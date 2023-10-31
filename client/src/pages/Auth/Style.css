@@ -1,0 +1,26 @@
+.outer-container{
+    @apply fixed top-0 w-screen h-screen overflow-hidden flex items-center justify-center;
+}
+.outer-container .container{
+    @apply absolute w-5/12 h-auto flex items-start justify-center px-28 py-20
+    bg-[#00000038] rounded-[20px] shadow-[0px_13px_44px_#0000001f] backdrop-blur-[19.6px] backdrop-brightness-[100%] [-webkit-backdrop-filter:blur(19.6px)_brightness(100%)];
+}
+.outer-container .container .content{
+    @apply w-full flex flex-col;
+}
+.outer-container .form-control{
+    @apply mt-10 flex items-center justify-start gap-4 pb-3 border-b-[1px] border-white;
+}
+.outer-container .form-control-input{
+    @apply outline-none focus:outline-none bg-transparent
+    font-normal text-sm text-white placeholder-opacity-60 placeholder-white focus:bg-transparent;
+}
+.outer-container .form-control-button{
+    @apply w-full h-12 px-10 mt-6 rounded-3xl bg-white flex items-center justify-between;
+}
+.outer-container .social-login{
+    @apply  my-6 w-full flex items-center justify-center gap-4;
+}
+.bg-custom-selection::selection {
+    background-color: #214dbd;
+}
