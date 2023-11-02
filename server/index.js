@@ -1,7 +1,9 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
 const connectDb = require('./config/database');
 const cors = require('cors');
+const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const userRouter = require('./routes/userRoute');
@@ -17,7 +19,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(session({secret:process.env.SESSION_SECRET, resave:true, saveUninitialized: true }));
 app.use(cookieParser());
+app.use('/products/resized', express.static(path.join(__dirname, "public", "products", "resized")));
 
 app.use('/user', userRouter);
 app.use('/admin', adminRouter);

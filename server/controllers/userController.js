@@ -10,7 +10,7 @@ module.exports = {
             const salt = bcrypt.genSaltSync(10);
             const hash = bcrypt.hashSync(password, salt);
             const currDate = Date.now();
-            const user = await User.create({ name, email, password: hash, createdAt: currDate, wallet:0 });
+            const user = await User.create({ name, email, password: hash, createdAt: currDate, wallet: 0 });
             if (!user) {
                 res.json({ status: "error", message: "Something went wrong!" });
                 return;
@@ -112,6 +112,60 @@ module.exports = {
             res.json({ status: 'ok' });
         } catch (error) {
             res.json({ status: 'error' });
+        }
+    },
+    googleAuthSuccess: async (req, res) => {
+        if (req?.user?._id) {
+            const token = generateUserToken({ id: req.user._id, isVerified: true });
+            res.cookie("user_key", token, { maxAge: 1000 * 60 * 60 * 24 * 2, httpOnly: true });
+            res.redirect(`${process.env.CLIENT_URL}`);
+        } else {
+            res.redirect(`${process.env.CLIENT_URL}login?error=${encodeURIComponent("Authentication Failed")}`);
+        }
+
+    },
+    googleAuthFailed: async (req, res) => {
+        res.redirect(`${process.env.CLIENT_URL}login?error=${encodeURIComponent("Authentication Failed")}`);
+    },
+
+    getAllUsers: async (req, res) => {
+        try {
+            const users = await User.find({role: "User"}).lean();
+            if (!users || users.length === 0) {
+                res.json({ status: "error", data: {}, message: "Users not found!" });
+            } else {
+                res.json({ status: "ok", data: users });
+            }
+        } catch (error) {
+            res.json({ status: "error", message: error?.message });
+        }
+    },
+
+    getUser: async (req, res) => {
+        const userId = req.params?.id;
+        try {
+            const user = await User.findOne({ _id: userId });
+            if (!user) {
+                res.json({ status: "error", data: {}, message: "User not found!" });
+            } else {
+                res.json({ status: "ok", data: user });
+            }
+        } catch (error) {
+            res.json({ status: "error", message: error?.message });
+        }
+    },
+    changeUserStatus: async (req, res) => {
+        const id = req.query?.id;
+        const status = req.query?.status;
+        try {
+            if (!id || !status) {
+                res.json({ status: "error" });
+            } else {
+                await User.updateOne({ _id: id }, { isBlocked: status });
+                res.json({ status: "ok" });
+            }
+        } catch (error) {
+            res.json({ status: "error", message: error?.message });
         }
     },
 }

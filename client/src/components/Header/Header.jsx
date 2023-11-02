@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Popover, PopoverHandler, PopoverContent, Button, Card, List, ListItem } from '@material-tailwind/react'
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../store/actions/user/userActions';
@@ -20,17 +20,17 @@ function Header() {
                 </div>
                 <div className='nav-links flex items-center justify-center gap-4
                 text-xs font-medium'>
-                    <h4>HOME</h4>
-                    <h4>STORE</h4>
+                    <Link to={"/"}>HOME</Link>
+                    <Link to={"store"}>STORE</Link>
                     <h4>BLOG</h4>
-                    <h4>CONTACT</h4>
+                    <Link to={"contact"}>CONTACT</Link>
                 </div>
             </div>
             <div className='flex items-center justify-center '>
                 <Button variant={"text"} className='mr-[-0.5rem]'>
                     <img src="/icons/search-icon.png" alt="" />
                 </Button>
-                <Button variant={"text"}>
+                <Button variant={"text"} onClick={() => navigate("cart")}>
                     <img src="/icons/shopping-cart-icon.png" alt="" />
                 </Button>
                 <Popover placement="bottom-end">

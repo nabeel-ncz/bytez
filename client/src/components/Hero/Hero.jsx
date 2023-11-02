@@ -4,7 +4,7 @@ import CustomCarousel from '../CustomCarousel/CustomCarousel'
 function Hero() {
     return (
         <>
-            <div className='w-full mt-24 px-24 flex items-center justify-center gap-[25px]'>
+            <div className='w-full px-24 flex items-center justify-center gap-[25px]'>
                 <div className='h-[548px] flex flex-col items-center justify-between'>
                     <img src="/images/bytez-banner-1.png" alt="" className='w-[386px] h-[255px] self-start' />
                     <img src="/images/bytez-banner-2.png" alt="" className='w-[386px] h-[255px] self-end' />

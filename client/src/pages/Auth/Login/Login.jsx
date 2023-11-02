@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import "../Style.css";
@@ -6,21 +6,28 @@ import loginSchema from '../../../schema/user/loginSchema';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser, login } from '../../../store/actions/user/userActions';
 import { resetError } from '../../../store/reducers/user/userSlice';
+import { useLocation } from 'react-router-dom';
 
 function Login() {
+  const [authError, setAuthError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { search } = useLocation();
+  const query = new URLSearchParams(search);
 
   useEffect(() => {
     dispatch(resetError());
+    const error = query.get("error");
+    const decError = error ? decodeURIComponent(error) : "";
+    setAuthError(decError);
   }, [])
 
   const error = useSelector(state => state?.user?.error);
 
   const handleFormSubmit = (data) => {
     dispatch(login({ userCredentials: data })).then((result) => {
-      if(result.payload?.status === "ok"){
-        if(result.payload?.data?.role === "User"){
+      if (result.payload?.status === "ok") {
+        if (result.payload?.data?.role === "User") {
           navigate('/');
         } else {
           dispatch(fetchUser());
@@ -29,6 +36,11 @@ function Login() {
       }
     })
   }
+
+  const handleGoogleAuth = () => {
+    window.open("http://localhost:3000/user/oauth2/google", "_self");
+  }
+
   return (
     <>
       <div className='outer-container'>
@@ -48,6 +60,7 @@ function Login() {
                 }}
               >
                 <Form action="" className='flex flex-col'>
+                  {(authError !== "") && <h2 className="text-red-500 text-xs text-start">{authError}</h2>}
                   {error && <h2 className="text-red-500 text-xs text-start">{error}</h2>}
                   <div className='form-control'>
                     <img src="/icons/mail-icon.png" alt="" className='w-5' />
@@ -75,11 +88,10 @@ function Login() {
                   <hr className='w-[44%]' />
                 </div>
               </div>
-              <div className='social-login'>
-                <img src="/icons/google-icon.png" alt="" className='h-12' />
-                <img src="/icons/facebook-icon.png" alt="" className='h-12' />
-                <img src="/icons/apple-icon.png" alt="" className='h-12' />
-              </div>
+              <button onClick={handleGoogleAuth} className='w-full h-12 px-10 mt-6 rounded-3xl bg-transparent border-white border-2 flex items-center justify-center gap-3'>
+                <img src="/icons/google-trsp-icon.png" alt="" className='h-8'/>
+                <span className='font-medium text-base text-white'>Continue With Google</span>
+              </button>
               <h2 className='mt-8 text-white text-start text-sm font-extralight'>Don’t have account?
                 <Link to={"/signup"}><span className='font-medium'>Register Now</span></Link>
               </h2>

@@ -15,6 +15,13 @@ import Categories from "./pages/Admin/Categories/Categories";
 import Brands from "./pages/Admin/Brands/Brands";
 import Customers from "./pages/Admin/Customers/Customers";
 import Admins from "./pages/Admin/Admins/Admins";
+import Store from "./pages/User/Store/Store"
+import Contact from "./pages/User/Contact/Contact"
+import Cart from "./pages/User/Cart/Cart"
+import Wishlist from "./pages/User/Wishlist/Wishlist"
+import AddProduct from "./pages/Admin/Products/AddProduct"
+import CustomerView from "./pages/Admin/Customers/CustomerView";
+import { Toaster } from "react-hot-toast";
 
 
 function App() {
@@ -29,20 +36,23 @@ function App() {
 
   return (
     <>
+      <Toaster position="top-center" />
       <Routes>
         <Route path="/login" element={!user ? <Login /> : <Navigate to={"/"} />} />
         <Route path="/signup" element={!user ? <Signup /> : <Navigate to={"/"} />} />
-        
+      
         {(role === "Admin" || role === "SuperAdmin") &&
           (<>
             <Route path="/admin/" element={<Layout role={"Admin"} />}>
               <Route index element={<Dashboard />} />
               <Route path="orders" element={<OrdersList />} />
               <Route path="products" element={<ProductsList />} />
+              <Route path="products/create" element={<AddProduct />} />
               <Route path="payments" element={<Payments />} />
               <Route path="categories" element={<Categories />} />
               <Route path="brands" element={<Brands />} />
               <Route path="customers" element={<Customers />} />
+              <Route path="customers/view/:id" element={<CustomerView />} />
               <Route path="admins" element={<Admins />} />
             </Route>
             <Route path="/admin/*" element={<h2>ERROR</h2>} />
@@ -58,6 +68,10 @@ function App() {
           <>
             <Route path="/" element={<Layout role={"User"} />}>
               <Route index element={<Home />} />
+              <Route path="store" element={<Store />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="cart" element={<Cart />} />
+              <Route path="wishlist" element={<Wishlist />} />
               <Route path="verify/email" element={verified ? <>{console.log("working")}<Navigate to={"/"} /></> : <OtpValidation /> } />
             </Route>
             <Route path="*" element={<h2>ERROR</h2>} />

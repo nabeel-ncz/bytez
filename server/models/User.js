@@ -32,10 +32,11 @@ const userSchema = new mongoose.Schema({
     wallet:{
         type:Number,
     },
-    createdAt:{
-        type:Date,
-        required:true,
+    oauth:{
+        type:Boolean,
     }
+},{
+    timestamps: true
 });
 const collection = mongoose.model("User",userSchema);
 module.exports = collection;
