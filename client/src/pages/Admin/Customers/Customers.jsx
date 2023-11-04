@@ -35,15 +35,15 @@ function Customers() {
                     </div>
                 </div>
                 <div className="lg:flex justify-between items-center text-xs font-semibold">
-                    <CustomTabs />
-                    <div className="flex my-2 gap-3">
+                    {/* <CustomTabs /> */}
+                    {/* <div className="flex my-2 gap-3">
                         <button className="flex items-center gap-2 p-2 rounded-lg bg-white">
                             Select Date
                         </button>
                         <button className="flex items-center gap-2 p-2 rounded-lg bg-white">
                             Filters
                         </button>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="overflow-x-scroll lg:overflow-hidden bg-white rounded-lg">
                     <table className="w-full min-w-max table-auto">

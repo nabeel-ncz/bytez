@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { sendOtp } from '../../store/actions/user/userActions';
+import { useNavigate } from 'react-router-dom';
 
-function CountdownTimer({time, setTime}) {
+function CountdownTimer({time, setTime, email}) {
     const intervalRef = useRef();
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const decreaseTime = () => {
         if (time > 0) {
@@ -29,7 +31,9 @@ function CountdownTimer({time, setTime}) {
     };
 
     const handleResendOtp = () => {
-        dispatch(sendOtp());
+        dispatch(sendOtp(email)).then(() => {
+            setTime(120);
+        })
     }
     return (
         <>
@@ -37,7 +41,7 @@ function CountdownTimer({time, setTime}) {
             <h2 className='my-4 text-start text-sm font-medium text-white'>{formatTime(time)}</h2>
         ) : (
             <h2 className='my-4 text-white text-start text-sm font-extralight'>Don't get the OTP ?
-                <span onClick={handleResendOtp} className='font-medium'> Resend Otp</span>
+                <span onClick={handleResendOtp} className='font-medium cursor-pointer'> Resend Otp</span>
             </h2>
         )}
         </>

@@ -23,13 +23,15 @@ function OtpValidation() {
         dispatch(resetError());
     },[]);
 
+    const query = search.get("request");
+    const email = search.get("email");
     useEffect(() => {
-        const query = search.get("request");
-        if(query){
-            dispatch(sendOtp());
+        if(query && email){
+            dispatch(sendOtp(email));
             setTime(120);
         } else {
             setTime(0);
+            navigate('/page_not_found');
         }
     },[]);
 
@@ -41,8 +43,10 @@ function OtpValidation() {
             setError("OTP must be contain 6 characters");
         } else {
             const data = { otp: otp };
-            dispatch(verifyEmail({ data })).then(() => {
-                navigate('/');
+            dispatch(verifyEmail({ data })).then((response) => {
+                if(response.data?.status === "ok"){
+                    navigate('/');
+                }
             })
         }
     }
@@ -86,7 +90,7 @@ function OtpValidation() {
                                     outline: "none"
                                 }}
                             />
-                            <CountdownTimer time={time} setTime={setTime} />
+                            <CountdownTimer time={time} setTime={setTime} email={email} />
                             <div className='w-full h-12 flex items-center justify-between gap-2'>
                                 <button onClick={() => navigate('/')} className='w-1/3 h-full mt-6 rounded-3xl flex items-center justify-center bg-transparent border-2 border-white text-white'>
                                     <span className='font-semibold text-base'>Do Later</span>

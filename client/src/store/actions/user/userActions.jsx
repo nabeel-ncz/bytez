@@ -66,9 +66,9 @@ export const fetchUser = createAsyncThunk("user/fetchUser", async () => {
     
 })
 
-export const sendOtp = createAsyncThunk("user/sendOtp", async () => {
+export const sendOtp = createAsyncThunk("user/sendOtp", async (email) => {
     try {
-        const response = await axios.get("/user/auth/send_otp", {withCredentials:true});
+        const response = await axios.get(`/user/auth/send_otp?email=${email}`, {withCredentials:true});
         if(response.data.status === "error"){
             throw new Error(response.data?.message);
         }

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createProduct, getAllProducts, getAllUsers } from "../../actions/admin/adminActions";
+import { createProduct, deleteProduct, getAllBrands, getAllCategories, getAllProducts, getAllUsers } from "../../actions/admin/adminActions";
 
 const INITIAL_STATE = {
     customers:{
@@ -12,6 +12,16 @@ const INITIAL_STATE = {
         data: null,
         error: null,
     },
+    categories:{
+        loading: false,
+        data: null,
+        error: null,
+    },
+    brands:{
+        loading: false,
+        data: null,
+        error: null,
+    }
 }
 const adminSlice = createSlice({
     name:"admin",
@@ -41,7 +51,13 @@ const adminSlice = createSlice({
         // })
         // .addCase(createProduct.fulfilled, (state, action) => {
         //     state.products.loading = false;
+        //     state.products.error = null;
         // })
+        // .addCase(createProduct.rejected, (state, action) => {
+        //     state.products.loading = false;
+        //     state.products.error = action?.error?.message;
+        // })
+        //get all products
         .addCase(getAllProducts.pending, (state) => {
             state.products.loading = true;
         })
@@ -55,6 +71,36 @@ const adminSlice = createSlice({
             state.products.data = null;
             state.products.error = action?.error?.message;
         }) 
+        //get All Categories
+        .addCase(getAllCategories.pending, (state) => {
+            state.categories.loading = true;
+        })
+        .addCase(getAllCategories.fulfilled, (state, action) => {
+            state.categories.loading = false;
+            state.categories.data = action?.payload;
+            state.categories.error = null;
+        })
+        .addCase(getAllCategories.rejected, (state, action) => {
+            state.categories.loading = false;
+            state.categories.error = action?.error?.message;
+            state.categories.data = null;
+        })
+        
+        //get All Categories
+        .addCase(getAllBrands.pending, (state) => {
+            state.brands.loading = true;
+        })
+        .addCase(getAllBrands.fulfilled, (state, action) => {
+            state.brands.loading = false;
+            state.brands.data = action?.payload;
+            state.brands.error = null;
+        })
+        .addCase(getAllBrands.rejected, (state, action) => {
+            state.brands.loading = false;
+            state.brands.error = action?.error?.message;
+            state.brands.data = null;
+        })
+        
     }
 })
 

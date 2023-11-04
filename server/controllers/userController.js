@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const { generateUserToken, generateOtpToken, verifyOtpToken, verifyUserToken } = require('../helper/jwtHelper');
 const { generateOTP } = require('../helper/otpHelper');
+const { sendOtpMail } = require('../helper/mailHelper');
 
 module.exports = {
     registerUser: async (req, res) => {
@@ -71,13 +72,15 @@ module.exports = {
     },
     sendOtp: async (req, res) => {
         const userToken = req.cookies?.user_key;
-        if (!userToken) {
+        const email = req.query?.email;
+        if (!userToken || !email) {
             res.json({ status: "error" });
         } else {
             const result = verifyUserToken(userToken);
             if (result.status === "ok") {
-                const otpToken = generateOtpToken(result.data?.id);
-                res.cookie("otp_key", otpToken, { maxAge: 1000 * 60 * 10, httpOnly: true });
+                const {otp, key} = generateOtpToken(result.data?.id);
+                res.cookie("otp_key", key, { maxAge: 1000 * 60 * 2, httpOnly: true });
+                await sendOtpMail({otp, email});
                 res.json({ status: "ok" });
             } else {
                 res.json({ status: "error" });

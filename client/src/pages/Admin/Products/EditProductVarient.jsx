@@ -1,66 +1,112 @@
 import React, { useState, useEffect } from 'react';
 import { Breadcrumbs, Button } from "@material-tailwind/react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import CustomFileInput from '../../../components/CustomFileInput/CustomFileInput';
 import { SwatchesPicker } from "react-color";
 import CustomFileInputSmall from '../../../components/CustomFileInput/CustomFileInputSmall';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
-import productSchema from '../../../schema/admin/productSchema';
 import toast from 'react-hot-toast';
-import { useDispatch, useSelector } from 'react-redux';
-import { createProduct, getAllCategories, getAllBrands } from '../../../store/actions/admin/adminActions';
+import { useDispatch } from 'react-redux';
+import axios from 'axios';
+import productVarientSchema from '../../../schema/admin/productVarientSchema';
+import { updateProductVarient } from '../../../store/actions/admin/adminActions';
+import { useParams } from 'react-router-dom';
+import ExistingFileInput from '../../../components/CustomFileInput/existingFileInput';
 
-function AddProduct() {
+function EditVarient() {
     const [subImages, setSubImages] = useState({ 1: null, 2: null, 3: null, 4: null, 5: null, 6: null });
     const keysWithData = Object.keys(subImages).filter(key => subImages[key] !== null);
     const [mainImage, setMainImage] = useState(null);
+    const [subImagesUpdated, setSubImagesUpdated] = useState(false);
     const [color, setColor] = useState(null);
+    const [product, setProduct] = useState(null);
+    const [search] = useSearchParams();
 
-    const categories = useSelector(state => state.admin?.categories?.data);
-    const brands = useSelector(state => state.admin?.brands?.data);
-
-    useEffect(() => {
-        dispatch(getAllCategories());
-    },[]);
-
-    useEffect(() => {
-        dispatch(getAllBrands());
-    },[]);
+    const pId = search.get("pId");
+    const vId = search.get("vId");
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        handleFetch();
+    }, []);
+
+    const handleFetch = () => {
+        axios.get(`http://localhost:3000/admin/product/varient?pId=${pId}&vId=${vId}`, { withCredentials: true }).then((response) => {
+            if (response.data?.status === "ok") {
+                setProduct(response.data?.data);
+            } else {
+                setProduct(null);
+            }
+        })
+    }
 
     const handleSubImageChange = (file, imageName) => {
         setSubImages((state) => ({
             ...state,
             [imageName]: file,
         }));
+        setSubImagesUpdated(true);
     }
     const handleThumbnail = (file) => {
         setMainImage(file);
     }
     const handleColorPicker = (color, event) => {
+        setProduct(state => ({
+            ...state,
+            color:null,
+        }));
         setColor(color.hex)
     }
 
+    const clearExistingThumbnail = () => {
+        setProduct(state => ({
+            ...state,
+            images: {
+                ...state.images,
+                mainImage: null,
+            }
+        }))
+    }
+
+    const clearExistingSubImage = (file) => {
+        const filtered = product?.images?.subImages.filter((url) => url !== file);
+        console.log(filtered)
+        setProduct(state => ({
+            ...state,
+            images: {
+                ...state.images,
+                subImages: filtered
+            }
+        }))
+    }
+
     const handleFormSubmit = (data) => {
-        if (!mainImage || keysWithData.length < 2 || !color) {
+        if ((!product?.images?.mainImage && !mainImage) || (product?.images?.subImages?.length + keysWithData.length < 2) || (!color && !product?.color)) {
             toast.error("Please correct the errors!");
         } else {
             const formData = new FormData();
-            formData.append("title", data.title);
+            formData.append("productId", pId);
+            formData.append("varientId", product?.varientId);
             formData.append("description", data.description);
             formData.append("stockQuantity", data.stockQuantity);
             formData.append("price", data.price);
             formData.append("discountPrice", data.discountPrice);
             formData.append("markup", data.markup);
-            formData.append("category", data.category);
-            formData.append("brand", data.brand);
             formData.append("status", data.status);
             formData.append("ram", data.ram);
             formData.append("rom", data.rom);
-            formData.append("color", color);
+            {
+                product?.color ? formData.append("color", product?.color) : formData.append("color", color);
+            }
+            {
+                !product?.images?.mainImage && formData.append("mainImageUpdated", true);
+            }
+            formData.append("subImagesUpdated", subImagesUpdated);
             formData.append("mainImage", mainImage);
+            formData.append("currThumbnail", product?.images?.mainImage);
+            formData.append("currSubImages", JSON.stringify(product?.images?.subImages));
 
             let index = 1;
             Object.keys(subImages).forEach((key) => {
@@ -70,29 +116,32 @@ function AddProduct() {
                 }
             })
             console.log(formData)
-            dispatch(createProduct(formData)).then((result) => {
-                toast.success('Product Created Successfully')
-                navigate(`/admin/products/view/${result.payload?._id}`);
+            dispatch(updateProductVarient(formData)).then(() => {
+                toast.success("Product varient is Updated");
+                navigate(`/admin/products/view/${pId}`);
             }).catch(() => {
-                toast.error("There is something went wrong!, Please try again later");
+                toast.error("There is something went wrong, Please try again later");
             })
         }
     }
     return (
         <>
+        {console.log(product?.images?.subImages)}
             <div className="px-5 pt-2 w-full md:overflow-y-hidden">
+
                 <Formik
                     initialValues={{
-                        title: "", description: "", stockQuantity: "", price: "", discountPrice: "",
-                        markup: "", category: "", brand: "", status: "", ram: "", rom: ""
+                        description: product?.description, stockQuantity: product?.stockQuantity, price: product?.price, discountPrice: product?.price,
+                        markup: product?.markup, status: product?.status, ram: product?.ram, rom: product?.rom
                     }}
-                    validationSchema={productSchema}
+                    validationSchema={productVarientSchema}
                     onSubmit={handleFormSubmit}
+                    enableReinitialize
                 >
                     <Form className="">
                         <div className="flex justify-between items-center text-xs font-semibold">
                             <div>
-                                <h1 className="font-bold text-2xl">Add Products</h1>
+                                <h1 className="font-bold text-2xl text-start">Edit Varient</h1>
                                 <Breadcrumbs>
                                     <Link to={"/admin"} className="opacity-60">
                                         <svg
@@ -127,18 +176,34 @@ function AddProduct() {
                                 <div className="bg-white p-5 rounded-lg mb-5 lg:flex gap-5">
                                     <div className="lg:w-1/3 mb-3 lg:mb-0 text-start">
                                         <h1 className="font-bold mb-3">Product Thumbnail</h1>
-                                        <CustomFileInput onChange={handleThumbnail} />
-                                        {!mainImage && <h6 className="text-red-500 text-xs">Thumbnail is required</h6>}
+                                        {product?.images?.mainImage ?
+                                            (<div className="mt-4 flex flex-col items-center">
+                                                <div className="bg-white p-2 h-52 rounded shadow-sm mb-2 ">
+                                                    <img
+                                                        src={`http://localhost:3000/products/resized/${product?.images?.mainImage}`}
+                                                        alt={"loading..."}
+                                                        className="object-contain w-full h-full rounded"
+                                                    />
+                                                </div>
+                                                <button onClick={clearExistingThumbnail}
+                                                    className="mt-4 bg-blue-gray-800 text-white text-base font-medium py-1 px-3 rounded"
+                                                >
+                                                    Clear File
+                                                </button>
+                                            </div>)
+                                            : (<>
+                                                <CustomFileInput onChange={handleThumbnail} />
+                                                {!mainImage && <h6 className="text-red-500 text-xs">Thumbnail is required</h6>}
+                                            </>)}
                                     </div>
                                     <div className="lg:w-2/3 text-start">
                                         <h1 className="font-bold">Product Information</h1>
                                         <p className="text-sm mt-2 font-semibold">Title</p>
-                                        <Field
-                                            type="text" name="title"
-                                            className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
 
+                                        <input
+                                            type="text" name="title" value={product?.title} disabled
+                                            className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
                                         />
-                                        <ErrorMessage name="title" component="div" className="text-red-500 text-xs text-start" />
 
                                         <p className="text-sm mt-2 font-semibold">Description</p>
                                         <Field
@@ -160,16 +225,36 @@ function AddProduct() {
                                 <div className="bg-white p-5 rounded-lg mb-5 flex flex-col items-start justify-center">
                                     <h1 className="font-bold">Product Images</h1>
                                     <div className='mt-4 flex items-center justify-center gap-4'>
-                                        <CustomFileInputSmall handleChange={handleSubImageChange} imageName={1} />
-                                        <CustomFileInputSmall handleChange={handleSubImageChange} imageName={2} />
-                                        <CustomFileInputSmall handleChange={handleSubImageChange} imageName={3} />
+                                        {
+                                            product?.images?.subImages[0] ?
+                                                (<ExistingFileInput clearExistingFile={clearExistingSubImage} imageUrl={product?.images?.subImages[0]} />) : (<CustomFileInputSmall handleChange={handleSubImageChange} imageName={1} />)
+                                        }
+                                        {
+                                            product?.images?.subImages[1] ?
+                                                (<ExistingFileInput clearExistingFile={clearExistingSubImage} imageUrl={product?.images?.subImages[1]} />) : (<CustomFileInputSmall handleChange={handleSubImageChange} imageName={2} />)
+                                        }
+                                        {
+                                            product?.images?.subImages[2] ?
+                                                (<ExistingFileInput clearExistingFile={clearExistingSubImage} imageUrl={product?.images?.subImages[2]} />) : (<CustomFileInputSmall handleChange={handleSubImageChange} imageName={3} />)
+                                        }
                                     </div>
                                     <div className='mt-4 flex items-center justify-center gap-4'>
-                                        <CustomFileInputSmall handleChange={handleSubImageChange} imageName={4} />
-                                        <CustomFileInputSmall handleChange={handleSubImageChange} imageName={5} />
-                                        <CustomFileInputSmall handleChange={handleSubImageChange} imageName={6} />
+                                        {
+                                            product?.images?.subImages[3] ?
+                                                (<ExistingFileInput clearExistingFile={clearExistingSubImage} imageUrl={product?.images?.subImages[3]} />) : (<CustomFileInputSmall handleChange={handleSubImageChange} imageName={4} />)
+                                        }
+                                        {
+                                            product?.images?.subImages[4] ?
+                                                (<ExistingFileInput clearExistingFile={clearExistingSubImage} imageUrl={product?.images?.subImages[4]} />) : (<CustomFileInputSmall handleChange={handleSubImageChange} imageName={5} />)
+                                        }
+                                        {
+                                            product?.images?.subImages[5] ?
+                                                (<ExistingFileInput clearExistingFile={clearExistingSubImage} imageUrl={product?.images?.subImages[5]} />) : (<CustomFileInputSmall handleChange={handleSubImageChange} imageName={6} />)
+                                        }
                                     </div>
-                                    {keysWithData.length < 2 && <h6 className="text-red-500 text-xs">Atleast 2 sub images is required</h6>}
+                                    {(product?.images?.subImages?.length + keysWithData.length < 2) &&
+                                        <h6 className="text-red-500 text-xs">Atleast 2 sub images is required</h6>
+                                    }
                                 </div>
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
                                     <h1 className="font-bold mb-2">Product Attributes</h1>
@@ -218,8 +303,8 @@ function AddProduct() {
                                             <p className="text-sm my-2 font-semibold">Color</p>
                                             <SwatchesPicker onChange={handleColorPicker} />
                                         </div>
-                                        <div className="w-40 h-20 block border text-center border-gray-500" style={{ backgroundColor: color ? color : "#fff" }}>
-                                            {!color && <h6 className="text-red-500 text-xs">Color is required</h6>}
+                                        <div className="w-40 h-20 block border text-center border-gray-500" style={{ backgroundColor: color ? color : product?.color ? product.color :"#fff" }}>
+                                            {(!color && !product?.color) && <h6 className="text-red-500 text-xs">Color is required</h6>}
                                         </div>
                                     </div>
 
@@ -257,29 +342,19 @@ function AddProduct() {
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
                                     <h1 className="font-bold">Category</h1>
                                     <p className="text-sm mt-2 font-semibold text-gray-700">Product Category</p>
-                                    <Field
-                                        name="category" id="categories" as="select"
+                                    <input
+                                        name="category" id="categories" value={product?.category} disabled
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                    >
-                                        {categories?.map(({category}) => (
-                                            <option value={category} >{category}</option>
-                                        ))}
-                                    </Field>
-                                    <ErrorMessage name="category" component="div" className="text-red-500 text-xs text-start" />
+                                    />
 
                                 </div>
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
                                     <h1 className="font-bold">Brand</h1>
                                     <p className="text-sm mt-2 font-semibold text-gray-700">Product Brand</p>
-                                    <Field
-                                        name="brand" id="brands" as="select"
+                                    <input
+                                        name="brand" id="brands" value={product?.brand} disabled
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                    >
-                                        {brands?.map(({brand}) => (
-                                            <option value={brand} >{brand}</option>
-                                        ))}
-                                    </Field>
-                                    <ErrorMessage name="brand" component="div" className="text-red-500 text-xs text-start" />
+                                    />
                                 </div>
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
                                     <h1 className="font-bold">Product Status</h1>
@@ -304,4 +379,4 @@ function AddProduct() {
     )
 }
 
-export default AddProduct
+export default EditVarient;

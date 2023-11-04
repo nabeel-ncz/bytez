@@ -151,7 +151,7 @@ function SideNavbar({ sidebarOpen, setSidebarOpen }) {
                                 </li>
                                 <li>
                                     <NavLink
-                                        to="brand"
+                                        to="brands"
                                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out hover:bg-gray-300 ${pathname.includes('dashboard') && "bg-gray-300"}`}
                                     >
                                         Brands

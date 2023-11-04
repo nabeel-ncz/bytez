@@ -16,7 +16,11 @@ const verifyUserToken = (token) => {
 }
 const generateOtpToken = (userId) => {
     const OTP = generateOTP();
-    return jwt.sign({ otp: OTP, userId: userId }, process.env.USER_OTP_SECRET, { expiresIn: 60 * 10 });
+    const key = jwt.sign({ otp: OTP, userId: userId }, process.env.USER_OTP_SECRET, { expiresIn: 60 * 10 });
+    return {
+        otp: OTP,
+        key: key,
+    };
 }
 const verifyOtpToken = (otp, otpToken) => {
     return jwt.verify(otpToken, process.env.USER_OTP_SECRET, (error, decoded) => {

@@ -17,9 +17,10 @@ function Signup() {
     },[]);
 
     const handleSubmit = (data) => {
-        dispatch(register({ userCredentials: data })).then(() => {
-            console.log('succees');
-            navigate('/verify/email?request=true');
+        dispatch(register({ userCredentials: data })).then((response) => {
+            if(response?.payload?.status === "ok"){
+                navigate(`/verify/email?request=true&email=${data.email}`);
+            }
         }).catch(() => {
             console.log('error');
         })

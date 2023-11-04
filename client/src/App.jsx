@@ -22,6 +22,14 @@ import Wishlist from "./pages/User/Wishlist/Wishlist"
 import AddProduct from "./pages/Admin/Products/AddProduct"
 import CustomerView from "./pages/Admin/Customers/CustomerView";
 import { Toaster } from "react-hot-toast";
+import ProductVarients from "./pages/Admin/Products/ProductVarients"
+import AddVarient from "./pages/Admin/Products/AddVarient"
+import EditVarient from "./pages/Admin/Products/EditProductVarient"
+import Product from "./pages/User/Product/Product"
+import BlockedUser from "./pages/User/Error/BlockedUser"
+import PageNotFound from "./pages/Error/PageNotFound"
+import CreateCategory from "./pages/Admin/Categories/CreateCategory"
+import CreateBrand from "./pages/Admin/Brands/CreateBrand"
 
 
 function App() {
@@ -40,6 +48,7 @@ function App() {
       <Routes>
         <Route path="/login" element={!user ? <Login /> : <Navigate to={"/"} />} />
         <Route path="/signup" element={!user ? <Signup /> : <Navigate to={"/"} />} />
+        <Route path="/page_not_found" element={<PageNotFound />} />
       
         {(role === "Admin" || role === "SuperAdmin") &&
           (<>
@@ -48,9 +57,14 @@ function App() {
               <Route path="orders" element={<OrdersList />} />
               <Route path="products" element={<ProductsList />} />
               <Route path="products/create" element={<AddProduct />} />
+              <Route path="products/create/varient/:id" element={<AddVarient />} />
+              <Route path="products/varient" element={<EditVarient />} />
+              <Route path="products/view/:id" element={<ProductVarients />} />
               <Route path="payments" element={<Payments />} />
               <Route path="categories" element={<Categories />} />
+              <Route path="categories/create" element={<CreateCategory />} />
               <Route path="brands" element={<Brands />} />
+              <Route path="brands/create" element={<CreateBrand />} />
               <Route path="customers" element={<Customers />} />
               <Route path="customers/view/:id" element={<CustomerView />} />
               <Route path="admins" element={<Admins />} />
@@ -66,9 +80,10 @@ function App() {
           </>
         ) : (
           <>
-            <Route path="/" element={<Layout role={"User"} />}>
+            <Route path="/" element={user?.isBlocked ? <BlockedUser /> : <Layout role={"User"} />}>
               <Route index element={<Home />} />
               <Route path="store" element={<Store />} />
+              <Route path="product/:id" element={<Product />} />
               <Route path="contact" element={<Contact />} />
               <Route path="cart" element={<Cart />} />
               <Route path="wishlist" element={<Wishlist />} />

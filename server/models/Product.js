@@ -13,8 +13,9 @@ const productSchema = new Schema({
         type: String,
         required: true,
     },
-    variants: [
+    varients: [
         {
+            varientId: {type: String, required: true},
             description: { type: String, required: true },
             price: { type: Number, required: true },
             markup: { type: Number, required: true },

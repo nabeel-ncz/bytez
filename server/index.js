@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const userRouter = require('./routes/userRoute');
 const adminRouter = require('./routes/adminRoute');
+const productRouter = require('./routes/productRoute');
 const app = express();
 connectDb();
 
@@ -25,6 +26,7 @@ app.use('/products/resized', express.static(path.join(__dirname, "public", "prod
 
 app.use('/user', userRouter);
 app.use('/admin', adminRouter);
+app.use('/products', productRouter);
 
 app.listen(process.env.PORT || 3000, () => {
     console.log(`\x1b[30m\x1b[42mServer Running at ${process.env?.PORT} Port \x1b[0m`);

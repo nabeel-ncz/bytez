@@ -36,25 +36,23 @@ function ViewProducts() {
             </Breadcrumbs>
           </div>
           <div className="flex gap-3">
-            <button className="flex items-center gap-2 p-2 rounded-lg bg-gray-200 text-blue-700">
+            {/* <button className="flex items-center gap-2 p-2 rounded-lg bg-gray-200 text-blue-700">
               Export
-            </button>
-            <button onClick={() => navigate("create")}
-              className="flex items-center gap-2 p-2 rounded-lg bg-blue-700 text-white"
-            >
+            </button> */}
+            <Button variant='gradient' onClick={() => navigate("create")}>
               Add Product
-            </button>
+            </Button>
           </div>
         </div>
         <div className="lg:flex justify-between items-center text-xs font-semibold">
           {/* <CustomTabs /> */}
           <div className="flex my-2 gap-3">
-            <button className="flex items-center gap-2 p-2 rounded-lg bg-white">
+            {/* <button className="flex items-center gap-2 p-2 rounded-lg bg-white">
               Select Date
             </button>
             <button className="flex items-center gap-2 p-2 rounded-lg bg-white">
               Filters
-            </button>
+            </button> */}
           </div>
         </div>
         <div className="overflow-x-scroll lg:overflow-hidden bg-white rounded-lg">
@@ -73,8 +71,8 @@ function ViewProducts() {
             </thead>
             <tbody>
               {products?.map((doc) => (
-                <tr
-                  onClick={() => { }} className={`hover:bg-blue-gray-50 active:bg-blue-gray-50 cursor-pointer`}
+                <tr key={doc?._id}
+                  onClick={() => { navigate(`/admin/products/view/${doc._id}`)}} className={`hover:bg-blue-gray-50 active:bg-blue-gray-50 cursor-pointer`}
                 >
                   <td className="text-sm p-4 flex items-center gap-2 text-start border-r">
                     <div className="w-10 h-10 overflow-clip flex justify-center items-center">

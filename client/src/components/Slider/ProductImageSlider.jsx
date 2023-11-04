@@ -1,0 +1,53 @@
+import React, { useState } from 'react'
+
+function ProductImageSlider({ images, handleHeroImage }) {
+    const itemsPerRow = 3;
+    const [startIndex, setStartIndex] = useState(0);
+
+    const nextSlide = () => {
+        const nextIndex = startIndex + itemsPerRow;
+        if (nextIndex < images.length) {
+            setStartIndex(nextIndex);
+        }
+    };
+
+    const prevSlide = () => {
+        const prevIndex = startIndex - itemsPerRow;
+        if (prevIndex >= 0) {
+            setStartIndex(prevIndex);
+        }
+    };
+
+    return (
+        <div className="text-center flex items-center justify-center gap-4">
+            {console.log(images)}
+            <button
+                onClick={prevSlide}
+                className={`px-2 py-1 bg-white text-white rounded-full ${startIndex === 0 && "opacity-50"}`}
+                disabled={startIndex === 0}
+            >
+                <img src="/icons/arrow-icon.png" alt="" className='w-8 rotate-90' />
+            </button>
+            <div className="grid grid-cols-3 gap-8">
+                {images.slice(startIndex, startIndex + itemsPerRow).map((image, index) => (
+                    <img
+                        key={index}
+                        src={`http://localhost:3000/products/resized/${image}`}
+                        alt={`Image ${index}`}
+                        className="w-14 h-auto"
+                        onClick={() => handleHeroImage(image)}
+                    />
+                ))}
+            </div>
+            <button
+                onClick={nextSlide}
+                className={`px-2 py-1 rounded-full bg-white text-white ${startIndex + itemsPerRow >= images.length && "opacity-50"}`}
+                disabled={startIndex + itemsPerRow >= images.length}
+            >
+                <img src="/icons/arrow-icon.png" alt="" className='w-8 -rotate-90' />
+            </button>
+        </div>
+    );
+}
+
+export default ProductImageSlider

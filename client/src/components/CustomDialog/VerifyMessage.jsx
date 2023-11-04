@@ -8,7 +8,7 @@ import {
     DialogFooter,
   } from "@material-tailwind/react";
 
-function VerifyMessage({open, handleOpen}) {
+function VerifyMessage({open, handleOpen, email}) {
     const navigate = useNavigate();
     return (
         <>
@@ -28,7 +28,7 @@ function VerifyMessage({open, handleOpen}) {
                         <span>later</span>
                     </Button>
                     <Button variant="gradient" color="green" onClick={() => {
-                        navigate('/verify/email?request=true')
+                        navigate(`/verify/email?request=true&email=${email}`)
                     }}>
                         <span>Verify Now</span>
                     </Button>

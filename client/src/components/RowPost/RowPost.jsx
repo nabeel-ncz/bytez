@@ -1,5 +1,6 @@
 import React from 'react'
 import ProductCard from '../ProductCard/ProductCard'
+import Dummy from '../ProductCard/Dummy'
 
 function RowPost() {
   return (
@@ -12,11 +13,10 @@ function RowPost() {
             </div>
         </div>
         <div className='w-full pb-12 px-32 flex items-center justify-between'>
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
-            <ProductCard />
+            <Dummy />
+            <Dummy />
+            <Dummy />
+            <Dummy />
         </div>
     </>
   )
