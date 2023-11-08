@@ -6,10 +6,10 @@ import { SwatchesPicker } from "react-color";
 import CustomFileInputSmall from '../../../components/CustomFileInput/CustomFileInputSmall';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import toast from 'react-hot-toast';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import productVarientSchema from '../../../schema/admin/productVarientSchema';
-import { updateProductVarient } from '../../../store/actions/admin/adminActions';
+import { updateProductVarient, createNewAttribute, getAllAttribute } from '../../../store/actions/admin/adminActions';
 import { useParams } from 'react-router-dom';
 import ExistingFileInput from '../../../components/CustomFileInput/existingFileInput';
 
@@ -21,6 +21,12 @@ function EditVarient() {
     const [color, setColor] = useState(null);
     const [product, setProduct] = useState(null);
     const [search] = useSearchParams();
+    const [newRam, setNewRam] = useState("");
+    const [newRom, setNewRom] = useState("")
+    const [attributeError, setAttributeError] = useState(null);
+    const [categoryAndBrand, setCategoryAndBrand] = useState(null);
+
+    const attributes = useSelector((state) => state?.admin?.productAttributes?.data);
 
     const pId = search.get("pId");
     const vId = search.get("vId");
@@ -30,7 +36,26 @@ function EditVarient() {
 
     useEffect(() => {
         handleFetch();
+        dispatch(getAllAttribute());
+        handleCategoryAndBrand();
     }, []);
+
+    const handleCategoryAndBrand = () => {
+        axios.get(`http://localhost:3000/admin/category/${product?.category}`, { withCredentials: true }).then((response) => {
+            if (response.data?.status === "ok") {
+                axios.get(`http://localhost:3000/admin/brand/${product?.brand}`, {withCredentials: true}).then((result) => {
+                    if(result?.data?.status === "ok"){
+                        setCategoryAndBrand({
+                            category: response?.data?.data?.category,
+                            brand: result?.data?.data?.brand
+                        });
+                    }
+                })
+            } else {
+                setCategoryAndBrand(null)
+            }
+        })
+    }
 
     const handleFetch = () => {
         axios.get(`http://localhost:3000/admin/product/varient?pId=${pId}&vId=${vId}`, { withCredentials: true }).then((response) => {
@@ -55,7 +80,7 @@ function EditVarient() {
     const handleColorPicker = (color, event) => {
         setProduct(state => ({
             ...state,
-            color:null,
+            color: null,
         }));
         setColor(color.hex)
     }
@@ -82,6 +107,20 @@ function EditVarient() {
         }))
     }
 
+    const handleAttributeSubmit = (event) => {
+        event.preventDefault();
+        if (newRam !== "" && newRom !== "" && newRam > 0 && newRom > 0) {
+            dispatch(createNewAttribute({ ram: newRam, rom: newRom })).then(() => {
+                dispatch(getAllAttribute());
+                setNewRam("");
+                setNewRom("");
+                setAttributeError(null);
+            })
+        } else {
+            setAttributeError("RAM and ROM should be greated that 0");
+        }
+    }
+
     const handleFormSubmit = (data) => {
         if ((!product?.images?.mainImage && !mainImage) || (product?.images?.subImages?.length + keysWithData.length < 2) || (!color && !product?.color)) {
             toast.error("Please correct the errors!");
@@ -95,8 +134,7 @@ function EditVarient() {
             formData.append("discountPrice", data.discountPrice);
             formData.append("markup", data.markup);
             formData.append("status", data.status);
-            formData.append("ram", data.ram);
-            formData.append("rom", data.rom);
+            formData.append("ramAndRom", data.ramAndRom);
             {
                 product?.color ? formData.append("color", product?.color) : formData.append("color", color);
             }
@@ -126,13 +164,13 @@ function EditVarient() {
     }
     return (
         <>
-        {console.log(product?.images?.subImages)}
+            {console.log(product?.images?.subImages)}
             <div className="px-5 pt-2 w-full md:overflow-y-hidden">
 
                 <Formik
                     initialValues={{
                         description: product?.description, stockQuantity: product?.stockQuantity, price: product?.price, discountPrice: product?.price,
-                        markup: product?.markup, status: product?.status, ram: product?.ram, rom: product?.rom
+                        markup: product?.markup, status: product?.status, ramAndRom: product?.ramAndRom
                     }}
                     validationSchema={productVarientSchema}
                     onSubmit={handleFormSubmit}
@@ -259,41 +297,36 @@ function EditVarient() {
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
                                     <h1 className="font-bold mb-2">Product Attributes</h1>
                                     <div className='flex items-start justify-between gap-4'>
-                                        <div className='w-full flex flex-col items-start justify-center'>
-                                            <p className="text-sm mt-2 font-semibold">RAM</p>
-                                            <Field
-                                                name="ram" as="select"
-                                                className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                            >
-                                                <option value={"4GB"} >4GB</option>
-                                                <option value={"8GB"}>8GB</option>
-                                            </Field>
-                                            <ErrorMessage name="ram" component="div" className="text-red-500 text-xs text-start" />
-
-                                            <input
-                                                type="text" name='ram'
-                                                className="w-full hidden bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                            />
-                                            <button className='w-full rounded mt-1 bg-blue-gray-800 text-white text px-3 py-1'>Add a new one</button>
+                                        <div className='w-full flex flex-col items-start justify-center gap-2'>
+                                            <h2 className='font-bold opacity-50'>Available Varients</h2>
+                                            {!attributes && (<h2>No varients available, Add a new one!</h2>)}
+                                            {attributes?.map(({ ram, rom }) => (
+                                                <div className='flex items-center justify-center gap-2'>
+                                                    <Field type="radio" name='ramAndRom' value={`${ram}GB RAM & ${rom}GB ROM`} />
+                                                    <label htmlFor="">{`${ram}GB RAM & ${rom}GB ROM`}</label>
+                                                </div>
+                                            ))}
+                                            <ErrorMessage name="ramAndRom" component="div" className="text-red-500 text-xs text-start" />
                                         </div>
                                         <div className='w-full flex flex-col items-start justify-center'>
-                                            <p className="text-sm mt-2 font-semibold">ROM</p>
-                                            <Field
-                                                name="rom" as="select"
-                                                className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                            >
-                                                <option value={"64GB"}>64GB</option>
-                                                <option value={"128GB"}>128GB</option>
-                                            </Field>
-                                            <ErrorMessage name="rom" component="div" className="text-red-500 text-xs text-start" />
-
-                                            <button className='w-full rounded mt-1 bg-blue-gray-800 text-white text px-3 py-1'>Add a new one</button>
-                                            <input
-                                                type="text" name='rom'
-                                                className="w-full hidden bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                            />
+                                            <div className='flex flex-col items-start justify-center gap-2' >
+                                                <h2 className='font-bold opacity-50'>Add a new Varient</h2>
+                                                {attributeError && (<h2 className='text-red-500 text-xs text-start'>{attributeError}</h2>)}
+                                                <div className='flex items-center justify-center h-10 bg-blue-gray-50'>
+                                                    <input placeholder='RAM' type='number' min={0} value={newRam} onChange={(evt) => setNewRam(evt.target.value)}
+                                                        name="ram" className="w-full bg-transparent rounded-md py-2 px-3 text-sm outline-none border border-gray-200"
+                                                    />
+                                                    <span className='px-2 h-full flex items-center justify-center'>GB</span>
+                                                </div>
+                                                <div className='flex items-center justify-center h-10 bg-blue-gray-50'>
+                                                    <input placeholder='ROM' type='number' min={0} value={newRom} onChange={(evt) => setNewRom(evt.target.value)}
+                                                        name="rom" className="w-full bg-transparent rounded-md py-2 px-3 text-sm outline-none border border-gray-200"
+                                                    />
+                                                    <span className='px-2 h-full flex items-center justify-center'>GB</span>
+                                                </div>
+                                                <Button type='button' size='sm' variant='gradient' onClick={handleAttributeSubmit}>Save</Button>
+                                            </div>
                                         </div>
-
                                     </div>
                                 </div>
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
@@ -303,7 +336,7 @@ function EditVarient() {
                                             <p className="text-sm my-2 font-semibold">Color</p>
                                             <SwatchesPicker onChange={handleColorPicker} />
                                         </div>
-                                        <div className="w-40 h-20 block border text-center border-gray-500" style={{ backgroundColor: color ? color : product?.color ? product.color :"#fff" }}>
+                                        <div className="w-40 h-20 block border text-center border-gray-500" style={{ backgroundColor: color ? color : product?.color ? product.color : "#fff" }}>
                                             {(!color && !product?.color) && <h6 className="text-red-500 text-xs">Color is required</h6>}
                                         </div>
                                     </div>
@@ -343,7 +376,7 @@ function EditVarient() {
                                     <h1 className="font-bold">Category</h1>
                                     <p className="text-sm mt-2 font-semibold text-gray-700">Product Category</p>
                                     <input
-                                        name="category" id="categories" value={product?.category} disabled
+                                        name="category" id="categories" value={categoryAndBrand?.category} disabled
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
                                     />
 
@@ -352,7 +385,7 @@ function EditVarient() {
                                     <h1 className="font-bold">Brand</h1>
                                     <p className="text-sm mt-2 font-semibold text-gray-700">Product Brand</p>
                                     <input
-                                        name="brand" id="brands" value={product?.brand} disabled
+                                        name="brand" id="brands" value={categoryAndBrand?.brand} disabled
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
                                     />
                                 </div>
@@ -364,9 +397,8 @@ function EditVarient() {
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
 
                                     >
-                                        <option value="draft" >Draft</option>
-                                        <option value="instock">In Stock</option>
-                                        <option value="outofstock">Out Of Stock</option>
+                                        <option value="publish">publish</option>
+                                        <option value="unpublish">unpublish</option>
                                     </Field>
                                     <ErrorMessage name="status" component="div" className="text-red-500 text-xs text-start" />
                                 </div>

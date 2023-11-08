@@ -6,12 +6,14 @@ const productSchema = new Schema({
         required: true
     },
     category: {
-        type: String,
-        required: true
+        type: mongoose.Types.ObjectId,
+        required: true,
+        ref:"Category"
     },
     brand: {
-        type: String,
+        type: mongoose.Types.ObjectId,
         required: true,
+        ref:"Brand"
     },
     varients: [
         {
@@ -22,15 +24,14 @@ const productSchema = new Schema({
             discountPrice: { type: Number, required: true },
             stockQuantity: { type: Number, required: true },
             sold: { type: Number, default: 0 },
-            ram: { type: String, required: true },
-            rom: { type: String, required: true },
+            ramAndRom: { type: String, required: true},
             color: { type: String, required: true },
             images: {
                 mainImage: { type: String, required: true },
                 subImages: [{ type: String }]
             },
             totalRating: { type: Number, default: 0 },
-            status:{ type: String, required: true, default: "draft" }
+            status:{ type: String, required: true, default: "publish" }
         }
     ]
 },

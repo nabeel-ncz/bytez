@@ -30,12 +30,20 @@ import BlockedUser from "./pages/User/Error/BlockedUser"
 import PageNotFound from "./pages/Error/PageNotFound"
 import CreateCategory from "./pages/Admin/Categories/CreateCategory"
 import CreateBrand from "./pages/Admin/Brands/CreateBrand"
+import NoAccount from "./pages/User/Error/NoAccount"
+import Profile from "./pages/User/Profile/Profile"
+import UserDashboard from "./pages/User/Profile/UserDashboard";
+import AccountDetails from "./pages/User/Profile/AccountDetails"
+import ShippingAddress from "./pages/User/Profile/ShippingAddress"
+import Wallet from "./pages/User/Profile/Wallet"
+import ChangePassword from "./pages/User/Profile/ChangePassword"
+import CreateAddress from "./pages/User/Profile/CreateAddress"
 
 
 function App() {
-  const user = useSelector(state => state.user?.user);
-  const verified = useSelector(state => state.user?.user?.verified);
-  const role = useSelector(state => state.user?.user?.role);
+  const user = useSelector(state => state.user?.user?.data);
+  const verified = useSelector(state => state.user?.user?.data?.verified);
+  const role = useSelector(state => state.user?.user?.data?.role);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -85,8 +93,16 @@ function App() {
               <Route path="store" element={<Store />} />
               <Route path="product/:id" element={<Product />} />
               <Route path="contact" element={<Contact />} />
-              <Route path="cart" element={<Cart />} />
-              <Route path="wishlist" element={<Wishlist />} />
+              <Route path="profile" element={<Profile />} >
+                <Route index element={<UserDashboard />} />
+                <Route path="account" element={<AccountDetails />}/>
+                <Route path="account/change_password" element={<ChangePassword />}/>
+                <Route path="address" element={<ShippingAddress />}/>
+                <Route path="address/create" element={<CreateAddress />}/>
+                <Route path="wallet" element={<Wallet />}/>
+              </Route>
+              <Route path="cart" element={user ? <Cart /> : <NoAccount />} />
+              <Route path="wishlist" element={user ? <Wishlist /> : <NoAccount/>} />
               <Route path="verify/email" element={verified ? <>{console.log("working")}<Navigate to={"/"} /></> : <OtpValidation /> } />
             </Route>
             <Route path="*" element={<h2>ERROR</h2>} />

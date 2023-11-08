@@ -4,27 +4,42 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addNewCategory } from '../../../store/actions/admin/adminActions';
 import toast from 'react-hot-toast';
+import CustomFileInputSmall from '../../../components/CustomFileInput/CustomFileInputSmall';
+import CustomFileInput from '../../../components/CustomFileInput/CustomFileInput';
 
 function CreateCategory() {
-    const [category, setCategory] = useState("");
+    const [data, setData] = useState({
+        category: "", status: "active"
+    });
+    const [thumbnail, setThumbnail] = useState(null);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleChange = (event) => {
-        setCategory(event.target.value);
+        setData((state) => ({
+            ...state,
+            [event.target.name]: event.target.value,
+        }));
+    }
+
+    const handleThumbnail = (file) => {
+        setThumbnail(file);
     }
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
-        dispatch(addNewCategory({category})).then((response) => {
-            if(response?.payload?.status === "ok" ){
+        console.log(data);
+        if (!thumbnail) {
+            toast.error("Thumbnail is required");
+            return;
+        };
+        dispatch(addNewCategory({ category: data.category, file: thumbnail, status: data?.status })).then((response) => {
+            if (response?.payload?.status === "ok") {
                 toast.success("Category created successfully!");
                 setCategory('');
-            }else{
+            } else {
                 toast.error("There is something went wrong!");
             }
-        }).catch(() => {
-            toast.error("There is something went wrong!");
         })
     };
     return (
@@ -53,7 +68,18 @@ function CreateCategory() {
                 <div className="overflow-x-scroll lg:overflow-hidden flex items-start">
                     <form onSubmit={handleFormSubmit} className='mt-6 flex flex-col items-start gap-0'>
                         <label >Category Name : </label>
-                        <input onChange={handleChange} value={category} className='w-60 h-12 bg-white rounded border border-gray-700 outline-none'/>
+                        <input name='category' onChange={handleChange} value={data?.category} required className='w-60 h-12 bg-white rounded border border-gray-700 outline-none' />
+                        <label >Thumbnail : </label>
+                        <CustomFileInput onChange={handleThumbnail} />
+                        <label >Status : </label>
+                        <label htmlFor="">
+                            <input type="radio" name='status' value={"active"} checked={data?.status === "active"} onChange={handleChange} />
+                            Active
+                        </label>
+                        <label htmlFor="">
+                            <input type="radio" name='status' value={"block"} checked={data?.status === "block"} onChange={handleChange} />
+                            Block    
+                        </label>
                         <Button type='submit' variant='gradient' className='w-full py-2 mt-4'>Save</Button>
                     </form>
                 </div>

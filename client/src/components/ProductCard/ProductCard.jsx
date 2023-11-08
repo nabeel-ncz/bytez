@@ -4,7 +4,7 @@ import CardColour from '../CardColour/CardColour'
 import { IconButton } from "@material-tailwind/react";
 import { useNavigate } from 'react-router-dom';
 
-function ProductCard({id, image, varients, title, description, price}) {
+function ProductCard({ id, image, varients, title, description, price }) {
     const [like, setLike] = useState(false)
     const navigate = useNavigate();
     return (
@@ -18,18 +18,18 @@ function ProductCard({id, image, varients, title, description, price}) {
                     }}>
                         <IconButton variant="text">
                             {like ?
-                            <img src="/icons/heart-red-icon.png" alt="" className='w-5 h-5' />
-                            : <img src="/icons/heart-icon.png" alt="" className='w-5 h-5' />
+                                <img src="/icons/heart-red-icon.png" alt="" className='w-5 h-5' />
+                                : <img src="/icons/heart-icon.png" alt="" className='w-5 h-5' />
                             }
                         </IconButton>
                     </div>
                 </div>
                 <div className='flex flex-col items-center justify-center'>
-                    <div className='flex items-center justify-center gap-2'>
-                        {varients?.map((doc) => (
-                            <CardColour status={false} color={doc?.color} />
+                    {/* <div className='flex items-center justify-center gap-2'>
+                        {[...new Set(varients.map(doc => doc.color))].map(color => (
+                            <CardColour status={false} color={color} key={color} />
                         ))}
-                    </div>
+                    </div> */}
                     {/* <StarCard /> */}
                     <div className='w-full flex flex-col px-6 py-4 items-start'>
                         <div className='w-full flex items-center justify-between'>

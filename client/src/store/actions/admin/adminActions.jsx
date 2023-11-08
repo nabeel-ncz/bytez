@@ -114,6 +114,7 @@ export const deleteProduct = createAsyncThunk("admin/deleteProduct", async ({pro
 export const addNewCategory = createAsyncThunk("admin/addNewCategory", async (data, { dispatch }) => {
     try {
         const response = await axios.post(`/admin/category/create`, data, { 
+            headers: { 'Content-Type': 'multipart/form-data' },
             withCredentials: true 
         });
         if(response?.data?.status === "ok"){
@@ -143,6 +144,7 @@ export const getAllCategories = createAsyncThunk("admin/getAllCategories", async
 export const addNewBrand = createAsyncThunk("admin/addNewBrand", async (data, { dispatch }) => {
     try {
         const response = await axios.post(`/admin/brand/create`, data, { 
+            headers: { 'Content-Type': 'multipart/form-data' },
             withCredentials: true 
         });
         if(response?.data?.status === "ok"){
@@ -166,6 +168,32 @@ export const getAllBrands = createAsyncThunk("admin/getAllBrands", async () => {
             throw new Error(response.data?.message);
         }
     } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const createNewAttribute = createAsyncThunk("admin/createNewAttribute", async (data) => {
+    try{
+        const response = await axios.post(`/admin/attribute/create`, data, {withCredentials: true});
+        if(response?.data?.status === "ok"){
+            return response.data?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error){
+        throw new Error(error?.message);
+    }
+});
+
+export const getAllAttribute = createAsyncThunk("admin/getAllAttribute", async () => {
+    try{
+        const response = await axios.get(`/admin/attribute/all`, {withCredentials: true});
+        if(response?.data?.status === "ok"){
+            return response.data?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error){
         throw new Error(error?.message);
     }
 })

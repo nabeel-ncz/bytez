@@ -20,6 +20,11 @@ const fileFilter = (req, file, callback) => {
     }
 }
 
+const uploadSingleFile = multer({
+    storage: fileStorage, 
+    limits: { fileSize: '10mb' }, 
+    fileFilter: fileFilter}).single('file');
+
 const uploadFiles = multer({
     storage: fileStorage,
     limits: { fileSize: '10mb' },
@@ -34,4 +39,5 @@ module.exports = {
     fileStorage,
     fileFilter,
     uploadFiles,
+    uploadSingleFile
 };

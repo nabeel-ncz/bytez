@@ -6,10 +6,10 @@ import { SwatchesPicker } from "react-color";
 import CustomFileInputSmall from '../../../components/CustomFileInput/CustomFileInputSmall';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import toast from 'react-hot-toast';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import productVarientSchema from '../../../schema/admin/productVarientSchema';
-import { createProductVarient } from '../../../store/actions/admin/adminActions';
+import { createNewAttribute, createProductVarient, getAllAttribute } from '../../../store/actions/admin/adminActions';
 import { useParams } from 'react-router-dom';
 
 function AddVarient() {
@@ -18,19 +18,45 @@ function AddVarient() {
     const [mainImage, setMainImage] = useState(null);
     const [color, setColor] = useState(null);
     const [product, setProduct] = useState(null);
+    const [newRam, setNewRam] = useState("");
+    const [newRom, setNewRom] = useState("")
+    const [attributeError, setAttributeError] = useState(null);
+    const [categoryAndBrand, setCategoryAndBrand] = useState(null);
+
+    const attributes = useSelector((state) => state?.admin?.productAttributes?.data);
+
     const { id } = useParams();
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         handleFetch();
+        dispatch(getAllAttribute());
     }, []);
+
+    const handleCategoryAndBrand = (category, brand) => {
+        axios.get(`http://localhost:3000/admin/category/${category}`, { withCredentials: true }).then((response) => {
+            if (response.data?.status === "ok") {
+                axios.get(`http://localhost:3000/admin/brand/${brand}`, {withCredentials: true}).then((result) => {
+                    if(result?.data?.status === "ok"){
+                        setCategoryAndBrand({
+                            category: response?.data?.data?.category,
+                            brand: result?.data?.data?.brand
+                        });
+                    }
+                })
+            } else {
+                setCategoryAndBrand(null)
+            }
+        })
+    }
 
     const handleFetch = () => {
         axios.get(`http://localhost:3000/admin/product/${id}`, { withCredentials: true }).then((response) => {
             if (response.data?.status === "ok") {
                 setProduct(response.data?.data);
+                handleCategoryAndBrand(response.data?.data?.category, response.data?.data?.brand)
             } else {
                 setProduct(null);
             }
@@ -50,6 +76,20 @@ function AddVarient() {
         setColor(color.hex)
     }
 
+    const handleAttributeSubmit = (event) => {
+        event.preventDefault();
+        if (newRam !== "" && newRom !== "" && newRam > 0 && newRom > 0) {
+            dispatch(createNewAttribute({ ram: newRam, rom: newRom })).then(() => {
+                dispatch(getAllAttribute());
+                setNewRam("");
+                setNewRom("");
+                setAttributeError(null);
+            })
+        } else {
+            setAttributeError("RAM and ROM should be greated that 0");
+        }
+    }
+
     const handleFormSubmit = (data) => {
         if (!mainImage || keysWithData.length < 2 || !color) {
             toast.error("Please correct the errors!");
@@ -62,15 +102,14 @@ function AddVarient() {
             formData.append("discountPrice", data.discountPrice);
             formData.append("markup", data.markup);
             formData.append("status", data.status);
-            formData.append("ram", data.ram);
-            formData.append("rom", data.rom);
+            formData.append("ramAndRom", data.ramAndRom);
             formData.append("color", color);
             formData.append("mainImage", mainImage);
 
             let index = 1;
             Object.keys(subImages).forEach((key) => {
                 const value = subImages[key];
-                if(value !== null){
+                if (value !== null) {
                     formData.append(`subImage${index++}`, value);
                 }
             })
@@ -86,17 +125,17 @@ function AddVarient() {
     return (
         <>
             <div className="px-5 pt-2 w-full md:overflow-y-hidden">
-                
+
                 <Formik
                     initialValues={{
                         description: "", stockQuantity: "", price: "", discountPrice: "",
-                        markup: "", status: "", ram: "", rom: ""
+                        markup: "", status: "", ramAndRom: "",
                     }}
                     validationSchema={productVarientSchema}
                     onSubmit={handleFormSubmit}
                 >
                     <Form className="">
-                    <div className="flex justify-between items-center text-xs font-semibold">
+                        <div className="flex justify-between items-center text-xs font-semibold">
                             <div>
                                 <h1 className="font-bold text-2xl text-start">Add Varient</h1>
                                 <Breadcrumbs>
@@ -119,7 +158,7 @@ function AddVarient() {
                                 </Breadcrumbs>
                             </div>
                             <div className="flex w-full justify-end gap-2 mb-2">
-                                <Button variant='outlined' onClick={() => navigate(-1)}>
+                                <Button variant='outlined' type='button' onClick={() => navigate("/admin/products")}>
                                     Cancel
                                 </Button>
                                 <Button type='submit' variant='gradient'>
@@ -179,41 +218,36 @@ function AddVarient() {
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
                                     <h1 className="font-bold mb-2">Product Attributes</h1>
                                     <div className='flex items-start justify-between gap-4'>
-                                        <div className='w-full flex flex-col items-start justify-center'>
-                                            <p className="text-sm mt-2 font-semibold">RAM</p>
-                                            <Field
-                                                name="ram" as="select"
-                                                className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                            >
-                                                <option value={"4GB"} >4GB</option>
-                                                <option value={"8GB"}>8GB</option>
-                                            </Field>
-                                            <ErrorMessage name="ram" component="div" className="text-red-500 text-xs text-start" />
-
-                                            <input
-                                                type="text" name='ram'
-                                                className="w-full hidden bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                            />
-                                            <button className='w-full rounded mt-1 bg-blue-gray-800 text-white text px-3 py-1'>Add a new one</button>
+                                        <div className='w-full flex flex-col items-start justify-center gap-2'>
+                                            <h2 className='font-bold opacity-50'>Available Varients</h2>
+                                            {!attributes && (<h2>No varients available, Add a new one!</h2>)}
+                                            {attributes?.map(({ ram, rom }) => (
+                                                <div className='flex items-center justify-center gap-2'>
+                                                    <Field type="radio" name='ramAndRom' value={`${ram}GB RAM & ${rom}GB ROM`} />
+                                                    <label htmlFor="">{`${ram}GB RAM & ${rom}GB ROM`}</label>
+                                                </div>
+                                            ))}
+                                            <ErrorMessage name="ramAndRom" component="div" className="text-red-500 text-xs text-start" />
                                         </div>
                                         <div className='w-full flex flex-col items-start justify-center'>
-                                            <p className="text-sm mt-2 font-semibold">ROM</p>
-                                            <Field
-                                                name="rom" as="select"
-                                                className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                            >
-                                                <option value={"64GB"}>64GB</option>
-                                                <option value={"128GB"}>128GB</option>
-                                            </Field>
-                                            <ErrorMessage name="rom" component="div" className="text-red-500 text-xs text-start" />
-
-                                            <button className='w-full rounded mt-1 bg-blue-gray-800 text-white text px-3 py-1'>Add a new one</button>
-                                            <input
-                                                type="text" name='rom'
-                                                className="w-full hidden bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                            />
+                                            <div className='flex flex-col items-start justify-center gap-2' >
+                                                <h2 className='font-bold opacity-50'>Add a new Varient</h2>
+                                                {attributeError && (<h2 className='text-red-500 text-xs text-start'>{attributeError}</h2>)}
+                                                <div className='flex items-center justify-center h-10 bg-blue-gray-50'>
+                                                    <input placeholder='RAM' type='number' min={0} value={newRam} onChange={(evt) => setNewRam(evt.target.value)}
+                                                        name="ram" className="w-full bg-transparent rounded-md py-2 px-3 text-sm outline-none border border-gray-200"
+                                                    />
+                                                    <span className='px-2 h-full flex items-center justify-center'>GB</span>
+                                                </div>
+                                                <div className='flex items-center justify-center h-10 bg-blue-gray-50'>
+                                                    <input placeholder='ROM' type='number' min={0} value={newRom} onChange={(evt) => setNewRom(evt.target.value)}
+                                                        name="rom" className="w-full bg-transparent rounded-md py-2 px-3 text-sm outline-none border border-gray-200"
+                                                    />
+                                                    <span className='px-2 h-full flex items-center justify-center'>GB</span>
+                                                </div>
+                                                <Button type='button' size='sm' variant='gradient' onClick={handleAttributeSubmit}>Save</Button>
+                                            </div>
                                         </div>
-
                                     </div>
                                 </div>
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
@@ -263,19 +297,19 @@ function AddVarient() {
                                     <h1 className="font-bold">Category</h1>
                                     <p className="text-sm mt-2 font-semibold text-gray-700">Product Category</p>
                                     <input
-                                        name="category" id="categories" value={product?.category} disabled
+                                        name="category" id="categories" value={categoryAndBrand?.category} disabled
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
                                     />
-                                    
+
                                 </div>
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
                                     <h1 className="font-bold">Brand</h1>
                                     <p className="text-sm mt-2 font-semibold text-gray-700">Product Brand</p>
                                     <input
-                                        name="brand" id="brands" value={product?.brand} disabled
+                                        name="brand" id="brands" value={categoryAndBrand?.brand} disabled
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                    />   
-                                    </div>
+                                    />
+                                </div>
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
                                     <h1 className="font-bold">Product Status</h1>
                                     <p className="text-sm mt-2 font-semibold text-gray-700">Status</p>
@@ -284,9 +318,8 @@ function AddVarient() {
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
 
                                     >
-                                        <option value="draft" >Draft</option>
-                                        <option value="instock">In Stock</option>
-                                        <option value="outofstock">Out Of Stock</option>
+                                        <option value="publish">publish</option>
+                                        <option value="unpublish">unpublish</option>
                                     </Field>
                                     <ErrorMessage name="status" component="div" className="text-red-500 text-xs text-start" />
                                 </div>

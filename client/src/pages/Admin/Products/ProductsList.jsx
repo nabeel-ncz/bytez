@@ -96,14 +96,11 @@ function ViewProducts() {
                   <td className="text-sm p-4 text-start border-r">{doc.varients[0]?.stockQuantity}</td>
                   <td className="text-sm p-4 text-start border-r">{doc.varients[0]?.price}</td>
                   <td className="text-sm p-4 text-start border-r">
-                    {doc.varients[0]?.status === "instock" && 
-                    (<Chip variant="ghost" color={"green"} size="sm" value={"In Stock"} className='text-center' />)
+                    {doc.varients[0]?.status === "publish" && 
+                    (<Chip variant="ghost" color={"green"} size="sm" value={"Publish"} className='text-center' />)
                     }
-                    {doc.varients[0]?.status === "outofstock" && 
-                    (<Chip variant="ghost" color={"red"} size="sm" value={"Out Of Stock"} className='text-center' />)
-                    }
-                    {doc.varients[0]?.status === "draft" && 
-                    (<Chip variant="ghost" color={"blue"} size="sm" value={"Draft"} className='text-center' />)
+                    {doc.varients[0]?.status === "unpublish" && 
+                    (<Chip variant="ghost" color={"blue-gray"} size="sm" value={"Unpublish"} className='text-center' />)
                     }
                   </td>
                   <td className="text-sm p-4 text-start border-r">{new Date(doc.createdAt).toLocaleString()}</td>

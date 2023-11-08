@@ -102,8 +102,8 @@ function ProductVarients() {
                                             name="category" id="categories" as="select"
                                             className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
                                         >
-                                            {categories?.map(({ category }) => (
-                                                <option value={category} >{category}</option>
+                                            {categories?.map(({ category, _id }) => (
+                                                <option value={_id} >{category}</option>
                                             ))}
                                         </Field>
                                         <ErrorMessage name="category" component="div" className="text-red-500 text-xs text-start" />
@@ -111,8 +111,8 @@ function ProductVarients() {
                                             name="brand" id="brands" as="select"
                                             className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
                                         >
-                                            {brands?.map(({ brand }) => (
-                                                <option value={brand} >{brand}</option>
+                                            {brands?.map(({ brand, _id }) => (
+                                                <option value={_id} >{brand}</option>
                                             ))}
                                         </Field>
                                         <ErrorMessage name="brand" component="div" className="text-red-500 text-xs text-start" />
@@ -169,15 +169,13 @@ function ProductVarients() {
                                     <td className="text-sm p-4 text-start border-r">{doc?.price}</td>
                                     <td className="text-sm p-4 text-start border-r">{doc?.totalRating}</td>
                                     <td className="text-sm p-4 text-start border-r">
-                                        {doc?.status === "instock" &&
-                                            (<Chip variant="ghost" color={"green"} size="sm" value={"In Stock"} className='text-center' />)
+                                        {doc?.status === "publish" &&
+                                            (<Chip variant="ghost" color={"green"} size="sm" value={"Publish"} className='text-center' />)
                                         }
-                                        {doc?.status === "outofstock" &&
-                                            (<Chip variant="ghost" color={"red"} size="sm" value={"Out Of Stock"} className='text-center' />)
+                                        {doc?.status === "unpublish" &&
+                                            (<Chip variant="ghost" color={"blue-gray"} size="sm" value={"Unpublish"} className='text-center' />)
                                         }
-                                        {doc?.status === "draft" &&
-                                            (<Chip variant="ghost" color={"blue"} size="sm" value={"Draft"} className='text-center' />)
-                                        }
+                                        
                                     </td>
                                     <td className="text-sm p-4 text-start border-r">
                                         <Button className='me-2' color='yellow' size='sm' variant='gradient' onClick={() => navigate(`/admin/products/varient?pId=${product?._id}&vId=${doc?.varientId}`)}>Edit</Button>

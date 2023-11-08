@@ -10,8 +10,21 @@ const {
     checkUserExist,
     logout,
     googleAuthSuccess,
-    googleAuthFailed
+    googleAuthFailed,
+    changeProductQuantity,
+    addProductToCart,
+    getAllCartProducts,
+    deleteProductFromCart
 } = require('../controllers/userController');
+
+const {
+    createAddress,
+    getAllAddress,
+    getAddress,
+    changeDefaultAddress,
+    updateAddress,
+    deleteAddress
+} = require('../controllers/addressController');
 
 router.use(passport.initialize());
 router.use(passport.session());
@@ -27,5 +40,17 @@ router.get('/oauth2/google',passport.authenticate('google', { scope: ['profile',
 router.get('/oauth2/google/redirect', passport.authenticate('google',{ successRedirect:"/user/oauth2/google/success", failureRedirect:"/user/oauth2/google/failed" }));
 router.get('/oauth2/google/success',googleAuthSuccess);
 router.get('/oauth2/google/failed',googleAuthFailed)
+
+router.get('/cart/product/all/:id', getAllCartProducts);
+router.post('/cart/product/add', addProductToCart);
+router.patch('/cart/product/change_quantity', changeProductQuantity);
+router.put('/cart/product/delete', deleteProductFromCart);
+
+router.post('/profile/address/create', createAddress);
+router.get('/profile/address/all/:id', getAllAddress);
+router.get('/profile/address/find', getAddress);
+router.patch('/profile/address/update', updateAddress);
+router.patch('/profile/address/default', changeDefaultAddress);
+router.patch('/profile/address/delete', deleteAddress);
 
 module.exports = router;

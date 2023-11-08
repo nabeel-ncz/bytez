@@ -7,6 +7,10 @@ const brandSchema = new mongoose.Schema({
     },
     thumbnail:{
         type:String,
+    },
+    status: {
+        type: String,
+        default: "active"
     }
 })
 const collection = mongoose.model("Brand", brandSchema);

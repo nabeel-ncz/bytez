@@ -23,7 +23,6 @@ const productSchema = Yup.object().shape({
     category: Yup.string().required('Category is required'),
     brand: Yup.string().required('Brand is required'),
     status: Yup.string().required('Product status is required'),
-    ram: Yup.string().required('RAM is required'),
-    rom: Yup.string().required('ROM is required'),
+    ramAndRom: Yup.string().required('RAM & ROM is required'),
 });
 export default productSchema;

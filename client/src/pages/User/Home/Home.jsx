@@ -7,10 +7,11 @@ import { useNavigate } from 'react-router-dom';
 import { fetchUser } from '../../../store/actions/user/userActions';
 
 function Home() {
-  const verified = useSelector(state => state?.user?.user?.verified);
-  const user = useSelector(state => state?.user?.user);
+  const verified = useSelector(state => state?.user?.user?.data?.verified);
+  const user = useSelector(state => state?.user?.user?.data);
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
+
   useEffect(() => {
     dispatch(fetchUser());
     const messageShown = sessionStorage.getItem('verifyMessageStatus');

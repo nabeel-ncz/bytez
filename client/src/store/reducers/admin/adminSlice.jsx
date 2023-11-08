@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createProduct, deleteProduct, getAllBrands, getAllCategories, getAllProducts, getAllUsers } from "../../actions/admin/adminActions";
+import { createProduct, deleteProduct, getAllAttribute, getAllBrands, getAllCategories, getAllProducts, getAllUsers } from "../../actions/admin/adminActions";
 
 const INITIAL_STATE = {
     customers:{
@@ -8,6 +8,11 @@ const INITIAL_STATE = {
         error: null,
     },
     products:{
+        loading: false,
+        data: null,
+        error: null,
+    },
+    productAttributes:{
         loading: false,
         data: null,
         error: null,
@@ -99,6 +104,10 @@ const adminSlice = createSlice({
             state.brands.loading = false;
             state.brands.error = action?.error?.message;
             state.brands.data = null;
+        })
+        //
+        .addCase(getAllAttribute.fulfilled, (state, action) => {
+            state.productAttributes.data = action?.payload;
         })
         
     }

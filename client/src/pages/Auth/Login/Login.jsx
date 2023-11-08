@@ -22,7 +22,7 @@ function Login() {
     setAuthError(decError);
   }, [])
 
-  const error = useSelector(state => state?.user?.error);
+  const error = useSelector(state => state?.user?.user?.error);
 
   const handleFormSubmit = (data) => {
     dispatch(login({ userCredentials: data })).then((result) => {

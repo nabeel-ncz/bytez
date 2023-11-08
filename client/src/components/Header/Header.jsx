@@ -6,7 +6,7 @@ import { logout } from '../../store/actions/user/userActions';
 
 function Header() {
     const navigate = useNavigate();
-    const user = useSelector(state => state.user?.user);
+    const user = useSelector(state => state.user?.user?.data);
     const dispatch = useDispatch();
 
     const handleLogout = () => {
@@ -42,7 +42,10 @@ function Header() {
                     <PopoverContent className="z-50">
                         <List>
                             {user ?
-                                <ListItem onClick={handleLogout}>Log Out</ListItem>
+                                <>
+                                    <ListItem onClick={handleLogout}>Log Out</ListItem>
+                                    <ListItem onClick={() => navigate("profile")}>Profile</ListItem>
+                                </>
                                 : (
                                     <>
                                         <ListItem onClick={() => navigate('login')}>Log In</ListItem>

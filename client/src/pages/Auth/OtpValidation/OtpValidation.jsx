@@ -15,7 +15,7 @@ function OtpValidation() {
     const initialTime = localStorage.getItem('timer') || 120;
     const [time, setTime] = useState(parseInt(initialTime, 10));
     
-    const user = useSelector((state) => state.user);
+    const user = useSelector((state) => state.user?.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     

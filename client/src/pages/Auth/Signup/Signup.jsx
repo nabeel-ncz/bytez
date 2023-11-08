@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import signupSchema from '../../../schema/user/signupSchema';
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser, register } from '../../../store/actions/user/userActions';
 import "../Style.css";
 import { resetError } from '../../../store/reducers/user/userSlice';
+import toast from 'react-hot-toast';
 
 function Signup() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const user = useSelector((state) => state.user);
-    const verified = useSelector(state => state.user?.user?.verified);
+    const user = useSelector((state) => state.user?.user);
+    const verified = useSelector(state => state.user?.user?.data?.verified);
+
     useEffect(() => {
         dispatch(resetError());
     },[]);

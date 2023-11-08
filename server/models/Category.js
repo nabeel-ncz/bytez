@@ -7,6 +7,10 @@ const categorySchema = new mongoose.Schema({
     },
     thumbnail:{
         type:String,
+    },
+    status:{ 
+        type: String,
+        default: "active"
     }
 })
 const collection = mongoose.model("Category", categorySchema);

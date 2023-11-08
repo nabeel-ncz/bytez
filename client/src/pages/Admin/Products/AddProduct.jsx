@@ -8,23 +8,25 @@ import { ErrorMessage, Field, Form, Formik } from 'formik';
 import productSchema from '../../../schema/admin/productSchema';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
-import { createProduct, getAllCategories, getAllBrands } from '../../../store/actions/admin/adminActions';
+import { createProduct, getAllCategories, getAllBrands, createNewAttribute, getAllAttribute } from '../../../store/actions/admin/adminActions';
 
 function AddProduct() {
     const [subImages, setSubImages] = useState({ 1: null, 2: null, 3: null, 4: null, 5: null, 6: null });
     const keysWithData = Object.keys(subImages).filter(key => subImages[key] !== null);
     const [mainImage, setMainImage] = useState(null);
     const [color, setColor] = useState(null);
+    const [newRam, setNewRam] = useState("");
+    const [newRom, setNewRom] = useState("")
+    const [attributeError, setAttributeError] = useState(null);
 
+    const attributes = useSelector((state) => state?.admin?.productAttributes?.data);
     const categories = useSelector(state => state.admin?.categories?.data);
     const brands = useSelector(state => state.admin?.brands?.data);
 
     useEffect(() => {
         dispatch(getAllCategories());
-    },[]);
-
-    useEffect(() => {
         dispatch(getAllBrands());
+        dispatch(getAllAttribute());
     },[]);
 
     const dispatch = useDispatch();
@@ -43,6 +45,20 @@ function AddProduct() {
         setColor(color.hex)
     }
 
+    const handleAttributeSubmit = (event) => {
+        event.preventDefault();
+        if (newRam !== "" && newRom !== "" && newRam > 0 && newRom > 0) {
+            dispatch(createNewAttribute({ ram: newRam, rom: newRom })).then(() => {
+                dispatch(getAllAttribute());
+                setNewRam("");
+                setNewRom("");
+                setAttributeError(null);
+            })
+        } else {
+            setAttributeError("RAM and ROM should be greated that 0");
+        }
+    }
+
     const handleFormSubmit = (data) => {
         if (!mainImage || keysWithData.length < 2 || !color) {
             toast.error("Please correct the errors!");
@@ -57,8 +73,7 @@ function AddProduct() {
             formData.append("category", data.category);
             formData.append("brand", data.brand);
             formData.append("status", data.status);
-            formData.append("ram", data.ram);
-            formData.append("rom", data.rom);
+            formData.append("ramAndRom", data.ramAndRom);
             formData.append("color", color);
             formData.append("mainImage", mainImage);
 
@@ -84,7 +99,7 @@ function AddProduct() {
                 <Formik
                     initialValues={{
                         title: "", description: "", stockQuantity: "", price: "", discountPrice: "",
-                        markup: "", category: "", brand: "", status: "", ram: "", rom: ""
+                        markup: "", category: "", brand: "", status: "", ramAndRom: ""
                     }}
                     validationSchema={productSchema}
                     onSubmit={handleFormSubmit}
@@ -174,41 +189,36 @@ function AddProduct() {
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
                                     <h1 className="font-bold mb-2">Product Attributes</h1>
                                     <div className='flex items-start justify-between gap-4'>
-                                        <div className='w-full flex flex-col items-start justify-center'>
-                                            <p className="text-sm mt-2 font-semibold">RAM</p>
-                                            <Field
-                                                name="ram" as="select"
-                                                className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                            >
-                                                <option value={"4GB"} >4GB</option>
-                                                <option value={"8GB"}>8GB</option>
-                                            </Field>
-                                            <ErrorMessage name="ram" component="div" className="text-red-500 text-xs text-start" />
-
-                                            <input
-                                                type="text" name='ram'
-                                                className="w-full hidden bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                            />
-                                            <button className='w-full rounded mt-1 bg-blue-gray-800 text-white text px-3 py-1'>Add a new one</button>
+                                        <div className='w-full flex flex-col items-start justify-center gap-2'>
+                                            <h2 className='font-bold opacity-50'>Available Varients</h2>
+                                            {!attributes && (<h2>No varients available, Add a new one!</h2>)}
+                                            {attributes?.map(({ ram, rom }) => (
+                                                <div className='flex items-center justify-center gap-2'>
+                                                    <Field type="radio" name='ramAndRom' value={`${ram}GB RAM & ${rom}GB ROM`} />
+                                                    <label htmlFor="">{`${ram}GB RAM & ${rom}GB ROM`}</label>
+                                                </div>
+                                            ))}
+                                            <ErrorMessage name="ramAndRom" component="div" className="text-red-500 text-xs text-start" />
                                         </div>
                                         <div className='w-full flex flex-col items-start justify-center'>
-                                            <p className="text-sm mt-2 font-semibold">ROM</p>
-                                            <Field
-                                                name="rom" as="select"
-                                                className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                            >
-                                                <option value={"64GB"}>64GB</option>
-                                                <option value={"128GB"}>128GB</option>
-                                            </Field>
-                                            <ErrorMessage name="rom" component="div" className="text-red-500 text-xs text-start" />
-
-                                            <button className='w-full rounded mt-1 bg-blue-gray-800 text-white text px-3 py-1'>Add a new one</button>
-                                            <input
-                                                type="text" name='rom'
-                                                className="w-full hidden bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
-                                            />
+                                            <div className='flex flex-col items-start justify-center gap-2' >
+                                                <h2 className='font-bold opacity-50'>Add a new Varient</h2>
+                                                {attributeError && (<h2 className='text-red-500 text-xs text-start'>{attributeError}</h2>)}
+                                                <div className='flex items-center justify-center h-10 bg-blue-gray-50'>
+                                                    <input placeholder='RAM' type='number' min={0} value={newRam} onChange={(evt) => setNewRam(evt.target.value)}
+                                                        name="ram" className="w-full bg-transparent rounded-md py-2 px-3 text-sm outline-none border border-gray-200"
+                                                    />
+                                                    <span className='px-2 h-full flex items-center justify-center'>GB</span>
+                                                </div>
+                                                <div className='flex items-center justify-center h-10 bg-blue-gray-50'>
+                                                    <input placeholder='ROM' type='number' min={0} value={newRom} onChange={(evt) => setNewRom(evt.target.value)}
+                                                        name="rom" className="w-full bg-transparent rounded-md py-2 px-3 text-sm outline-none border border-gray-200"
+                                                    />
+                                                    <span className='px-2 h-full flex items-center justify-center'>GB</span>
+                                                </div>
+                                                <Button type='button' size='sm' variant='gradient' onClick={handleAttributeSubmit}>Save</Button>
+                                            </div>
                                         </div>
-
                                     </div>
                                 </div>
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
@@ -261,8 +271,8 @@ function AddProduct() {
                                         name="category" id="categories" as="select"
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
                                     >
-                                        {categories?.map(({category}) => (
-                                            <option value={category} >{category}</option>
+                                        {categories?.map(({category, _id}) => (
+                                            <option value={_id} >{category}</option>
                                         ))}
                                     </Field>
                                     <ErrorMessage name="category" component="div" className="text-red-500 text-xs text-start" />
@@ -275,8 +285,8 @@ function AddProduct() {
                                         name="brand" id="brands" as="select"
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
                                     >
-                                        {brands?.map(({brand}) => (
-                                            <option value={brand} >{brand}</option>
+                                        {brands?.map(({brand, _id}) => (
+                                            <option value={_id} >{brand}</option>
                                         ))}
                                     </Field>
                                     <ErrorMessage name="brand" component="div" className="text-red-500 text-xs text-start" />
@@ -289,9 +299,8 @@ function AddProduct() {
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
 
                                     >
-                                        <option value="draft" >Draft</option>
-                                        <option value="instock">In Stock</option>
-                                        <option value="outofstock">Out Of Stock</option>
+                                        <option value="publish">publish</option>
+                                        <option value="unpublish">unpublish</option>
                                     </Field>
                                     <ErrorMessage name="status" component="div" className="text-red-500 text-xs text-start" />
                                 </div>

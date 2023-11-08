@@ -34,7 +34,7 @@ module.exports = {
             if (!req?.files) {
                 res.json({ status: "error", message: "Image upload error!" });
             } else {
-                const { title, category, brand, description, price, markup, discountPrice, stockQuantity, ram, rom, color, status
+                const { title, category, brand, description, price, markup, discountPrice, stockQuantity, ramAndRom, color, status
                 } = req.body;
                 const result = await resizeProductImage(req.files);
                 let user = null;
@@ -52,8 +52,7 @@ module.exports = {
                                 markup,
                                 discountPrice,
                                 stockQuantity,
-                                ram,
-                                rom,
+                                ramAndRom,
                                 color,
                                 status,
                                 images: {
@@ -78,7 +77,7 @@ module.exports = {
     updateProductVarient: async (req, res) => {
         try {
             const { productId, varientId, description, price, markup, discountPrice, stockQuantity,
-                ram, rom, color, status, mainImageUpdated, subImagesUpdated, currThumbnail, currSubImages } = req.body;
+                ramAndRom, color, status, mainImageUpdated, subImagesUpdated, currThumbnail, currSubImages } = req.body;
             let result;
             if (req.files) {
                 result = await resizeProductImage(req.files);
@@ -124,8 +123,7 @@ module.exports = {
                     "varients.$.markup": markup,
                     "varients.$.discountPrice": discountPrice,
                     "varients.$.stockQuantity": stockQuantity,
-                    "varients.$.ram": ram,
-                    "varients.$.rom": rom,
+                    "varients.$.ramAndRom": ramAndRom,
                     "varients.$.color": color,
                     "varients.$.status": status,
                     "varients.$.images": updatedImages,
@@ -147,7 +145,7 @@ module.exports = {
             if (!req?.files) {
                 res.json({ status: "error", message: "Image upload error!" });
             } else {
-                const { productId, description, price, markup, discountPrice, stockQuantity, ram, rom, color, status
+                const { productId, description, price, markup, discountPrice, stockQuantity, ramAndRom, color, status
                 } = req.body;
                 const result = await resizeProductImage(req.files);
                 if (result.status === "ok") {
@@ -159,8 +157,7 @@ module.exports = {
                         markup,
                         discountPrice,
                         stockQuantity,
-                        ram,
-                        rom,
+                        ramAndRom,
                         color,
                         status,
                         images: {
@@ -212,35 +209,146 @@ module.exports = {
     },
     getProductVarient: async (req, res) => {
         const productId = req.query?.pId;
-        const varientId = req.query?.vId;
+        const variantId = req.query?.vId;
         try {
-            if (!productId || !varientId) {
-                res.json({ status: "error", message: "Product Id or Varient Id is miss" });
-            } else {
-                const product = await Product.findOne({ _id: productId });
-                if (!product) {
-                    res.json({ status: "error", message: "Product Id is not exist" });
-                } else {
-                    const result = await Product.findOne({
-                        _id: productId,
-                        "varients.varientId": varientId,
-                    }).exec();
-                    if (!result) {
-                        res.json({ status: "error", message: "Varient not exist" });
-                    } else {
-                        res.json({
-                            status: "ok", data: {
-                                title: product.title,
-                                category: product.category,
-                                brand: product.brand,
-                                ...result?.varients[0]?._doc,
-                            }
-                        });
-                    }
-                }
+            const product = await Product.findById(productId);
+            if (!product) {
+                return res.json({ status: 'error', message: 'Product not found!' });
             }
+            const specificVariant = product.varients.find((variant) => variant.varientId === variantId);
+            if (!specificVariant) {
+                return res.json({ status: 'error', message: 'Variant not found!' });
+            }
+            res.json({ status: 'ok', data: {
+                title: product.title,
+                category: product.category,
+                brand: product.brand,
+                ...specificVariant._doc,
+            }});
         } catch (error) {
-            res.json({ status: "error", message: error?.message });
+            res.json({ status: 'error', message: error?.message });
+        }
+    },
+    getProductVarientAttributes: async (req, res) => {
+        try {
+            const productId = req.params?.id;
+            const product = await Product.findById(productId);
+            if (!product) {
+                res.json({ status: 'error', message: 'Product not found!' });
+            }
+            const ramAndRomValues = new Set();
+            product.varients.forEach((variant) => {
+                ramAndRomValues.add(variant.ramAndRom);
+            });
+            const data = Array.from(ramAndRomValues);
+            res.json({ status: 'ok', data: data });
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        }
+    },
+    getProductVarientColors: async (req, res) => {
+        try {
+            const productId = req.params?.id;
+            const product = await Product.findById(productId);
+            if (!product) {
+                res.json({ status: 'error', message: 'Product not found!' });
+            }
+            const availableColors = new Set();
+            product.varients.forEach((variant) => {
+                availableColors.add(variant.color);
+            });
+            const data = Array.from(availableColors);
+            res.json({ status: 'ok', data: data });
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        }
+    },
+    getProductVarientAttributesBasedOnColor: async (req, res) => {
+        try {
+            const productId = req?.query?.pId;
+            const color = decodeURIComponent(req?.query?.color);
+            const product = await Product.findById(productId);
+            if (!product) {
+                res.json({ status: 'error', message: 'Product not found!' });
+            }
+            const availableAttributes = new Set();
+            product.varients.forEach((varient) => {
+                if (varient.color === color) {
+                    availableAttributes.add(varient.ramAndRom);
+                };
+            });
+            const data = Array.from(availableAttributes);
+            res.json({ status: "ok", data: data });
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        }
+    },
+    getProductVarientColorsBasedOnRamAndRom: async (req, res) => {
+        try {
+            const productId = req?.query?.pId;
+            const ramAndRom = decodeURIComponent(req?.query?.rr);
+            const product = await Product.findById(productId);
+            if (!product) {
+                res.json({ status: 'error', message: 'Product not found!' });
+            }
+            const availableColors = new Set();
+            product.varients.forEach((varient) => {
+                if (varient.ramAndRom === ramAndRom) {
+                    availableColors.add(varient.color);
+                };
+            });
+            const data = Array.from(availableColors);
+            res.json({ status: "ok", data: data });
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        }
+    },
+    getProductIndexBasedOnColorAndId: async (req, res) => {
+        try {
+            const productId = req?.query?.pId;
+            const color = decodeURIComponent(req?.query?.color);
+            const product = await Product.findOne({
+                _id: productId,
+                'varients.color': color,
+            });
+            if (!product) {
+                res.json({ status: 'error', message: 'product not found!' });
+                return;
+            }
+            const index = product.varients.findIndex((varient) => varient.color === color);
+            if (index === -1) {
+                res.json({ status: 'error', message: 'product not found!' });
+                return;
+            }
+            res.json({ status: 'ok', data: { varient: index } });
+
+        } catch (error) {
+            res.json({ status: "error", message: "Error finding product : " + error?.message });
+        }
+    },
+    getProductIndexBasedOnAttributeAndId: async (req, res) => {
+        try {
+            const productId = req?.query?.pId;
+            const ramAndRom = decodeURIComponent(req?.query?.rr);
+            const color = decodeURIComponent(req?.query?.color);
+            const product = await Product.findOne({
+                _id: productId,
+                'varients.ramAndRom': ramAndRom,
+                'varients.color': color,
+            });
+            if (!product) {
+                res.json({ status: 'error', message: 'product not found!' });
+                return;
+            }
+            const index = product.varients.findIndex((varient) => varient.ramAndRom === ramAndRom && varient.color === color);
+            if (index === -1) {
+                res.json({ status: 'error', message: 'product not found!' });
+                return;
+            }
+            res.json({ status: 'ok', data: { varient: index } });
+
+        } catch (error) {
+            res.json({ status: "error", message: "Error finding product : " + error?.message });
         }
     },
     updateProductMainField: async (req, res) => {
@@ -253,9 +361,9 @@ module.exports = {
                     brand
                 }
             });
-            res.json({status:"ok"});
+            res.json({ status: "ok" });
         } catch (error) {
-            res.json({status:"error"});
+            res.json({ status: "error" });
         }
     }
 }
