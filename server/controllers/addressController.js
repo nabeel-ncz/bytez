@@ -22,6 +22,7 @@ module.exports = {
                 exist.addresses.push({
                     firstName, lastName, companyName, houseAddress, country, state, city, zipcode, email, phone
                 });
+                exist.defaultAddress = exist.addresses[0]._id;
                 await exist.save();
             } else {
                 const result = await Address.create({
@@ -41,7 +42,7 @@ module.exports = {
     changeDefaultAddress: async (req, res) => {
         const userId = req.query?.uId;
         const addressId = req.query?.aId;
-        if (!userId || addressId) {
+        if (!userId || !addressId) {
             return res.json({ status: 'error', message: 'Something went wrong!' });
         }
         try {
@@ -127,11 +128,19 @@ module.exports = {
         try {
             const userId = req.query?.uId;
             const addressId = req.query?.aId;
-            const updated = await Address.findOneAndUpdate({ userId }, { $pull: { addresses: { _id: addressId } } }, { new: true });
-            if (!updated) {
-                return res.json({ status: 'error', message: 'Delete address failed!' });
+            const result = await Address.findOne({ userId });
+            if (!result) {
+                return res.json({ status: 'error', message: "Address Can't be delete" });
             }
-            res.json({ status: 'ok', data: updated });
+            if(result.defaultAddress === addressId){
+                if(result?.addresses?.length > 1){
+                    let newDoc = result?.addresses?.find((doc) => doc._id.toString() !== addressId);
+                    result.defaultAddress = newDoc._id;
+                }
+            }
+            await result.updateOne({ $pull: { addresses: { _id: addressId } } });
+            await result.save();
+            res.json({ status: 'ok', data: result });
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
         }

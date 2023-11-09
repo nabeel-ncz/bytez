@@ -3,23 +3,32 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Button } from "@material-tailwind/react";
 import { useNavigate } from 'react-router-dom';
 import addressSchema from '../../../schema/user/addressSchema';
+import { useDispatch, useSelector } from 'react-redux';
+import { createAddress } from '../../../store/actions/user/userActions';
 
 function CreateAddress() {
     const navigate = useNavigate();
-    const handleFormSubmit = () => {
-        
+    const dispatch = useDispatch();
+    const user = useSelector(state => state?.user?.user?.data);
+    const handleFormSubmit = (values) => {
+        dispatch(createAddress({
+            userId: user._id,
+            ...values
+        })).then(() => {
+            navigate('/profile/address');
+        })
     }
     return (
         <>
             <div className='w-9/12 shadow-sm bg-white'>
                 <Formik
                     initialValues={{
-                        firstname:"",
-                        lastname:"",
+                        firstName:"",
+                        lastName:"",
                         email:"",
                         phone:"",
                         companyName:"",
-                        homeAddress:"",
+                        houseAddress:"",
                         country:"",
                         state:"",
                         city:"",
@@ -39,12 +48,12 @@ function CreateAddress() {
                                     <h6>Name</h6>
                                     <div className='w-full flex items-center justify-center gap-2'>
                                         <div className='w-1/2 flex flex-col items-start justify-center'>
-                                            <Field placeholder="First Name" type="text" name="firstname" className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200" />
-                                            <ErrorMessage name="firstname" component="div" className="text-red-500 text-xs text-start" />
+                                            <Field placeholder="First Name" type="text" name="firstName" className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200" />
+                                            <ErrorMessage name="firstName" component="div" className="text-red-500 text-xs text-start" />
                                         </div>
                                         <div className='w-1/2 flex flex-col items-start justify-center'>
-                                            <Field placeholder="Last Name" type="text" name="lastname" className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200" />
-                                            <ErrorMessage name="lastname" component="div" className="text-red-500 text-xs text-start" />
+                                            <Field placeholder="Last Name" type="text" name="lastName" className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200" />
+                                            <ErrorMessage name="lastName" component="div" className="text-red-500 text-xs text-start" />
                                         </div>
                                     </div>
                                 </div>
@@ -59,8 +68,8 @@ function CreateAddress() {
                             <div className='w-full flex gap-6 px-12'>
                                 <div className='w-full flex flex-col items-start justify-center'>
                                     <h6>Address</h6>
-                                    <Field type="text" name="homeAddress" as="textarea" className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200" />
-                                    <ErrorMessage name="homeAddress" component="div" className="text-red-500 text-xs text-start" />
+                                    <Field type="text" name="houseAddress" as="textarea" className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200" />
+                                    <ErrorMessage name="houseAddress" component="div" className="text-red-500 text-xs text-start" />
                                 </div>
                             </div>
                             <div className='w-full flex gap-2 px-12'>
@@ -99,7 +108,7 @@ function CreateAddress() {
                                 </div>
                             </div>
                             <div className='w-full px-12 flex justify-end'>
-                                <Button>Save Changes</Button>
+                                <Button type='submit'>Save Changes</Button>
                             </div>
                         </div>
                     </Form>

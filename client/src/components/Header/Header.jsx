@@ -43,8 +43,8 @@ function Header() {
                         <List>
                             {user ?
                                 <>
-                                    <ListItem onClick={handleLogout}>Log Out</ListItem>
                                     <ListItem onClick={() => navigate("profile")}>Profile</ListItem>
+                                    <ListItem onClick={handleLogout}>Log Out</ListItem>
                                 </>
                                 : (
                                     <>

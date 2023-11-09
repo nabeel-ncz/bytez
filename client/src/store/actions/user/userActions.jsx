@@ -98,7 +98,7 @@ export const addProductToCart = createAsyncThunk("user/addProductToCart", async 
             productId: data.productId,
             varientId: data.varientId,
         }, { withCredentials: true });
-        if(response.data?.status === 'ok'){
+        if (response.data?.status === 'ok') {
             return response.data;
         } else {
             throw new Error(response.data?.message);
@@ -148,8 +148,98 @@ export const deleteProductFromCart = createAsyncThunk("user/deleteProductFromCar
 })
 
 export const createAddress = createAsyncThunk("user/createAddress", async (data) => {
-    try{
+    try {
         const response = await axios.post(`user/profile/address/create`, data, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const getAllAddresses = createAsyncThunk("user/getAllAddresses", async (userId) => {
+    try {
+        const response = await axios.get(`user/profile/address/all/${userId}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const getAddress = createAsyncThunk("user/getAddress", async ({ userId, addressId }) => {
+    try {
+        const response = await axios.get(`user/profile/address/find?uId=${userId}&aId=${addressId}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const updateAddress = createAsyncThunk("user/updateAddress", async (data) => {
+    try {
+        const response = await axios.patch(`user/profile/address/update`, data, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const changeDefaultAddress = createAsyncThunk("user/changeDefaultAddress", async ({ userId, addressId }) => {
+    try {
+        const response = await axios.patch(`user/profile/address/default?uId=${userId}&aId=${addressId}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const deleteAddress = createAsyncThunk("user/deleteAddress", async ({ userId, addressId }) => {
+    try {
+        const response = await axios.patch(`user/profile/address/delete?uId=${userId}&aId=${addressId}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+export const updateUserInform = createAsyncThunk("user/updateUserInform", async (data) => {
+    try {
+        const response = await axios.patch(`user/profile/account/update`, data, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const updateUserPassword = createAsyncThunk("user/updateUserPassword", async (data) => {
+    try {
+        const response = await axios.patch(`user/profile/account/update_password`, data, { withCredentials: true });
         if (response.data?.status === "ok") {
             return response.data;
         } else {

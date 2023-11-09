@@ -14,7 +14,9 @@ const {
     changeProductQuantity,
     addProductToCart,
     getAllCartProducts,
-    deleteProductFromCart
+    deleteProductFromCart,
+    updateUserInform,
+    updateUserPassword
 } = require('../controllers/userController');
 
 const {
@@ -52,5 +54,8 @@ router.get('/profile/address/find', getAddress);
 router.patch('/profile/address/update', updateAddress);
 router.patch('/profile/address/default', changeDefaultAddress);
 router.patch('/profile/address/delete', deleteAddress);
+
+router.patch('/profile/account/update', updateUserInform);
+router.patch('/profile/account/update_password', updateUserPassword);
 
 module.exports = router;

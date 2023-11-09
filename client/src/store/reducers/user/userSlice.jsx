@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchUser, register, verifyEmail, sendOtp, logout, login, getAllCartProducts, changeCartProductQuantity, deleteProductFromCart } from "../../actions/user/userActions";
+import { fetchUser, register, verifyEmail, sendOtp, logout, login, getAllCartProducts, changeCartProductQuantity, deleteProductFromCart, getAllAddresses } from "../../actions/user/userActions";
 
 const INITIAL_STATE = {
     user:{
@@ -8,6 +8,11 @@ const INITIAL_STATE = {
         error: null,
     },
     cart: {
+        loading: false,
+        data: null,
+        error: null,
+    },
+    addresses:{
         loading: false,
         data: null,
         error: null,
@@ -143,6 +148,14 @@ const userSlice = createSlice({
             state.cart.loading = false;
             state.cart.data = null;
             state.cart.error = action?.error?.message;
+        })
+
+        .addCase(getAllAddresses.pending, (state) => {
+
+        })
+        .addCase(getAllAddresses.fulfilled, (state, action) => {
+            state.addresses.loading = false;
+            state.addresses.data = action.payload?.data;
         })
     }    
 });

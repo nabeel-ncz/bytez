@@ -207,8 +207,8 @@ module.exports = {
                 res.json({ status: 'ok' });
             } else {
                 const varientExist = exist.items.find((doc) => doc.varientId === varientId);
-                if(varientExist){
-                    return res.json({status:"error", message: "Varient is already exist in the cart!"});
+                if (varientExist) {
+                    return res.json({ status: "error", message: "Varient is already exist in the cart!" });
                 }
                 exist.items.push({
                     productId: productId,
@@ -290,17 +290,56 @@ module.exports = {
             const totalPrice = cart.totalPrice - (itemToDelete.quantity * itemToDelete.discountPrice);
             const discount = subTotal - totalPrice;
             const updatedItems = cart.items.filter((doc) => doc.varientId !== varientId);
-    
-            const updatedCart = await Cart.findOneAndUpdate({ userId },{
+
+            const updatedCart = await Cart.findOneAndUpdate({ userId }, {
                 items: updatedItems,
                 subTotal,
                 totalPrice,
                 discount,
-            },{ new: true });
-            
+            }, { new: true });
+
             res.json({ status: 'ok', data: updatedCart });
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
+        }
+    },
+    updateUserInform: async (req, res) => {
+        try {
+            const { userId, firstName, lastName, email, phone } = req.body;
+            await User.findByIdAndUpdate(userId, {
+                name: firstName + " " + lastName,
+                email: email,
+                phone: phone
+            });
+            res.json({ status: 'ok' });
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        }
+    },
+    updateUserPassword: async (req, res) => {
+        try {
+            const { userId, current_password, new_password } = req.body;
+            const user = await User.findById({ _id: userId });
+            if (!user) {
+                return res.json({ status: 'error', message: 'User not exist!' });
+            };
+            if (user.oauth) {
+                return res.json({ status: 'error', message: "Password can't be change" });
+            }
+            const match = await bcrypt.compare(current_password, user.password);
+            if (match) {
+                const salt = await bcrypt.genSalt(10);
+                const hash = await bcrypt.hash(new_password, salt);
+                const updatedUser = await User.findByIdAndUpdate(userId, { password: hash });
+                if (!updatedUser) {
+                    return res.json({ status: 'error', message: 'User not exist!' });
+                }
+                res.json({ status: 'ok' });
+            } else {
+                return res.json({ status: 'error', message: 'Current Password is not correct!' });
+            }
+        } catch (error) {
+            return res.json({ status: 'error', message: error?.message });
         }
     }
 }
