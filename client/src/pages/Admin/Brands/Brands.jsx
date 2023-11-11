@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Breadcrumbs, Button } from '@material-tailwind/react';
+import { Breadcrumbs, Button, Chip } from '@material-tailwind/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllBrands } from '../../../store/actions/admin/adminActions';
@@ -41,6 +41,8 @@ function Brands() {
                         <tr className="border-b border-gray-200">
                             <th className="font-semibold p-4 text-left border-r">Brand</th>
                             <th className="font-semibold p-4 text-left border-r">Brand Id</th>
+                            <th className="font-semibold p-4 text-left border-r">Status</th>
+                            <th className="font-semibold p-4 text-left border-r">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,6 +50,17 @@ function Brands() {
                             <tr className={`hover:bg-blue-gray-50 active:bg-blue-gray-50 cursor-pointer`}>
                                 <td className="text-sm p-4 text-start border-r">{doc.brand}</td>
                                 <td className="text-sm p-4 text-start border-r">{doc._id}</td>
+                                <td className="text-sm p-4 text-start border-r">
+                                    {doc.status === 'active' ?
+                                        (
+                                            <Chip variant="ghost" color={"blue"} size="sm" value={"Active"} className='text-center' />
+                                        ) : (
+                                            <Chip variant="ghost" color={"red"} size="sm" value={"Block"} className='text-center' />
+                                        )}
+                                </td>
+                                <td className="text-sm p-4 text-start border-r">
+                                    <Button size='sm' onClick={() => { navigate(`/admin/brands/update/${doc._id}`) }}>Update</Button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

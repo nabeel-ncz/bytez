@@ -249,3 +249,30 @@ export const updateUserPassword = createAsyncThunk("user/updateUserPassword", as
         throw new Error(error?.message);
     }
 })
+
+export const createOrder = createAsyncThunk("user/createOrder", async (data) => {
+    try {
+        const response = await axios.post(`user/order/create`, data, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const getAllOrders = createAsyncThunk("user/getAllOrders", async (id) => {
+    try {
+        const response = await axios.get(`user/order/all/${id}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+

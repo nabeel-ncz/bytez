@@ -31,7 +31,7 @@ const productSchema = new Schema({
                 subImages: [{ type: String }]
             },
             totalRating: { type: Number, default: 0 },
-            status:{ type: String, required: true, default: "publish" }
+            status:{ type: String, enum:["publish", "unpublish"], required: true, default: "publish" }
         }
     ]
 },

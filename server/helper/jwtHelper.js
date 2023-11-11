@@ -35,4 +35,25 @@ const verifyOtpToken = (otp, otpToken) => {
         }
     })
 }
-module.exports = { generateUserToken, generateOtpToken, verifyOtpToken, verifyUserToken }
+const generateResetPasswordToken = (id) => {
+    return jwt.sign({ id }, process.env.USER_RESET_PASS_SECRET, {
+        expiresIn: 60 * 10,
+    });
+}
+const verifyResetPasswordToken = (token) => {
+    return jwt.verify(token, process.env.USER_RESET_PASS_SECRET, (error, decoded) => {
+        if (error) {
+            return { status: "error", message: "Something error occured!" };
+        } else {
+            return { status: "ok", data: decoded };
+        }
+    })
+}
+module.exports = { 
+    generateUserToken,
+    generateOtpToken, 
+    verifyOtpToken, 
+    verifyUserToken, 
+    generateResetPasswordToken,
+    verifyResetPasswordToken 
+}

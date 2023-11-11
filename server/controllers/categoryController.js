@@ -18,11 +18,11 @@ module.exports = {
     updateCategory: async (req, res) => {
         try {
             const filename = req?.file?.filename;
-            const { id, category, fileChanged } = req.body;
+            const { id, category, fileChanged, status } = req.body;
             if (fileChanged) {
-                await Category.updateOne({ _id: id }, { category, thumbnail: filename });
+                await Category.updateOne({ _id: id }, { category, thumbnail: filename, status });
             } else {
-                await Category.updateOne({ _id: id }, { category });
+                await Category.updateOne({ _id: id }, { category, status });
             }
             res.json({ status: "ok" });
         } catch (error) {

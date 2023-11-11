@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createProduct, deleteProduct, getAllAttribute, getAllBrands, getAllCategories, getAllProducts, getAllUsers } from "../../actions/admin/adminActions";
+import { getAllOrders, updateOrderStatus } from "../../actions/admin/adminActions";
 
 const INITIAL_STATE = {
     customers:{
@@ -23,6 +24,11 @@ const INITIAL_STATE = {
         error: null,
     },
     brands:{
+        loading: false,
+        data: null,
+        error: null,
+    },
+    orders: {
         loading: false,
         data: null,
         error: null,
@@ -109,7 +115,10 @@ const adminSlice = createSlice({
         .addCase(getAllAttribute.fulfilled, (state, action) => {
             state.productAttributes.data = action?.payload;
         })
-        
+
+        .addCase(getAllOrders.fulfilled, (state, action) => {
+            state.orders.data = action.payload;
+        })        
     }
 })
 

@@ -72,7 +72,7 @@ function Login() {
                     <Field type="password" name="password" placeholder="Enter your password" className="form-control-input" />
                   </div>
                   <ErrorMessage name="password" component="div" className="text-red-500 text-xs text-start" />
-                  {/* <h2 className='text-start mt-2 font-normal text-sm text-white'>Forgot your password ?</h2> */}
+                  <h2 onClick={() => { navigate(`/auth/forgot_password`)}} className='text-start mt-2 font-normal text-sm text-white'>Forgot your password ?</h2>
                   <button type='submit' className='form-control-button'>
                     <span className='font-semibold text-base'>Continue</span>
                     <img src="/icons/arrow-left-icon.png" alt="" className='h-8' />

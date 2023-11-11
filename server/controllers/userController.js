@@ -2,9 +2,9 @@ const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
-const { generateUserToken, generateOtpToken, verifyOtpToken, verifyUserToken } = require('../helper/jwtHelper');
+const { generateUserToken, generateOtpToken, verifyOtpToken, verifyUserToken, generateResetPasswordToken, verifyResetPasswordToken } = require('../helper/jwtHelper');
 const { generateOTP } = require('../helper/otpHelper');
-const { sendOtpMail } = require('../helper/mailHelper');
+const { sendOtpMail, sendResetPasswordMail } = require('../helper/mailHelper');
 
 module.exports = {
     registerUser: async (req, res) => {
@@ -337,6 +337,52 @@ module.exports = {
                 res.json({ status: 'ok' });
             } else {
                 return res.json({ status: 'error', message: 'Current Password is not correct!' });
+            }
+        } catch (error) {
+            return res.json({ status: 'error', message: error?.message });
+        }
+    },
+    resetPassword: async (req, res) => {
+        try {
+            const email = req?.query?.email;
+            const user = await User.findOne({ email });
+            if (!user) {
+                res.json({ status: "error", message: "Email doesn't exist" });
+                return;
+            }
+            const token = generateResetPasswordToken(user._id);
+            const mailSend = await sendResetPasswordMail(req, email, token);
+            if (mailSend.status === "ok") {
+                res.json({ status: 'ok' });
+            } else {
+                res.json({ status: 'error' });
+            }
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        }
+    },
+    verifyResetPassword: async (req, res) => {
+        try {
+            const token = req.body?.token;
+            const password = req.body?.password;
+            if (!token) {
+                return res.json({ status: 'error', message: 'Link is valid!, Please try again later!' });
+            }
+            const verify = verifyResetPasswordToken(token);
+            if (verify?.status === "ok") {
+                const user = await User.findOne({ _id: verify?.data?.id });
+                if (!user) {
+                    return res.json({ status: 'error', message: 'User not exist!' });
+                };
+                if (user.oauth) {
+                    return res.json({ status: 'error', message: "Password can't be change" });
+                }
+                const salt = await bcrypt.genSalt(10);
+                const hash = await bcrypt.hash(password, salt);
+                await User.findByIdAndUpdate(verify?.data?.id, { password: hash });
+                res.json({ status: 'ok' });
+            } else {
+                return res.json({ status: 'error', message: 'Link is valid!, Please try again later!' });
             }
         } catch (error) {
             return res.json({ status: 'error', message: error?.message });

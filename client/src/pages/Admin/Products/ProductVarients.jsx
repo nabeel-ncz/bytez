@@ -179,7 +179,7 @@ function ProductVarients() {
                                     </td>
                                     <td className="text-sm p-4 text-start border-r">
                                         <Button className='me-2' color='yellow' size='sm' variant='gradient' onClick={() => navigate(`/admin/products/varient?pId=${product?._id}&vId=${doc?.varientId}`)}>Edit</Button>
-                                        <Button color='red' size='sm' variant='gradient' onClick={() => handleOpen(product?._id, doc?.varientId)} >Delete</Button>
+                                        {/* <Button color='red' size='sm' variant='gradient' onClick={() => handleOpen(product?._id, doc?.varientId)} >Delete</Button> */}
                                     </td>
                                 </tr>
                             ))}

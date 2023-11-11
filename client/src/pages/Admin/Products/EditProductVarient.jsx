@@ -40,10 +40,10 @@ function EditVarient() {
         handleCategoryAndBrand();
     }, []);
 
-    const handleCategoryAndBrand = () => {
-        axios.get(`http://localhost:3000/admin/category/${product?.category}`, { withCredentials: true }).then((response) => {
+    const handleCategoryAndBrand = (category, brand) => {
+        axios.get(`http://localhost:3000/admin/category/${category}`, { withCredentials: true }).then((response) => {
             if (response.data?.status === "ok") {
-                axios.get(`http://localhost:3000/admin/brand/${product?.brand}`, {withCredentials: true}).then((result) => {
+                axios.get(`http://localhost:3000/admin/brand/${brand}`, {withCredentials: true}).then((result) => {
                     if(result?.data?.status === "ok"){
                         setCategoryAndBrand({
                             category: response?.data?.data?.category,
@@ -61,6 +61,7 @@ function EditVarient() {
         axios.get(`http://localhost:3000/admin/product/varient?pId=${pId}&vId=${vId}`, { withCredentials: true }).then((response) => {
             if (response.data?.status === "ok") {
                 setProduct(response.data?.data);
+                handleCategoryAndBrand(response.data?.data?.category, response.data?.data?.brand)
             } else {
                 setProduct(null);
             }

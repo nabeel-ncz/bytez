@@ -21,17 +21,23 @@ const {
 const {
     createCategory,
     getAllCategories,
-    getCategory
+    getCategory,
+    updateCategory
 } = require('../controllers/categoryController');
 const { 
     createBrand, 
     getAllBrands,
-    getBrand
+    getBrand,
+    updateBrand
 } = require('../controllers/brandController');
 const {
     createNewAttribute,
     getAllAttributes
 } = require('../controllers/attributeController');
+const {
+    getAllOrders,
+    updateOrderStatus,
+} = require('../controllers/orderController');
 
 const { uploadFiles, uploadSingleFile } = require('../helper/fileUploadHelper');
 
@@ -52,14 +58,19 @@ router.delete('/product/delete', deleteProduct);
 router.get('/product/:id', getProduct);
 
 router.post('/category/create', uploadSingleFile, createCategory);
+router.put('/category/update',uploadSingleFile , updateCategory);
 router.get('/category/all', getAllCategories);
 router.get('/category/:id', getCategory);
 
 router.post('/brand/create', uploadSingleFile, createBrand);
+router.put('/brand/update', uploadSingleFile, updateBrand);
 router.get('/brand/all', getAllBrands);
 router.get('/brand/:id', getBrand);
 
 router.post('/attribute/create', createNewAttribute);
 router.get('/attribute/all', getAllAttributes);
+
+router.get('/order/all', getAllOrders);
+router.patch('/order/update/status', updateOrderStatus);
 
 module.exports = router;

@@ -8,7 +8,6 @@ import Layout from "./pages/Layout/Layout";
 import Home from "./pages/User/Home/Home";
 import OtpValidation from "./pages/Auth/OtpValidation/OtpValidation";
 import Dashboard from "./pages/Admin/Home/Dashboard"
-import OrdersList from "./pages/Admin/Orders/OrdersList";
 import ProductsList from "./pages/Admin/Products/ProductsList";
 import Payments from "./pages/Admin/Payments/Payments";
 import Categories from "./pages/Admin/Categories/Categories";
@@ -38,6 +37,15 @@ import ShippingAddress from "./pages/User/Profile/ShippingAddress"
 import Wallet from "./pages/User/Profile/Wallet"
 import ChangePassword from "./pages/User/Profile/ChangePassword"
 import CreateAddress from "./pages/User/Profile/CreateAddress"
+import Checkout from "./pages/User/Order/Checkout"
+import OrdersList from "./pages/User/Order/OrdersList"
+import AdminOrdersList from "./pages/Admin/Orders/AdminOrdersList"
+import OrderDetails from "./pages/User/Order/OrderDetails"
+import AdminOrderDetails from "./pages/Admin/Orders/AdminOrderDetails"
+import UpdateCategory from "./pages/Admin/Categories/updateCategory"
+import UpdateBrand from "./pages/Admin/Brands/UpdateBrand"
+import ForgotPassword from "./pages/Auth/ForgotPassword/ForgotPassword"
+import ResetPassword from "./pages/Auth/ForgotPassword/ResetPassword"
 
 
 function App() {
@@ -56,13 +64,16 @@ function App() {
       <Routes>
         <Route path="/login" element={!user ? <Login /> : <Navigate to={"/"} />} />
         <Route path="/signup" element={!user ? <Signup /> : <Navigate to={"/"} />} />
+        <Route path="/auth/forgot_password" element={!user ? <ForgotPassword /> : <Navigate to={"/"} />} />
+        <Route path="/auth/reset_password" element={!user ? <ResetPassword /> : <Navigate to={"/"} />} />
         <Route path="/page_not_found" element={<PageNotFound />} />
       
         {(role === "Admin" || role === "SuperAdmin") &&
           (<>
             <Route path="/admin/" element={<Layout role={"Admin"} />}>
               <Route index element={<Dashboard />} />
-              <Route path="orders" element={<OrdersList />} />
+              <Route path="orders" element={<AdminOrdersList />} />
+              <Route path="orders/view/:id" element={<AdminOrderDetails />} />
               <Route path="products" element={<ProductsList />} />
               <Route path="products/create" element={<AddProduct />} />
               <Route path="products/create/varient/:id" element={<AddVarient />} />
@@ -71,8 +82,10 @@ function App() {
               <Route path="payments" element={<Payments />} />
               <Route path="categories" element={<Categories />} />
               <Route path="categories/create" element={<CreateCategory />} />
+              <Route path="categories/update/:id" element={<UpdateCategory />} />
               <Route path="brands" element={<Brands />} />
               <Route path="brands/create" element={<CreateBrand />} />
+              <Route path="brands/update/:id" element={<UpdateBrand />} />
               <Route path="customers" element={<Customers />} />
               <Route path="customers/view/:id" element={<CustomerView />} />
               <Route path="admins" element={<Admins />} />
@@ -102,6 +115,9 @@ function App() {
                 <Route path="wallet" element={<Wallet />}/>
               </Route>
               <Route path="cart" element={user ? <Cart /> : <NoAccount />} />
+              <Route path="checkout" element={user ? <Checkout /> : <NoAccount />} />
+              <Route path="orders" element={user ? <OrdersList /> : <NoAccount />} />
+              <Route path="orders/view/:id" element={user ? <OrderDetails /> : <NoAccount />} />
               <Route path="wishlist" element={user ? <Wishlist /> : <NoAccount/>} />
               <Route path="verify/email" element={verified ? <>{console.log("working")}<Navigate to={"/"} /></> : <OtpValidation /> } />
             </Route>

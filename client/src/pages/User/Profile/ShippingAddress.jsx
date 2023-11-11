@@ -62,7 +62,7 @@ function ShippingAddress() {
                                     )}
 
                                     <img src="/icons/bin.png" alt="" className='w-9 border border-gray-400 p-2' onClick={() => handleDeleteAddress(doc._id)} />
-                                    <img src="/icons/edit-icon.png" alt="" className='w-9 border border-gray-400 p-2' />
+                                    {/* <img src="/icons/edit-icon.png" alt="" className='w-9 border border-gray-400 p-2' /> */}
                                 </div>
                             </div>
                             <div className='w-full flex flex-col items-start px-6 py-3 font-medium text-sm'>

@@ -1,0 +1,77 @@
+const mongoose = require('mongoose');
+
+const productSchema = new mongoose.Schema({
+    productId: {
+        type: String,
+        required: true,
+    },
+    varientId: {
+        type: String,
+        required: true,
+    },
+    name:{
+        type: String,
+        required: true,
+    },
+    image:{
+        type: String,
+        required: true,
+    },
+    quantity: {
+        type: Number,
+        required: true,
+    },
+    price: {
+        type: String,
+        required: true,
+    }
+});
+
+const addressSchema = new mongoose.Schema({
+    fullName: { type: String, required: true },
+    email: { type: String },
+    phone: { type: String, required: true },
+    address: { type: String, required: true },
+    zipcode: { type: String, required: true },
+});
+
+const orderSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    address: addressSchema,
+    status: {
+        type: String,
+        required: true,
+        enum: ["pending", "processing", "shipped", "delivered", "cancelled", "returned", "rejected"],
+        default: "pending",
+    },
+    deliveryDate: {
+        type: Date,
+        default: () => {
+            const date = new Date();
+            date.setDate(date.getDate() + 7);
+            return date;
+        },
+    },
+    paymentMode: {
+        type: String,
+        required: true,
+        enum: ["COD", "Online", "Wallet"],
+    },
+    orderNote: {
+        type: String,
+    },
+    items: [productSchema],
+    itemsQuantity: {type: Number, required: true },
+    subTotal: { type: Number, required: true },
+    discount: { type: Number, required: true },
+    shipping: { type: Number, default: 0 },
+    totalPrice: { type: Number, required: true },
+},
+{ timestamps: true });
+
+const collection = mongoose.model('Order', orderSchema);
+module.exports = collection;

@@ -16,7 +16,9 @@ const {
     getAllCartProducts,
     deleteProductFromCart,
     updateUserInform,
-    updateUserPassword
+    updateUserPassword,
+    resetPassword,
+    verifyResetPassword
 } = require('../controllers/userController');
 
 const {
@@ -28,6 +30,12 @@ const {
     deleteAddress
 } = require('../controllers/addressController');
 
+const {
+    createOrder,
+    getUserOrders,
+    getOrderById,
+} = require('../controllers/orderController');
+
 router.use(passport.initialize());
 router.use(passport.session());
 
@@ -35,6 +43,8 @@ router.post('/auth/signup', registerUser);
 router.post('/auth/login', loginUser);
 router.post('/auth/verify/email', verifyEmail);
 router.get('/auth/send_otp', sendOtp);
+router.get('/auth/send_mail', resetPassword);
+router.patch('/auth/verify/reset_password', verifyResetPassword);
 router.get('/auth/isExist', checkUserExist);
 router.get('/auth/logout', logout);
 
@@ -57,5 +67,9 @@ router.patch('/profile/address/delete', deleteAddress);
 
 router.patch('/profile/account/update', updateUserInform);
 router.patch('/profile/account/update_password', updateUserPassword);
+
+router.post('/order/create', createOrder);
+router.get('/order/all/:id', getUserOrders);
+router.get('/order/find/:id', getOrderById);
 
 module.exports = router;

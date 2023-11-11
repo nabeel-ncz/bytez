@@ -7,12 +7,14 @@ const {
     getProductVarientAttributesBasedOnColor,
     getProductVarientColorsBasedOnRamAndRom,
     getProductIndexBasedOnColorAndId,
-    getProductIndexBasedOnAttributeAndId
+    getProductIndexBasedOnAttributeAndId,
+    getProductVarient,
 } = require('../controllers/productController');
 const router = express.Router();
 
 router.get('/store', getAllProducts);
 router.get('/view/:id', getProduct);
+router.get('/varient/view', getProductVarient);
 
 router.get('/varient/available/color', getProductIndexBasedOnColorAndId);
 router.get('/varient/available/attribute', getProductIndexBasedOnAttributeAndId);

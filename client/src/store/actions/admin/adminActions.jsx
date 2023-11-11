@@ -197,3 +197,27 @@ export const getAllAttribute = createAsyncThunk("admin/getAllAttribute", async (
         throw new Error(error?.message);
     }
 })
+export const getAllOrders = createAsyncThunk("admin/getAllOrders", async () => {
+    try{
+        const response = await axios.get(`/admin/order/all`, {withCredentials: true});
+        if(response?.data?.status === "ok"){
+            return response.data?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error){
+        throw new Error(error?.message);
+    }
+})
+export const updateOrderStatus = createAsyncThunk("admin/updateOrderStatus", async (data) => {
+    try{
+        const response = await axios.patch(`/admin/order/update/status?id=${data?.orderId}&status=${data?.status}`, {withCredentials: true});
+        if(response?.data?.status === "ok"){
+            return response.data?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error){
+        throw new Error(error?.message);
+    }
+})

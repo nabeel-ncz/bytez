@@ -5,8 +5,10 @@ import { changeCartProductQuantity, deleteProductFromCart, getAllCartProducts } 
 import toast from 'react-hot-toast';
 import { Button } from '@material-tailwind/react';
 import DeleteCartProduct from '../../../components/CustomDialog/deleteCartProduct'
+import { useNavigate } from 'react-router-dom';
 
 function Cart() {
+  const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
@@ -119,7 +121,7 @@ function Cart() {
                 </div>
                 <div className='w-full flex items-center justify-between'>
                   <span>Estimated delivery by</span>
-                  <span>21 Mar 2023</span>
+                  <span>{new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}</span>
                 </div>
                 <div className='mt-4 w-full h-12 flex items-center border border-gray-800 justify-between'>
                   <input type="text" placeholder='Coupon Code' className='outline-none w-10/12 h-full ps-4' />
@@ -128,7 +130,7 @@ function Cart() {
                   </button>
                 </div>
                 <div className='w-full flex items-center justify-between mt-4'>
-                  <Button variant='filled' className='w-full items-center justify-center py-4'>Proceed to checkout</Button>
+                  <Button onClick={() => navigate('/checkout')} variant='filled' className='w-full items-center justify-center py-4'>Proceed to checkout</Button>
                 </div>
               </div>
             </div>

@@ -18,11 +18,11 @@ module.exports = {
     updateBrand: async (req, res) => {
         try {
             const filename = req?.file?.filename;
-            const { id, brand, fileChanged } = req.body;
+            const { id, brand, fileChanged, status } = req.body;
             if (fileChanged) {
-                await Brand.updateOne({ _id: id }, { brand, thumbnail: filename });
+                await Brand.updateOne({ _id: id }, { brand, status, thumbnail: filename });
             } else {
-                await Brand.updateOne({ _id: id }, { brand });
+                await Brand.updateOne({ _id: id }, { brand, status });
             }
             res.json({ status: "ok" });
         } catch (error) {
