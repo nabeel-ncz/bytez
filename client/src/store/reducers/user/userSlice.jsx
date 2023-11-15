@@ -133,7 +133,6 @@ const userSlice = createSlice({
         })
         .addCase(changeCartProductQuantity.fulfilled, (state, action) => {
             state.cart.loading = false;
-            state.cart.data = action.payload?.data;
             state.cart.error = null;
         })
         .addCase(changeCartProductQuantity.rejected, (state, action) => {
@@ -146,12 +145,10 @@ const userSlice = createSlice({
         })
         .addCase(deleteProductFromCart.fulfilled, (state, action) => {
             state.cart.loading = false;
-            state.cart.data = action?.payload?.data;
             state.cart.error = null;
         })
         .addCase(deleteProductFromCart.rejected, (state, action) => {
             state.cart.loading = false;
-            state.cart.data = null;
             state.cart.error = action?.error?.message;
         })
 

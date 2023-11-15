@@ -7,8 +7,8 @@ const resizeProductImage = async (files) => {
         for (let fieldname in files) {
             const file = files[fieldname][0];
             await sharp(file.path)
-                .resize(310, 400, { position: 'top' })
-                .webp({ quality: 100 })
+                .resize(400, 400, { position: 'centre' })
+                .toFormat('png')
                 .toFile(`../server/public/products/resized/${file.filename}`);
             resizedFiles.push(file.filename);
         }

@@ -34,8 +34,9 @@ function CreateBrand() {
         }
         dispatch(addNewBrand({ brand: data?.brand, file: thumbnail, status: data?.status })).then((response) => {
             if (response?.payload?.status === "ok") {
-                toast.success("Category created successfully!");
-                setCategory('');
+                toast.success("Brand created successfully!");
+                setData({brand:"", status:""});
+                navigate('/admin/brands')
             } else {
                 toast.error("There is something went wrong!");
             }

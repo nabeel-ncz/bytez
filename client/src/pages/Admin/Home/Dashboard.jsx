@@ -1,11 +1,12 @@
 import React from 'react'
+import SalesByDate from '../../../components/CustomCharts/SalesByDate'
 // import SideNavbar from '../../../components/Navbar/SideNavbar'
 
 
 function Dashboard() {
     return (
         <>
-            <h1>Dashboard</h1>
+            <SalesByDate />
         </>
     )
 }

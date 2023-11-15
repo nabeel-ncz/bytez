@@ -117,8 +117,8 @@ function Product() {
     return (
         <>
             {product ? (
-                <div className='w-full h-screen flex items-start justify-between pt-8 px-20'>
-                    <div className='w-1/2 flex flex-col items-center justify-center gap-14'>
+                <div className='w-full min-h-screen flex items-start justify-between pt-6 px-20'>
+                    <div className='w-1/2 mt-2 flex flex-col items-center justify-center gap-14 py-12 bg-transparent mx-12 rounded-md shadow-sm'>
                         <CardZoom image={heroImage} />
                         <div className=''>
                             <ProductImageSlider handleHeroImage={handleHeroImage} images={product ? [...productImages] : []} />
@@ -127,11 +127,9 @@ function Product() {
                     <div className="lg:w-1/2 pt-12">
                         <div className='flex items-center justify-between w-10/12'>
                             <h1 className="text-3xl font-semibold text-start">{product?.title}</h1>
-                            {product?.varients[selectedVarient]?.status === "publish" && (
-                                <IconButton variant="outlined" className='w-2/12'>
-                                    <img src="/icons/heart-icon.png" alt="" className='w-5 h-5' />
-                                </IconButton>
-                            )}
+                            <IconButton variant="outlined" className='w-2/12'>
+                                <img src="/icons/heart-icon.png" alt="" className='w-5 h-5' />
+                            </IconButton>
                         </div>
                         <p className='text-start w-10/12 mt-2 opacity-50 line-clamp-2'>{product?.varients[selectedVarient]?.description}</p>
                         <div className='w-10/12 flex items-center justify-between border-t border-gray-400 mt-4 pt-4'>

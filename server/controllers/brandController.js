@@ -67,5 +67,17 @@ module.exports = {
         } catch (error) {
             res.json({ status: "error", message: error?.message });
         }
+    },
+    getAllActiveBrands: async (req, res) => {
+        try {
+            const result = await Brand.find({status:'active'}).lean();
+            if (!result) {
+                res.json({ staus: "error", message: "Brand not found!" });
+            } else {
+                res.json({ status: "ok", data: result });
+            }
+        } catch (error) {
+            res.json({ status: "error", message: error?.message });
+        }
     }
 }

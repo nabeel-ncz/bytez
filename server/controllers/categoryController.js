@@ -67,5 +67,17 @@ module.exports = {
         } catch (error){
             res.json({status:"error", message: error?.message});
         }
+    },
+    getAllActiveCategories: async (req, res) => {
+        try {
+            const result = await Category.find({status:'active'}).lean();
+            if (!result) {
+                res.json({ staus: "error", message: "Category not found!" });
+            } else {
+                res.json({ status: "ok", data: result });
+            }
+        } catch (error) {
+            res.json({ status: "error", message: error?.message });
+        }
     }
 }

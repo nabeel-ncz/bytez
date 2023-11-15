@@ -2,38 +2,39 @@ import React, { useEffect, useState } from 'react';
 import OTPInput from 'react-otp-input';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { verifyEmail, sendOtp } from '../../../store/actions/user/userActions';
+import { verifyEmail, sendOtp, fetchUser } from '../../../store/actions/user/userActions';
 import CountdownTimer from '../../../components/CountdownTimer/CountdownTimer';
 import { resetError } from '../../../store/reducers/user/userSlice';
 import { useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
 
 function OtpValidation() {
     const [otp, setOtp] = useState("");
     const [error, setError] = useState("");
     const [search, setSearch] = useSearchParams();
-    
+
     const initialTime = localStorage.getItem('timer') || 120;
     const [time, setTime] = useState(parseInt(initialTime, 10));
-    
+
     const user = useSelector((state) => state.user?.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         dispatch(resetError());
-    },[]);
+    }, []);
 
     const query = search.get("request");
     const email = search.get("email");
     useEffect(() => {
-        if(query && email){
+        if (query && email) {
             dispatch(sendOtp(email));
             setTime(120);
         } else {
             setTime(0);
             navigate('/page_not_found');
         }
-    },[]);
+    }, []);
 
     const handleChange = (code) => {
         setOtp(code);
@@ -43,9 +44,10 @@ function OtpValidation() {
             setError("OTP must be contain 6 characters");
         } else {
             const data = { otp: otp };
-            dispatch(verifyEmail({ data })).then((response) => {
-                if(response.data?.status === "ok"){
+            dispatch(verifyEmail(data)).then((response) => {
+                if (response.payload?.status === "ok") {
                     navigate('/');
+                    toast.success("Your account was successfully verified!");
                 }
             })
         }

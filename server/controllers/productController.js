@@ -1,7 +1,10 @@
 const { ObjectId } = require("mongoose");
 const { resizeProductImage } = require("../helper/imageResizeHelper");
 const Product = require("../models/Product");
+const Brand = require('../models/Brand');
+const Category = require('../models/Category');
 const uuid = require('uuid');
+const slugify = require('slugify');
 
 module.exports = {
     getAllProducts: async (req, res) => {
@@ -11,6 +14,72 @@ module.exports = {
                 res.json({ status: "error", data: {}, message: "Products not found!" });
             } else {
                 res.json({ status: "ok", data: products });
+            }
+        } catch (error) {
+            res.json({ status: "error", message: error?.message });
+        }
+    },
+    getAllProductsForUsers: async (req, res) => {
+        const searchTerm = req.query?.search;
+        const regexParts = searchTerm.split(/\s+/).map(part => `(?=.*\\b${part}\\b)`);
+        const searchRegex = new RegExp(regexParts.join(''), 'i');
+        const queryCategory = req.query?.category;
+        const queryBrand = req.query?.brand?.trim();
+        const queryAvailability = req.query?.availability;
+        const queryPriceFrom = req.query?.priceFrom;
+        const queryPriceTo = req.query?.priceTo;
+        const queryRating = req.query?.rating;
+
+        console.log(queryCategory,queryBrand,queryAvailability,queryPriceFrom,queryPriceTo)
+
+        let filter = {};
+        if (searchTerm !== 'all') {
+            filter.$or = [
+                { title: { $regex: searchRegex } },
+                { tags: { $in: [searchRegex] } }
+            ];
+        }
+        if (queryCategory && queryCategory !== 'all') {
+            const category = await Category.findOne({ category: queryCategory });
+            filter.category = category._id;
+        }
+        if (queryBrand && queryBrand !== 'all') {
+            const brand = await Brand.findOne({ brand: queryBrand });
+            filter.brand = brand._id;
+        }
+
+        if (queryAvailability && queryAvailability === 'instock') {
+            filter['varients.stockQuantity'] = { $gt: 0 };
+        } else if (queryAvailability && queryAvailability === 'outofstock'){
+            filter['varients.stockQuantity'] = { $lte: 0 };
+        }
+
+        if (queryPriceFrom) {
+            filter['varients.discountPrice'] = { $gte: parseFloat(queryPriceFrom) };
+        }
+
+        if (queryPriceTo) {
+            filter['varients.discountPrice'] = {
+                ...filter['varients.discountPrice'],
+                $lte: parseFloat(queryPriceTo)
+            };
+        }
+        console.log(filter)
+        // if (queryRating && queryRating !== 'all') {
+        //     filter['varients.totalRating'] = parseFloat(queryRating);
+        // }
+
+        try {
+            const products = await Product.find(filter).populate('category brand').lean();
+            if (!products || products.length === 0) {
+                res.json({ status: "error", data: {}, message: "Products not found!" });
+            } else {
+                const filteredProducts = products.filter(product => {
+                    const categoryStatus = product.category.status || "active";
+                    const brandStatus = product.brand.status || "active";
+                    return categoryStatus === "active" && brandStatus === "active";
+                });
+                res.json({ status: "ok", data: filteredProducts });
             }
         } catch (error) {
             res.json({ status: "error", message: error?.message });
@@ -34,16 +103,19 @@ module.exports = {
             if (!req?.files) {
                 res.json({ status: "error", message: "Image upload error!" });
             } else {
-                const { title, category, brand, description, price, markup, discountPrice, stockQuantity, ramAndRom, color, status
+                const { title, category, brand, description, price, markup, discountPrice, stockQuantity, ramAndRom, color, status, tags
                 } = req.body;
                 const result = await resizeProductImage(req.files);
-                let user = null;
+                let product = null;
+                const slug = slugify(title, { replacement: '-', lower: true });
                 if (result.status === "ok") {
                     const uniqueId = uuid.v4();
-                    user = await Product.create({
+                    product = await Product.create({
                         title,
+                        slug,
                         category,
                         brand,
+                        tags,
                         varients: [
                             {
                                 varientId: uniqueId,
@@ -62,7 +134,7 @@ module.exports = {
                             }
                         ]
                     });
-                    res.json({ status: "ok", data: user });
+                    res.json({ status: "ok", data: product });
                 } else {
                     res.json({ status: "error", message: "Image resize failed" });
                 }
@@ -219,12 +291,14 @@ module.exports = {
             if (!specificVariant) {
                 return res.json({ status: 'error', message: 'Variant not found!' });
             }
-            res.json({ status: 'ok', data: {
-                title: product.title,
-                category: product.category,
-                brand: product.brand,
-                ...specificVariant._doc,
-            }});
+            res.json({
+                status: 'ok', data: {
+                    title: product.title,
+                    category: product.category,
+                    brand: product.brand,
+                    ...specificVariant._doc,
+                }
+            });
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
         }
@@ -352,18 +426,55 @@ module.exports = {
         }
     },
     updateProductMainField: async (req, res) => {
-        const { id, title, category, brand } = req.body;
+        const { id, title, category, brand, tags } = req.body;
+        const slug = slugify(title, { replacement: '-', lower: true });
         try {
             await Product.updateOne({ _id: id }, {
                 $set: {
                     title,
+                    slug,
                     category,
-                    brand
+                    brand,
+                    tags
                 }
             });
             res.json({ status: "ok" });
         } catch (error) {
             res.json({ status: "error" });
+        }
+    },
+    sampleController: async (req, res) => {
+        try {
+            // Find all products and populate the 'category' and 'brand' fields
+            const products = await Product.find().populate('category brand').lean();
+
+            if (!products || products.length === 0) {
+                res.json({ status: "error", data: {}, message: "Products not found!" });
+            } else {
+                // Filter out products with blocked category or brand
+                const filteredProducts = products.filter(product => {
+                    // Check if the category and brand are not blocked
+                    const categoryStatus = product.category.status || "active";
+                    const brandStatus = product.brand.status || "active";
+
+                    return categoryStatus === "active" && brandStatus === "active";
+                });
+
+                res.json({ status: "ok", data: filteredProducts });
+            }
+        } catch (error) {
+            res.json({ status: "error", message: error?.message });
+        }
+    },
+    sampleControllerTwo: async (req, res) => {
+        try {
+            const q = 3;
+            const productId = req?.query?.pId;
+            const varientId = req?.query?.vId;
+
+            res.json({ status: 'ok', data: product });
+        } catch (error) {
+            res.json({ status: 'error' });
         }
     }
 }

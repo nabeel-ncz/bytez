@@ -1,6 +1,5 @@
 const express = require('express');
-const { 
-    getAllProducts, 
+const {  
     getProduct,
     getProductVarientAttributes,
     getProductVarientColors,
@@ -9,10 +8,15 @@ const {
     getProductIndexBasedOnColorAndId,
     getProductIndexBasedOnAttributeAndId,
     getProductVarient,
+    getAllProductsForUsers,
+    sampleControllerTwo,
 } = require('../controllers/productController');
 const router = express.Router();
 
-router.get('/store', getAllProducts);
+
+router.get('/sample', sampleControllerTwo)
+
+router.get('/store', getAllProductsForUsers);
 router.get('/view/:id', getProduct);
 router.get('/varient/view', getProductVarient);
 
@@ -24,5 +28,7 @@ router.get('/varient/attribute/:id', getProductVarientAttributes);
 
 router.get('/varient/color/available', getProductVarientColorsBasedOnRamAndRom);
 router.get('/varient/color/:id', getProductVarientColors);
+
+
 
 module.exports = router;

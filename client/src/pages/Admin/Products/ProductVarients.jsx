@@ -14,6 +14,8 @@ function ProductVarients() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [deleteId, setDeleteId] = useState({ productId: "", varientId: "" })
     const [editProduct, setEditProduct] = useState(false);
+    const [tags, setTags] = useState(null);
+    const [tag, setTag] = useState("");
     const dispatch = useDispatch();
 
     const { id } = useParams();
@@ -23,11 +25,11 @@ function ProductVarients() {
 
     useEffect(() => {
         dispatch(getAllCategories());
-    },[]);
+    }, []);
 
     useEffect(() => {
         dispatch(getAllBrands());
-    },[]);
+    }, []);
 
     useEffect(() => {
         handleFetch();
@@ -37,6 +39,7 @@ function ProductVarients() {
         axios.get(`http://localhost:3000/admin/product/${id}`, { withCredentials: true }).then((response) => {
             if (response.data?.status === "ok") {
                 setProduct(response.data?.data);
+                setTags(response.data?.data?.tags);
             } else {
                 setProduct(null);
             }
@@ -56,6 +59,15 @@ function ProductVarients() {
         setProduct(data)
     }
 
+    const handleAddTag = () => {
+        setTags(state => [...state, tag]);
+        setTag("");
+    }
+    const handleRemoveFromTags = (i) => {
+        const filtered = tags.filter((item, index) => index !== i);
+        setTags(filtered)
+    }
+
     const handleFormSubmit = (data) => {
         console.log(data)
         const formData = {
@@ -63,6 +75,7 @@ function ProductVarients() {
             title: data.title,
             category: data.category,
             brand: data.brand,
+            tags: tags,
         };
         dispatch(updateProduct(formData)).then((response) => {
             if (response?.payload?.status === "ok") {
@@ -116,6 +129,26 @@ function ProductVarients() {
                                             ))}
                                         </Field>
                                         <ErrorMessage name="brand" component="div" className="text-red-500 text-xs text-start" />
+                                        <div className="p-5 rounded-lg mb-5 text-start">
+                                            <h1 className="font-bold mb-2">Product Tags</h1>
+                                            <div className='flex items-start justify-between'>
+                                                <div className='w-1/2 flex flex-col items-start justify-start px-4'>
+                                                    {tags?.map((item, index) => (
+                                                        <div className='flex items-center justify-start gap-2'>
+                                                            <h2 className='text-sm font-semibold'>{index + 1}. {item}</h2>
+                                                            <button onClick={() => { handleRemoveFromTags(index) }} className='p-2 border border-gray-600 rounded'><img src="/icons/bin.png" alt="" className='w-3' /></button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className='w-1/2 flex flex-col items-end justify-start gap-2'>
+                                                    <input type="text" placeholder='Enter the tags' className='w-full flex items-center justify-center h-10 bg-white border border-gray-600 rounded-md py-2 px-3 text-sm outline-none' value={tag} onChange={(event) => {
+                                                        setTag(event.target.value)
+                                                    }} />
+                                                    <Button variant='gradient' size='sm' onClick={handleAddTag} className='bg-black text-center px-4 py-2 rounded'>Add</Button>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <Button type='submit' variant='outlined' size='sm'>Save Product</Button>
                                     </div>
                                 </Form>
@@ -175,7 +208,7 @@ function ProductVarients() {
                                         {doc?.status === "unpublish" &&
                                             (<Chip variant="ghost" color={"blue-gray"} size="sm" value={"Unpublish"} className='text-center' />)
                                         }
-                                        
+
                                     </td>
                                     <td className="text-sm p-4 text-start border-r">
                                         <Button className='me-2' color='yellow' size='sm' variant='gradient' onClick={() => navigate(`/admin/products/varient?pId=${product?._id}&vId=${doc?.varientId}`)}>Edit</Button>

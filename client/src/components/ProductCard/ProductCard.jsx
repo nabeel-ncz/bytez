@@ -9,9 +9,9 @@ function ProductCard({ id, image, varients, title, description, price }) {
     const navigate = useNavigate();
     return (
         <>
-            <div onClick={() => navigate(`/product/${id}`)} className='card w-[240px] h-[280px] relative bg-white flex flex-col' style={{ "boxShadow": "0px 1px 20px 2px rgba(0, 0, 0, 0.08)" }}>
+            <div onClick={() => navigate(`/product/${id}`)} className='card w-[240px] h-[300px] relative bg-white flex flex-col' style={{ "boxShadow": "0px 1px 20px 2px rgba(0, 0, 0, 0.08)" }}>
                 <div className='my-4 img-container relative w-full flex items-center justify-center'>
-                    <img src={image ? `http://localhost:3000/products/resized/${image}` : "/images/dummy-product-1.webp"} alt="" className='h-[115px]' />
+                    <img src={image ? `http://localhost:3000/products/resized/${image}` : "/images/dummy-product-1.webp"} alt="" className='h-[160px]' />
                     <div className='absolute top-0 right-4' onClick={(event) => {
                         event.stopPropagation();
                         setLike(state => !state);

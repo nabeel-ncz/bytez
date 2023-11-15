@@ -5,6 +5,7 @@ const Product = require('../models/Product');
 const { generateUserToken, generateOtpToken, verifyOtpToken, verifyUserToken, generateResetPasswordToken, verifyResetPasswordToken } = require('../helper/jwtHelper');
 const { generateOTP } = require('../helper/otpHelper');
 const { sendOtpMail, sendResetPasswordMail } = require('../helper/mailHelper');
+const mongoose = require('mongoose');
 
 module.exports = {
     registerUser: async (req, res) => {
@@ -59,7 +60,7 @@ module.exports = {
                 const result = verifyOtpToken(otp, otpToken);
                 console.log(result)
                 if (result.status === "ok") {
-                    const response = await User.updateOne({ _id: result.data.userId }, { verified: true }, { new: true });
+                    const response = await User.findByIdAndUpdate(result.data.userId, { $set: { verified: true } }, { new: true });
                     res.cookie("otp_key", "", { maxAge: 1 });
                     const token = generateUserToken({ id: result.data.userId, isVerified: true });
                     res.cookie("user_key", token, { maxAge: 1000 * 60 * 60 * 24 * 2, httpOnly: true });
@@ -190,15 +191,6 @@ module.exports = {
                         productId: productId,
                         varientId: varient.varientId,
                         quantity: 1,
-                        name: product.title,
-                        image: varient.images.mainImage,
-                        price: varient.price,
-                        discountPrice: varient.discountPrice,
-                        subTotal: varient.discountPrice,
-                        attributes: {
-                            color: varient.color,
-                            ramAndRom: varient.ramAndRom,
-                        },
                     }],
                     subTotal: varient.price,
                     totalPrice: varient.discountPrice,
@@ -214,15 +206,6 @@ module.exports = {
                     productId: productId,
                     varientId: varient.varientId,
                     quantity: 1,
-                    name: product.title,
-                    image: varient.images.mainImage,
-                    discountPrice: varient.discountPrice,
-                    price: varient.price,
-                    subTotal: varient.discountPrice,
-                    attributes: {
-                        color: varient.color,
-                        ramAndRom: varient.ramAndRom,
-                    }
                 });
                 exist.subTotal += varient.price;
                 exist.totalPrice += varient.discountPrice;
@@ -237,8 +220,46 @@ module.exports = {
     getAllCartProducts: async (req, res) => {
         try {
             const userId = req?.params?.id;
-            const result = await Cart.findOne({ userId });
-            res.json({ status: 'ok', data: result });
+            const result = await Cart.findOne({ userId }).lean();
+            const getVarientData = result?.items?.map(async (doc, index) => {
+                const product = await Product.aggregate([
+                    {
+                        $match: { _id: doc.productId }
+                    },
+                    {
+                        $unwind: '$varients'
+                    },
+                    {
+                        $match: { 'varients.varientId': doc.varientId }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            name: "$title",
+                            image: "$varients.images.mainImage",
+                            price: "$varients.price",
+                            discountPrice: "$varients.discountPrice",
+                            attributes: {
+                                color: "$varients.color",
+                                ramAndRom: "$varients.ramAndRom"
+                            }
+                        }
+                    }
+                ])
+                if (!product) {
+                    throw new Error(`Insufficient stock for product: ${doc.name}`);
+                } else {
+                    result.items[index] = {
+                        ...result.items[index],
+                        ...product[0],
+                    };
+                }
+            });
+            Promise.all(getVarientData).then(() => {
+                res.json({ status: 'ok', data: result });
+            }).catch((error) => {
+                res.json({ status: 'error', message: error?.message });
+            })
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
         }
@@ -264,9 +285,49 @@ module.exports = {
             if (cart.items[itemIndex].quantity > availableQuantity) {
                 return res.json({ status: 'error', message: 'Product is Out of stock!' });
             }
-            cart.items[itemIndex].subTotal = cart.items[itemIndex].quantity * cart.items[itemIndex].discountPrice;
-            cart.subTotal = cart.items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-            cart.totalPrice = cart.items.reduce((sum, item) => sum + (item.quantity * item.discountPrice), 0);
+            const cartItems = [];
+            const getVarientData = cart?.items?.map(async (doc, index) => {
+                const product = await Product.aggregate([
+                    {
+                        $match: { _id: doc.productId }
+                    },
+                    {
+                        $unwind: '$varients'
+                    },
+                    {
+                        $match: { 'varients.varientId': doc.varientId }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            name: "$title",
+                            image: "$varients.images.mainImage",
+                            price: "$varients.price",
+                            discountPrice: "$varients.discountPrice",
+                            attributes: {
+                                color: "$varients.color",
+                                ramAndRom: "$varients.ramAndRom"
+                            }
+                        }
+                    }
+                ]);
+                const item = {
+                    ...cart.items[index],
+                    ...product[0],
+                };
+                cartItems.push({
+                    ...item._doc,
+                    name: item.name,
+                    image: item.image,
+                    price: item.price,
+                    discountPrice: item.discountPrice,
+                    attributes: item.attributes,
+                });
+            });
+            await Promise.all(getVarientData);
+            console.log(cartItems)
+            cart.subTotal = cartItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+            cart.totalPrice = cartItems.reduce((sum, item) => sum + (item.quantity * item.discountPrice), 0);
             cart.discount = cart.subTotal - cart.totalPrice;
             const updatedCart = await cart.save();
             res.json({ status: 'ok', data: updatedCart });
@@ -286,8 +347,23 @@ module.exports = {
             if (!itemToDelete) {
                 return res.json({ status: 'error', message: 'No Items to delete!' });
             }
-            const subTotal = cart.subTotal - (itemToDelete.quantity * itemToDelete.price);
-            const totalPrice = cart.totalPrice - (itemToDelete.quantity * itemToDelete.discountPrice);
+            const productToDelete = await Product.aggregate([{ $match: { _id: itemToDelete.productId } }, { $unwind: '$varients' }, { $match: { 'varients.varientId': itemToDelete.varientId } },
+            {
+                $project: {
+                    _id: 0,
+                    name: "$title",
+                    image: "$varients.images.mainImage",
+                    price: "$varients.price",
+                    discountPrice: "$varients.discountPrice",
+                    attributes: {
+                        color: "$varients.color",
+                        ramAndRom: "$varients.ramAndRom"
+                    }
+                }
+            }
+            ]);
+            const subTotal = cart.subTotal - (itemToDelete.quantity * productToDelete[0].price);
+            const totalPrice = cart.totalPrice - (itemToDelete.quantity * productToDelete[0].discountPrice);
             const discount = subTotal - totalPrice;
             const updatedItems = cart.items.filter((doc) => doc.varientId !== varientId);
 

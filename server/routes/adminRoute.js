@@ -40,8 +40,9 @@ const {
 } = require('../controllers/orderController');
 
 const { uploadFiles, uploadSingleFile } = require('../helper/fileUploadHelper');
+const { verifyAdmin } = require('../middleware/validate');
 
-
+router.use(verifyAdmin);
 
 router.get('/customer/all', getAllUsers);
 router.patch('/customer/update/status', changeUserStatus);

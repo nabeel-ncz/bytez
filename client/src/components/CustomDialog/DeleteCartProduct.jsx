@@ -7,7 +7,7 @@ import {
     DialogFooter,
 } from "@material-tailwind/react";
 import { useDispatch } from 'react-redux';
-import { deleteProductFromCart } from '../../store/actions/user/userActions';
+import { deleteProductFromCart, getAllCartProducts } from '../../store/actions/user/userActions';
 
 function DeleteCartProduct({ open, handleOpen, userId, deleteId, setDeleteId,  }) {
     const dispatch = useDispatch();
@@ -18,7 +18,9 @@ function DeleteCartProduct({ open, handleOpen, userId, deleteId, setDeleteId,  }
             varientId: deleteId,
         })).then(() => {
             setDeleteId(null);
-            handleOpen();
+            dispatch(getAllCartProducts(userId)).then(() => {
+                handleOpen();
+            })
         })
     }
 

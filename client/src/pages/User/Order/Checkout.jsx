@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import OrderSuccessfull from '../../../components/CustomDialog/OrderSuccessfull';
+import axios from 'axios';
 
 function Checkout() {
     const dispatch = useDispatch();
@@ -26,23 +27,102 @@ function Checkout() {
         setOrderNote(event.target.value);
     }
 
+    const initOnlinePayment = (key, data) => {
+        const options = {
+            key,
+            amount: data?.amount,
+            currency: data?.currency,
+            name: "Bytez",
+            description: "Test Transaction",
+            order_id: data?.id,
+            handler: function (response) {
+                axios.post(`http://localhost:3000/user/order/payment/verify`, response, { withCredentials: true }).then((result) => {
+                    if (result.data?.status === "ok") {
+                        dispatch(createOrder({
+                            userId: user?._id,
+                            cartId: cart?._id,
+                            paymentMode: paymentMode,
+                            orderNote: orderNote,
+                            addressId: defaultAddress?._id,
+                        })).then((response) => {
+                            if (response.error) {
+                                toast.error(response?.error?.message);
+                                navigate('/cart');
+                            } else if (response.payload.status === "ok") {
+                                handleDialogOpen();
+                            } else if (response.payload?.status === 'error') {
+                                toast.error(response.payload?.message);
+                            } else {
+                                toast.error(response?.error?.message);
+                            }
+                        })
+                    }
+                }).catch((error) => {
+                    console.log(error);
+                })
+            },
+            prefill: {
+                name: user?.name,
+                email: user?.email,
+                contact: user?.phone ?? 9898234587,
+            },
+            notes: {
+                "address": "Razorpay Corporate Office"
+            },
+            theme: {
+                color: "#3399cc",
+            },
+        }
+        const razorPay = new window.Razorpay(options);
+        razorPay.open();
+
+        razorPay.on("payment.failed", function (response) {
+            toast.error(response.error.description);
+        });
+    }
+
     const handleCheckout = () => {
-        if(paymentMode !== "COD"){
-            toast.error("Please select cash on delivery!");
-        } else if(!user || !cart || !defaultAddress){
+        if (!user || !cart || !defaultAddress) {
             toast.error("Order is not possible!");
         } else {
-            dispatch(createOrder({
-                userId: user?._id,
-                cartId: cart?._id,
-                paymentMode: paymentMode,
-                orderNote: orderNote,
-                addressId: defaultAddress?._id,
-            })).then((response) => {
-                if(response.payload.status === "ok"){
-                    handleDialogOpen();
-                }
-            })
+            if (paymentMode === "RazorPay") {
+                axios.post('http://localhost:3000/user/razorpay/create_order', { totalAmount: cart?.totalPrice, cartId: cart?._id }, { withCredentials: true }).then((result) => {
+                    if (result?.data?.status === "ok") {
+                        const data = result?.data?.data;
+                        axios.get('http://localhost:3000/user/razorpay/key', { withCredentials: true }).then((response) => {
+                            if (response.data?.status === "ok") {
+                                const key = response?.data?.data?.razorpay_key;
+                                initOnlinePayment(key, data);
+                            }
+                        }).catch((error) => {
+                            toast.error(error?.message);
+                        })
+                    } else {
+                        toast.error(result.data?.message ?? (result.error?.message ? result.error?.message :"There is something went wrong!"))
+                    }
+                }).catch((error) => {
+                    toast.error(error?.message);
+                })
+            } else if (paymentMode === "COD") {
+                dispatch(createOrder({
+                    userId: user?._id,
+                    cartId: cart?._id,
+                    paymentMode: paymentMode,
+                    orderNote: orderNote,
+                    addressId: defaultAddress?._id,
+                })).then((response) => {
+                    if (response.error) {
+                        toast.error(response?.error?.message);
+                        navigate('/cart');
+                    } else if (response.payload.status === "ok") {
+                        handleDialogOpen();
+                    } else if (response.payload?.status === 'error') {
+                        toast.error(response.payload?.message);
+                    } else {
+                        toast.error(response?.error?.message);
+                    }
+                })
+            }
         }
     }
 
@@ -94,7 +174,7 @@ function Checkout() {
                                     <img src="/icons/cash-on-delivery.png" alt="" className='w-8' />
                                     <h2>Cash on delivery</h2>
                                 </div>
-                                <div onClick={() => setPaymentMode("Online")} className={`absolute ${paymentMode === "Online" && "border"} border-gray-600 transition-all duration-50 cursor-pointer w-48 h-32 shadow-md hover:shadow-lg rounded-md hover:w-[12.5rem] hover:h-[8.5rem] h flex flex-col items-center justify-center gap-2`}>
+                                <div onClick={() => setPaymentMode("RazorPay")} className={`absolute ${paymentMode === "RazorPay" && "border"} border-gray-600 transition-all duration-50 cursor-pointer w-48 h-32 shadow-md hover:shadow-lg rounded-md hover:w-[12.5rem] hover:h-[8.5rem] h flex flex-col items-center justify-center gap-2`}>
                                     <img src="/icons/credit-card.png" alt="" className='w-8' />
                                     <h2>Online payment</h2>
                                 </div>
@@ -165,7 +245,7 @@ function Checkout() {
                     </div>
                 </div>
             </div>
-            <OrderSuccessfull open={successDialog} handleOpen={handleDialogOpen}/>
+            <OrderSuccessfull open={successDialog} handleOpen={handleDialogOpen} />
         </>
     )
 }

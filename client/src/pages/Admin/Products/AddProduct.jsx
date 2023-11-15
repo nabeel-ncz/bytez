@@ -18,6 +18,8 @@ function AddProduct() {
     const [newRam, setNewRam] = useState("");
     const [newRom, setNewRom] = useState("")
     const [attributeError, setAttributeError] = useState(null);
+    const [tags, setTags] = useState([]);
+    const [tag, setTag] = useState("");
 
     const attributes = useSelector((state) => state?.admin?.productAttributes?.data);
     const categories = useSelector(state => state.admin?.categories?.data);
@@ -27,7 +29,7 @@ function AddProduct() {
         dispatch(getAllCategories());
         dispatch(getAllBrands());
         dispatch(getAllAttribute());
-    },[]);
+    }, []);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -43,6 +45,14 @@ function AddProduct() {
     }
     const handleColorPicker = (color, event) => {
         setColor(color.hex)
+    }
+    const handleAddTag = () => {
+        setTags(state => [...state, tag]);
+        setTag("");
+    }
+    const handleRemoveFromTags = (i) => {
+        const filtered = tags.filter((item, index) => index !== i);
+        setTags(filtered)
     }
 
     const handleAttributeSubmit = (event) => {
@@ -76,6 +86,7 @@ function AddProduct() {
             formData.append("ramAndRom", data.ramAndRom);
             formData.append("color", color);
             formData.append("mainImage", mainImage);
+            formData.append("tags", tags);
 
             let index = 1;
             Object.keys(subImages).forEach((key) => {
@@ -84,6 +95,7 @@ function AddProduct() {
                     formData.append(`subImage${index++}`, value);
                 }
             })
+
             console.log(formData)
             dispatch(createProduct(formData)).then((result) => {
                 toast.success('Product Created Successfully')
@@ -234,6 +246,25 @@ function AddProduct() {
                                     </div>
 
                                 </div>
+                                <div className="bg-white p-5 rounded-lg mb-5 text-start">
+                                    <h1 className="font-bold mb-2">Product Tags</h1>
+                                    <div className='flex items-start justify-between bg-white'>
+                                        <div className='w-1/2 flex flex-col items-start justify-start px-4'>
+                                            {tags?.map((item, index) => (
+                                                <div className='flex items-center justify-start gap-2'>
+                                                    <h2 className='text-sm font-semibold'>{index + 1}. {item}</h2>
+                                                    <button onClick={() => { handleRemoveFromTags(index) }} className='p-2 border border-gray-600 rounded'><img src="/icons/bin.png" alt="" className='w-3' /></button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className='w-1/2 flex flex-col items-end justify-start gap-2'>
+                                            <input type="text" placeholder='Enter the tags' className='w-full flex items-center justify-center h-10 bg-white border border-gray-600 rounded-md py-2 px-3 text-sm outline-none' value={tag} onChange={(event) => {
+                                                setTag(event.target.value)
+                                            }} />
+                                            <Button variant='gradient' size='sm' onClick={handleAddTag} className='bg-black text-center px-4 py-2 rounded'>Add</Button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div className="lg:w-2/6">
                                 <div className="bg-white p-5 rounded-lg mb-5 text-start">
@@ -268,10 +299,10 @@ function AddProduct() {
                                     <h1 className="font-bold">Category</h1>
                                     <p className="text-sm mt-2 font-semibold text-gray-700">Product Category</p>
                                     <Field
-                                        name="category" id="categories" as="select"
+                                        name="category" id="categories" as="select" 
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
                                     >
-                                        {categories?.map(({category, _id}) => (
+                                        {categories?.map(({ category, _id }) => (
                                             <option value={_id} >{category}</option>
                                         ))}
                                     </Field>
@@ -285,7 +316,7 @@ function AddProduct() {
                                         name="brand" id="brands" as="select"
                                         className="w-full bg-blue-gray-50 rounded-md mt-2 py-2 px-3 text-sm outline-none border border-gray-200"
                                     >
-                                        {brands?.map(({brand, _id}) => (
+                                        {brands?.map(({ brand, _id }) => (
                                             <option value={_id} >{brand}</option>
                                         ))}
                                     </Field>

@@ -34,7 +34,7 @@ export const login = createAsyncThunk("user/login", async ({ userCredentials }, 
     }
 })
 
-export const verifyEmail = createAsyncThunk("user/verifyEmail", async ({ data }, { dispatch }) => {
+export const verifyEmail = createAsyncThunk("user/verifyEmail", async (data, { dispatch }) => {
     try {
         const response = await axios.post("/user/auth/verify/email", data, {
             headers: { "Content-Type": "application/json" },
@@ -136,7 +136,7 @@ export const changeCartProductQuantity = createAsyncThunk("user/changeCartProduc
 
 export const deleteProductFromCart = createAsyncThunk("user/deleteProductFromCart", async (data) => {
     try {
-        const response = await axios.put(`user/cart/product/delete?uId=${data.userId}&vId=${data.varientId}`, { withCredentials: true });
+        const response = await axios.put(`user/cart/product/delete?uId=${data.userId}&vId=${data.varientId}`, {}, { withCredentials: true });
         if (response.data?.status === "ok") {
             return response.data;
         } else {

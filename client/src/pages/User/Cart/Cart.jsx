@@ -27,8 +27,11 @@ function Cart() {
       varientId: varientId,
       userId: user?._id,
     })).then((result) => {
+      console.log(result);
       if (result?.error) {
         toast.error(result.error?.message);
+      } else if (result?.payload?.status === "ok") {
+        dispatch(getAllCartProducts(user._id));
       }
     })
   }
@@ -54,6 +57,7 @@ function Cart() {
                       <h2 className='font-semibold text-xl'>{doc.name}</h2>
                       <h2 className='font-semibold text-xl'>₹.{doc.discountPrice} <span className='font-normal line-through opacity-40'>₹.{doc.price}</span></h2>
                       <div className='flex flex-col items-start gap-2 text-blue-gray-700 text-sm'>
+                        {/* <h2>{doc.quantity < doc}</h2> */}
                         <div className='flex items-center justify-start gap-4'>
                           <div className={`flex items-center justify-center gap-4 bg-white px-2 py-1 border border-blue-gray-500 cursor-pointer`}>
                             <h2 className='font-semibold'>Color </h2> <div className='block w-4 h-4 rounded-full' style={{ backgroundColor: doc.attributes?.color }}></div>
@@ -69,7 +73,7 @@ function Cart() {
                   </div>
                   <div className='flex flex-col items-end justify-center h-full'>
                     <div className='flex items-center justify-center'>
-                      <h2 className='text-xl'><span className='text-sm'>Sub Total : </span>₹ {doc.subTotal}</h2>
+                      <h2 className='text-xl'><span className='text-sm'>Sub Total : </span>₹ {doc.price * doc.quantity}</h2>
                     </div>
                     <div className='flex items-center justify-center gap-2 h-12'>
                       <div className='flex items-center justify-center gap-4 border border-blue-gray-700 rounded h-full'>

@@ -10,7 +10,8 @@ const brandSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        default: "active"
+        default: "active",
+        enum: ['active', 'block']
     }
 })
 const collection = mongoose.model("Brand", brandSchema);

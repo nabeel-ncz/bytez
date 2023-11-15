@@ -21,7 +21,8 @@ function UpdateBrand() {
     }, []);
 
     const handleFetch = () => {
-        axios.get(`http://localhost:3000/admin/brand/${id}`).then((response) => {
+        axios.get(`http://localhost:3000/admin/brand/${id}`, { withCredentials: true }).then((response) => {
+            console.log(response)
             if (response.data?.status === "ok") {
                 setData(response?.data?.data);
             }

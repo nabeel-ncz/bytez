@@ -26,7 +26,7 @@ function ProductImageSlider({ images, handleHeroImage }) {
                 className={`px-2 py-1 bg-white text-white rounded-full ${startIndex === 0 && "opacity-50"}`}
                 disabled={startIndex === 0}
             >
-                <img src="/icons/arrow-icon.png" alt="" className='w-8 rotate-90' />
+                <img src="/icons/arrow-icon.png" alt="" className='w-8 rotate-90 opacity-80' />
             </button>
             <div className="grid grid-cols-3 gap-8">
                 {images.slice(startIndex, startIndex + itemsPerRow).map((image, index) => (
@@ -34,7 +34,7 @@ function ProductImageSlider({ images, handleHeroImage }) {
                         key={index}
                         src={`http://localhost:3000/products/resized/${image}`}
                         alt={`Image ${index}`}
-                        className="w-14 h-auto"
+                        className="w-24 h-auto border border-gray-400 rounded p-2"
                         onClick={() => handleHeroImage(image)}
                     />
                 ))}
@@ -44,7 +44,7 @@ function ProductImageSlider({ images, handleHeroImage }) {
                 className={`px-2 py-1 rounded-full bg-white text-white ${startIndex + itemsPerRow >= images.length && "opacity-50"}`}
                 disabled={startIndex + itemsPerRow >= images.length}
             >
-                <img src="/icons/arrow-icon.png" alt="" className='w-8 -rotate-90' />
+                <img src="/icons/arrow-icon.png" alt="" className='w-8 -rotate-90 opacity-80' />
             </button>
         </div>
     );
