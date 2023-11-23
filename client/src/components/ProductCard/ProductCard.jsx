@@ -1,14 +1,37 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import StarCard from '../StarRating/StarCard'
 import CardColour from '../CardColour/CardColour'
 import { IconButton } from "@material-tailwind/react";
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { AddItemToWishlist, removeItemFromWishlist } from '../../store/actions/user/userActions';
 
 function ProductCard({ id, image, varients, title, description, price }) {
-    const [like, setLike] = useState(false)
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const user = useSelector(state => state?.user?.user?.data);
+    const wishlist = useSelector(state => state?.user?.wishlist?.data);
+    const [likedItems, setLikedItems] = useState(null);
+
+    const [like, setLike] = useState(false)
+    const handleAddToWishlist = () => {
+        dispatch(AddItemToWishlist({
+            userId: user?._id,
+            productId: id,
+            varientId: varients[0]?.varientId
+        }))
+    }
+    
+    const handleRemoveFromWishlist = () => {
+        dispatch(removeItemFromWishlist({
+            userId: user?._id,
+            productId: id,
+        }));
+    }
+
     return (
         <>
+        {console.log(wishlist)}
             <div onClick={() => navigate(`/product/${id}`)} className='card w-[240px] h-[300px] relative bg-white flex flex-col' style={{ "boxShadow": "0px 1px 20px 2px rgba(0, 0, 0, 0.08)" }}>
                 <div className='my-4 img-container relative w-full flex items-center justify-center'>
                     <img src={image ? `http://localhost:3000/products/resized/${image}` : "/images/dummy-product-1.webp"} alt="" className='h-[160px]' />
@@ -16,12 +39,16 @@ function ProductCard({ id, image, varients, title, description, price }) {
                         event.stopPropagation();
                         setLike(state => !state);
                     }}>
-                        <IconButton variant="text">
-                            {like ?
+                        {wishlist?.includes(id) ? (
+                            <IconButton variant="text" onClick={handleRemoveFromWishlist}>
                                 <img src="/icons/heart-red-icon.png" alt="" className='w-5 h-5' />
-                                : <img src="/icons/heart-icon.png" alt="" className='w-5 h-5' />
-                            }
-                        </IconButton>
+                            </IconButton>
+                        ) : (
+                            <IconButton variant="text" onClick={handleAddToWishlist}>
+                                <img src="/icons/heart-icon.png" alt="" className='w-5 h-5' />
+                            </IconButton>
+                        )}
+
                     </div>
                 </div>
                 <div className='flex flex-col items-center justify-center'>
@@ -37,7 +64,7 @@ function ProductCard({ id, image, varients, title, description, price }) {
                             <StarCard />
                         </div>
                         <div className='w-full flex flex-col items-start'>
-                            <h2 className='font-semibold text-lg'>{title}</h2>
+                            <h2 className='w-full text-start font-semibold text-lg truncate'>{title}</h2>
                             <h2 className="w-full text-start font-light text-xs truncate">{description}</h2>
                         </div>
                     </div>

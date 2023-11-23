@@ -3,11 +3,11 @@ import { Carousel } from "@material-tailwind/react";
 
 function CustomCarousel() {
     return (
-        <div className='w-[870px] h-[546px]' >
+        <div className='w-full h-[246px] md:w-[870px] md:h-[546px] md:z-auto' >
             <Carousel
                 className="rounded-xl bg-[#79baef65]"
                 navigation={({ setActiveIndex, activeIndex, length }) => (
-                    <div className="absolute bottom-4 left-2/4 z-50 flex -translate-x-2/4 gap-2">
+                    <div className="absolute bottom-4 left-2/4 flex -translate-x-2/4 gap-2">
                         {new Array(length).fill("").map((_, i) => (
                             <span
                                 key={i}
@@ -21,6 +21,11 @@ function CustomCarousel() {
                 <img
                     src="/images/bytez-main-banner-trsp.png"
                     alt="image 1"
+                    className="h-full absolute left-8 object-cover"
+                />
+                <img
+                    src="/images/bytez-main-banner-trsp.png"
+                    alt="image 2"
                     className="h-full absolute left-8 object-cover"
                 />
                 <img

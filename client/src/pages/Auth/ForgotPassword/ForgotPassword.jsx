@@ -13,7 +13,7 @@ function ForgotPassword() {
         setLoading(true);
         axios.get(`http://localhost:3000/user/auth/send_mail?email=${email}`).then((response) => {
             if (response.data?.status === "ok") {
-                navigate('/');
+                navigate('/?email_send=true');
             } else if (response.data?.status === "error") {
                 setError(response?.data?.message);
             }

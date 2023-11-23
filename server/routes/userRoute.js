@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
 const googleStrategy = require('../config/googleAuth');
+const passport = require('passport');
 const {
     registerUser,
     loginUser,
@@ -18,7 +18,7 @@ const {
     updateUserInform,
     updateUserPassword,
     resetPassword,
-    verifyResetPassword
+    verifyResetPassword,
 } = require('../controllers/userController');
 
 const {
@@ -37,10 +37,23 @@ const {
     cancelOrder,
     verifyOrderPayment,
     getRazorpayKey,
-    makeRazorpayOrder
+    makeRazorpayOrder,
+    requestReturnOrder,
+    cancelReturnRequest
 } = require('../controllers/orderController');
 
-const { verifyUser } = require('../middleware/validate');
+const { 
+    getAllTransactionsByUserId
+} = require('../controllers/transactionController');
+
+const {
+    getWishlistItems,
+    addItemsToWishlist,
+    removeItemsFromWishlist,
+    getWishlistDetails
+} = require('../controllers/wishlistController');
+
+const { verifyUser, isVerifiedAccount } = require('../middleware/validate');
 const { getAllActiveCategories } = require('../controllers/categoryController');
 const { getAllActiveBrands } = require('../controllers/brandController');
 
@@ -71,6 +84,11 @@ router.post('/cart/product/add', addProductToCart);
 router.patch('/cart/product/change_quantity', changeProductQuantity);
 router.put('/cart/product/delete', deleteProductFromCart);
 
+router.get('/wishlist/all/:id', getWishlistItems);
+router.post('/wishlist/add',addItemsToWishlist);
+router.patch('/wishlist/delete',removeItemsFromWishlist);
+router.get('/wishlist/details/:id', getWishlistDetails);
+
 router.post('/profile/address/create', createAddress);
 router.get('/profile/address/all/:id', getAllAddress);
 router.get('/profile/address/find', getAddress);
@@ -80,13 +98,20 @@ router.patch('/profile/address/delete', deleteAddress);
 router.patch('/profile/account/update', updateUserInform);
 router.patch('/profile/account/update_password', updateUserPassword);
 
+router.use(isVerifiedAccount);
+
 router.post('/order/create', createOrder);
 router.post('/order/payment/verify', verifyOrderPayment);
-router.get('/order/all/:id', getUserOrders);
+router.get('/order/all', getUserOrders);
 router.get('/order/find/:id', getOrderById);
-router.get('/order/cancel/:id', cancelOrder);
+router.patch('/order/cancel', cancelOrder);
+router.patch('/order/return', requestReturnOrder);
+router.patch('/order/return/cancel', cancelReturnRequest);
 
 router.get('/razorpay/key', getRazorpayKey);
 router.post('/razorpay/create_order', makeRazorpayOrder)
+
+router.get('/transaction/all', getAllTransactionsByUserId);
+
 
 module.exports = router;

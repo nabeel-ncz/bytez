@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from "@material-tailwind/react"
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeDefaultAddress, deleteAddress, getAllAddresses } from '../../../store/actions/user/userActions';
 import DeleteAddress from '../../../components/CustomDialog/DeleteAddress';
@@ -11,6 +11,7 @@ function ShippingAddress() {
     const user = useSelector(state => state.user?.user?.data);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [currDeleteId, setCurrDeleteId] = useState(null);
+ 
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -62,7 +63,7 @@ function ShippingAddress() {
                                     )}
 
                                     <img src="/icons/bin.png" alt="" className='w-9 border border-gray-400 p-2' onClick={() => handleDeleteAddress(doc._id)} />
-                                    {/* <img src="/icons/edit-icon.png" alt="" className='w-9 border border-gray-400 p-2' /> */}
+                                    <img src="/icons/edit-icon.png" alt="" className='w-9 border border-gray-400 p-2' onClick={() => { navigate(`update?uId=${user?._id}&aId=${doc._id}`)}} />
                                 </div>
                             </div>
                             <div className='w-full flex flex-col items-start px-6 py-3 font-medium text-sm'>

@@ -24,8 +24,8 @@ const {
     getCategory,
     updateCategory
 } = require('../controllers/categoryController');
-const { 
-    createBrand, 
+const {
+    createBrand,
     getAllBrands,
     getBrand,
     updateBrand
@@ -37,12 +37,24 @@ const {
 const {
     getAllOrders,
     updateOrderStatus,
+    getSalesReport,
 } = require('../controllers/orderController');
+const {
+    getAllCoupons,
+    createCoupon,
+    updateCoupon
+} = require('../controllers/couponController');
+
+const {
+    getAllTransactions
+} = require('../controllers/transactionController');
 
 const { uploadFiles, uploadSingleFile } = require('../helper/fileUploadHelper');
 const { verifyAdmin } = require('../middleware/validate');
 
 router.use(verifyAdmin);
+
+router.get('/dashboard/sales/:period', getSalesReport);
 
 router.get('/customer/all', getAllUsers);
 router.patch('/customer/update/status', changeUserStatus);
@@ -59,7 +71,7 @@ router.delete('/product/delete', deleteProduct);
 router.get('/product/:id', getProduct);
 
 router.post('/category/create', uploadSingleFile, createCategory);
-router.put('/category/update',uploadSingleFile , updateCategory);
+router.put('/category/update', uploadSingleFile, updateCategory);
 router.get('/category/all', getAllCategories);
 router.get('/category/:id', getCategory);
 
@@ -73,5 +85,12 @@ router.get('/attribute/all', getAllAttributes);
 
 router.get('/order/all', getAllOrders);
 router.patch('/order/update/status', updateOrderStatus);
+
+router.get('/transactions/all', getAllTransactions);
+
+router.get('/coupon/all', getAllCoupons);
+router.post('/coupon/create', createCoupon);
+router.put('/coupon/update', updateCoupon);
+
 
 module.exports = router;

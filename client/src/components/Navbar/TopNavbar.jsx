@@ -47,10 +47,6 @@ const TopNavbar = ({ sidebarOpen, setSidebarOpen }) => {
                                     />
                                 </svg>
                             </button>
-                            <div className='flex items-center justify-center gap-4 p-3 border-[1px] border-gray-300'>
-                                <img src="/icons/search-icon.png" alt="" className='w-5' />
-                                <input type="text" name="search" placeholder='Search' className="outline-none focus:outline-none bg-transparent font-normal text-sm focus:bg-transparent" autoComplete="off" />
-                            </div>
                         </div>
                     </form>
                 </div>

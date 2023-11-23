@@ -1,17 +1,37 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Breadcrumbs, Chip } from '@material-tailwind/react';
 import { Link, useNavigate } from 'react-router-dom';
 import CustomTabs from '../../../components/Tabs/CustomTabs';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllUsers } from '../../../store/actions/admin/adminActions';
+import Pagination from '../../../components/Pagination/Pagination';
 
 function Customers() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const customers = useSelector(state => state?.admin?.customers?.data);
+    const [activePage, setActivePage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+
     useEffect(() => {
-        dispatch(getAllUsers());
-    }, [])
+        dispatch(getAllUsers({
+            page: activePage,
+            limit: 5,
+        })).then((response) => {
+            if (response?.payload?.totalPage) {
+                setTotalPage(response?.payload?.totalPage);
+            };
+        })
+    }, [activePage]);
+
+    const next = () => {
+        if (activePage === totalPage) return;
+        setActivePage(state => state + 1);
+    };
+    const prev = () => {
+        if (activePage === 1) return;
+        setActivePage(state => state - 1);
+    };
 
     return (
         <>
@@ -96,6 +116,9 @@ function Customers() {
 
                         </tbody>
                     </table>
+                </div>
+                <div className='flex items-center justify-end p-4'>
+                    <Pagination next={next} prev={prev} total={totalPage} active={activePage} />
                 </div>
             </div>
         </>

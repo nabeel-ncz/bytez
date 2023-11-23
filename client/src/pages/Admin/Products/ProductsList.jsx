@@ -1,18 +1,48 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Breadcrumbs, Chip, Button } from "@material-tailwind/react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import CustomTabs from '../../../components/Tabs/CustomTabs';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllProducts } from '../../../store/actions/admin/adminActions';
-
+import Pagination from "../../../components/Pagination/Pagination";
 
 function ViewProducts() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const products = useSelector(state => state.admin?.products?.data);
+  const [activePage, setActivePage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchQuery, setSearchQuery] = useSearchParams();
+
   useEffect(() => {
-    dispatch(getAllProducts());
-  }, []);
+    const search = searchQuery.get('search');
+    console.log(search)
+    dispatch(getAllProducts({ page: activePage, limit: 5, search })).then((response) => {
+      if (response.payload?.totalPage) {
+        setTotalPage(response.payload?.totalPage)
+      }
+    })
+  }, [activePage]);
+
+  const next = () => {
+    if (activePage === totalPage) return;
+    setActivePage(state => state + 1);
+  };
+  const prev = () => {
+    if (activePage === 1) return;
+    setActivePage(state => state - 1);
+  };
+
+  const handleSearch = () => {
+    setSearchQuery({ search: searchValue });
+    dispatch(getAllProducts({ page: activePage, limit: 5, search: searchValue })).then((response) => {
+      if (response.payload?.totalPage) {
+        setTotalPage(response.payload?.totalPage)
+      }
+    })
+  }
+
   return (
     <>
       <div className="p-5 w-full overflow-y-auto">
@@ -36,43 +66,35 @@ function ViewProducts() {
             </Breadcrumbs>
           </div>
           <div className="flex gap-3">
-            {/* <button className="flex items-center gap-2 p-2 rounded-lg bg-gray-200 text-blue-700">
-              Export
-            </button> */}
+            <div className='flex items-center justify-center gap-2 py-2 px-4 bg-white'>
+              <input type="text" onBlur={handleSearch} value={searchValue} onChange={(evt) => { setSearchValue(evt.target.value) }} className='h-8 p-2 bg-transparent outline-none focus:border-gray-400 text-base' />
+              <img src="/icons/search-icon.png" alt="" className='w-5 opacity-50' />
+            </div>
             <Button variant='gradient' onClick={() => navigate("create")}>
               Add Product
             </Button>
           </div>
         </div>
         <div className="lg:flex justify-between items-center text-xs font-semibold">
-          {/* <CustomTabs /> */}
           <div className="flex my-2 gap-3">
-            {/* <button className="flex items-center gap-2 p-2 rounded-lg bg-white">
-              Select Date
-            </button>
-            <button className="flex items-center gap-2 p-2 rounded-lg bg-white">
-              Filters
-            </button> */}
           </div>
         </div>
-        <div className="overflow-x-scroll lg:overflow-hidden bg-white rounded-lg">
-          <table className="w-full min-w-max table-auto ">
+        <div className="bg-white p-8 overflow-x-scroll">
+          <table className="w-full table-auto">
             <thead className="font-normal">
               <tr className="border-b border-gray-200">
                 <th className="font-semibold p-4 text-left border-r">Name</th>
                 <th className="font-semibold p-4 text-left border-r">Varients</th>
-                <th className="font-semibold p-4 text-left border-r w-60">Description</th>
-                <th className="font-semibold p-4 text-left border-r">Category</th>
+                <th className="font-semibold p-4 text-left border-r">Category Id</th>
+                <th className="font-semibold p-4 text-left border-r">Brand Id</th>
                 <th className="font-semibold p-4 text-left border-r">Quantity</th>
-                <th className="font-semibold p-4 text-left border-r">Price</th>
-                <th className="font-semibold p-4 text-left border-r">Status</th>
                 <th className="font-semibold p-4 text-left border-r">Added</th>
               </tr>
             </thead>
             <tbody>
               {products?.map((doc) => (
                 <tr key={doc?._id}
-                  onClick={() => { navigate(`/admin/products/view/${doc._id}`)}} className={`hover:bg-blue-gray-50 active:bg-blue-gray-50 cursor-pointer`}
+                  onClick={() => { navigate(`/admin/products/view/${doc._id}`) }} className={`hover:bg-blue-gray-50 active:bg-blue-gray-50 cursor-pointer`}
                 >
                   <td className="text-sm p-4 flex items-center gap-2 text-start border-r">
                     <div className="w-10 h-10 overflow-clip flex justify-center items-center">
@@ -89,25 +111,17 @@ function ViewProducts() {
                     <span>{doc.title}</span>
                   </td>
                   <td className="text-sm p-4 text-start border-r">{doc.varients?.length}</td>
-                  <td className="text-sm p-4 text-start border-r">
-                    {doc.varients[0]?.description}
-                  </td>
                   <td className="text-sm p-4 text-start border-r">{doc.category}</td>
-                  <td className="text-sm p-4 text-start border-r">{doc.varients[0]?.stockQuantity}</td>
-                  <td className="text-sm p-4 text-start border-r">{doc.varients[0]?.price}</td>
-                  <td className="text-sm p-4 text-start border-r">
-                    {doc.varients[0]?.status === "publish" && 
-                    (<Chip variant="ghost" color={"green"} size="sm" value={"Publish"} className='text-center' />)
-                    }
-                    {doc.varients[0]?.status === "unpublish" && 
-                    (<Chip variant="ghost" color={"blue-gray"} size="sm" value={"Unpublish"} className='text-center' />)
-                    }
-                  </td>
+                  <td className="text-sm p-4 text-start border-r">{doc.brand}</td>
+                  <td className="text-sm p-4 text-start border-r">{doc.varients?.reduce((sum, item) => sum + item.stockQuantity, 0)}</td>
                   <td className="text-sm p-4 text-start border-r">{new Date(doc.createdAt).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+        <div className='flex items-center justify-end p-4'>
+          <Pagination next={next} prev={prev} total={totalPage} active={activePage} />
         </div>
       </div>
     </>

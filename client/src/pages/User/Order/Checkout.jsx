@@ -82,8 +82,12 @@ function Checkout() {
     }
 
     const handleCheckout = () => {
-        if (!user || !cart || !defaultAddress) {
-            toast.error("Order is not possible!");
+        if (!user) {
+            toast.error("User not exist!, Please Authenticate");
+        } else if (!cart) {
+            toast.error("There is no items in the cart");
+        } else if (!defaultAddress) {
+            toast.error("Please add an address first!");
         } else {
             if (paymentMode === "RazorPay") {
                 axios.post('http://localhost:3000/user/razorpay/create_order', { totalAmount: cart?.totalPrice, cartId: cart?._id }, { withCredentials: true }).then((result) => {
@@ -98,7 +102,7 @@ function Checkout() {
                             toast.error(error?.message);
                         })
                     } else {
-                        toast.error(result.data?.message ?? (result.error?.message ? result.error?.message :"There is something went wrong!"))
+                        toast.error(result.data?.message ?? (result.error?.message ? result.error?.message : "There is something went wrong!"))
                     }
                 }).catch((error) => {
                     toast.error(error?.message);
@@ -121,7 +125,32 @@ function Checkout() {
                     } else {
                         toast.error(response?.error?.message);
                     }
-                })
+                });
+            } else if (paymentMode === "Wallet") {
+                if (user?.wallet >= cart?.totalPrice) {
+                    dispatch(createOrder({
+                        userId: user?._id,
+                        cartId: cart?._id,
+                        paymentMode: paymentMode,
+                        orderNote: orderNote,
+                        addressId: defaultAddress?._id,
+                    })).then((response) => {
+                        if (response.error) {
+                            toast.error(response?.error?.message);
+                            navigate('/cart');
+                        } else if (response.payload.status === "ok") {
+                            handleDialogOpen();
+                        } else if (response.payload?.status === 'error') {
+                            toast.error(response.payload?.message);
+                        } else {
+                            toast.error(response?.error?.message);
+                        }
+                    });
+                } else {
+                    toast.error("There is no enough money in the wallet");
+                }
+            } else {
+                toast("Please choose a available payment mode");
             }
         }
     }
@@ -150,7 +179,11 @@ function Checkout() {
                     <div className='w-full bg-white rounded shadow-sm'>
                         <div className='w-full flex items-center justify-end border-b border-gray-200 px-6 py-1'>
                             <div className='flex items-center gap-2'>
-                                <span onClick={() => navigate('/profile/address')} className='px-4 py-2 bg-black text-white text-xs'>Change</span>
+                                {defaultAddress ? (
+                                    <span onClick={() => navigate('/profile/address')} className='px-4 py-2 bg-black text-white text-xs'>Change</span>
+                                ) : (
+                                    <span onClick={() => navigate('/profile/address/create?from_orders=true')} className='px-4 py-2 bg-black text-white text-xs'>Add Address</span>
+                                )}
                             </div>
                         </div>
                         <div className='w-full flex flex-col items-start px-6 py-3 font-medium text-sm'>

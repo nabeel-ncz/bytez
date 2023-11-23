@@ -9,9 +9,9 @@ function Dummy() {
     const navigate = useNavigate();
     return (
         <>
-            <div onClick={() => navigate(`/`)} className='card w-[240px] h-[280px] relative bg-white flex flex-col' style={{ "boxShadow": "0px 1px 20px 2px rgba(0, 0, 0, 0.08)" }}>
+            <div onClick={() => navigate(`/`)} className='card w-[140px] h-[180px] relative bg-white flex flex-col' style={{ "boxShadow": "0px 1px 20px 2px rgba(0, 0, 0, 0.08)" }}>
                 <div className='my-4 img-container relative w-full flex items-center justify-center'>
-                    <img src="/images/dummy-product-1.webp" alt="" className='w-[90px] h-[115px]' />
+                    <img src="/images/dummy-product-1.webp" alt="" className='w-[60px]' />
                     <div className='absolute top-0 right-4' onClick={() => {
                         setLike(state => !state);
                     }}>
@@ -24,7 +24,7 @@ function Dummy() {
                     </div>
                 </div>
                 <div className='flex flex-col items-center justify-center'>
-                    <div className='flex items-center justify-center gap-2'>
+                    <div className='hidden lg:flex items-center justify-center gap-2'>
                         <CardColour status={true} color={"#09132e"} />
                         <CardColour status={false} color={"#a9db02"} />
                         <CardColour status={false} color={"#8c0b43"} />

@@ -136,11 +136,15 @@ module.exports = {
 
     getAllUsers: async (req, res) => {
         try {
-            const users = await User.find({ role: "User" }).lean();
+            const page = Number(req.query?.page) || 1;
+            const limit = Number(req.query?.limit) || 5;
+            const skip = (page - 1) * limit;
+            const users = await User.find({ role: "User" }).skip(skip).limit(limit).lean();
+            const totalDocuments = await User.countDocuments({ role: "User" });
             if (!users || users.length === 0) {
                 res.json({ status: "error", data: {}, message: "Users not found!" });
             } else {
-                res.json({ status: "ok", data: users });
+                res.json({ status: "ok", data: { users, totalPage: Math.ceil(totalDocuments / limit) } });
             }
         } catch (error) {
             res.json({ status: "error", message: error?.message });
@@ -184,6 +188,9 @@ module.exports = {
                 return res.json({ status: 'error', message: 'Product not found!' });
             }
             const varient = product.varients.find((doc) => doc.varientId === varientId);
+            if (varient.stockQuantity === 0) {
+                return res.json({ status: 'error', message: `Insufficient stock for the product ${product.title}` });
+            }
             if (!exist) {
                 await Cart.create({
                     userId: userId,
@@ -245,7 +252,7 @@ module.exports = {
                             }
                         }
                     }
-                ])
+                ]);
                 if (!product) {
                     throw new Error(`Insufficient stock for product: ${doc.name}`);
                 } else {
@@ -255,11 +262,18 @@ module.exports = {
                     };
                 }
             });
-            Promise.all(getVarientData).then(() => {
-                res.json({ status: 'ok', data: result });
-            }).catch((error) => {
-                res.json({ status: 'error', message: error?.message });
-            })
+            await Promise.all(getVarientData);
+            const totalPrice = result.items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+            const discountPrice = result.items.reduce((sum, item) => sum + (item.quantity * item.discountPrice), 0);
+            await Cart.updateOne({ userId: userId }, {
+                subTotal: totalPrice,
+                discount: totalPrice - discountPrice,
+                totalPrice: discountPrice
+            });
+            result.subTotal = totalPrice;
+            result.discount = totalPrice - discountPrice;
+            result.totalPrice = discountPrice;
+            res.json({ status: 'ok', data: result });
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
         }

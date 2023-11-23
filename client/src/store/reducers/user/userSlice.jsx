@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchUser, register, verifyEmail, sendOtp, logout, login, getAllCartProducts, changeCartProductQuantity, deleteProductFromCart, getAllAddresses, getAllOrders } from "../../actions/user/userActions";
+import { fetchUser, register, verifyEmail, sendOtp, logout, login, getAllCartProducts, changeCartProductQuantity, deleteProductFromCart, getAllAddresses, getAllOrders, getAllUserTransactions, getAllWishlistItems } from "../../actions/user/userActions";
 
 const INITIAL_STATE = {
     user:{
@@ -20,8 +20,19 @@ const INITIAL_STATE = {
     orders: {
         loading: false,
         data: null,
+        totalCount: 0,
         error: null,
     },
+    transactions: {
+        loading: false,
+        data: null,
+        error: null,
+    },
+    wishlist: {
+        loading: false,
+        data: null,
+        error: null,
+    }
 };
 const userSlice = createSlice({
     name: 'user',
@@ -164,7 +175,22 @@ const userSlice = createSlice({
 
         })
         .addCase(getAllOrders.fulfilled, (state, action) => {
-            state.orders.data = action?.payload?.data;
+            state.orders.data = action?.payload?.data?.orders;
+            state.orders.totalCount = action?.payload?.data?.totalCount;
+        })
+
+        //
+        .addCase(getAllUserTransactions.pending, (state) => {
+
+        })
+        .addCase(getAllUserTransactions.fulfilled, (state, action) => {
+            state.transactions.data = action?.payload?.data?.transactions;
+        })
+        //
+        .addCase(getAllWishlistItems.fulfilled, (state, action) => {
+            console.log(action)
+            state.wishlist.loading = false;
+            state.wishlist.data = action?.payload?.data?.items;
         })
     }    
 });

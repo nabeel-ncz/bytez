@@ -132,8 +132,8 @@ module.exports = {
             if (!result) {
                 return res.json({ status: 'error', message: "Address Can't be delete" });
             }
-            if(result.defaultAddress === addressId){
-                if(result?.addresses?.length > 1){
+            if (result.defaultAddress === addressId) {
+                if (result?.addresses?.length > 1) {
                     let newDoc = result?.addresses?.find((doc) => doc._id.toString() !== addressId);
                     result.defaultAddress = newDoc._id;
                 }

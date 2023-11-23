@@ -117,23 +117,21 @@ function Product() {
     return (
         <>
             {product ? (
-                <div className='w-full min-h-screen flex items-start justify-between pt-6 px-20'>
-                    <div className='w-1/2 mt-2 flex flex-col items-center justify-center gap-14 py-12 bg-transparent mx-12 rounded-md shadow-sm'>
+                <div className='w-full min-h-screen flex flex-col lg:flex-row items-center justify-center lg:items-start lg:justify-between py-2 lg:pt-6 px-6 lg:px-20'>
+                    <div className='w-full lg:w-1/2 mt-2 flex flex-col items-center justify-center gap-14 py-4 lg:py-12 bg-transparent mx-12 rounded-md shadow-sm'>
                         <CardZoom image={heroImage} />
-                        <div className=''>
-                            <ProductImageSlider handleHeroImage={handleHeroImage} images={product ? [...productImages] : []} />
-                        </div>
+                        <ProductImageSlider handleHeroImage={handleHeroImage} images={product ? [...productImages] : []} />
                     </div>
-                    <div className="lg:w-1/2 pt-12">
-                        <div className='flex items-center justify-between w-10/12'>
+                    <div className="w-full lg:w-1/2 pt-12">
+                        <div className='flex items-center justify-between w-full lg:w-10/12'>
                             <h1 className="text-3xl font-semibold text-start">{product?.title}</h1>
                             <IconButton variant="outlined" className='w-2/12'>
                                 <img src="/icons/heart-icon.png" alt="" className='w-5 h-5' />
                             </IconButton>
                         </div>
-                        <p className='text-start w-10/12 mt-2 opacity-50 line-clamp-2'>{product?.varients[selectedVarient]?.description}</p>
-                        <div className='w-10/12 flex items-center justify-between border-t border-gray-400 mt-4 pt-4'>
-                            <div className='flex flex-col items-start justify-center'>
+                        <p className='text-start w-full lg:w-10/12 mt-2 opacity-50 line-clamp-2'>{product?.varients[selectedVarient]?.description}</p>
+                        <div className='w-full lg:w-10/12 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-2 lg:gap-0 border-t border-gray-400 mt-4 pt-4'>
+                            <div className='flex flex-row lg:flex-col items-start justify-center'>
                                 <h1 className="text-blue-gray-900 text-2xl font-semibold me-2">
                                     ₹ {product?.varients[selectedVarient]?.discountPrice}
                                 </h1>
@@ -141,12 +139,12 @@ function Product() {
                                     ₹ {product?.varients[selectedVarient]?.price}
                                 </h1>
                             </div>
-                            <div className='flex items-start justify-center'>
+                            <div className='flex items-start justify-center lg:gap-0 gap-2'>
                                 <StarCardLarge />
                                 <ReviewCount />
                             </div>
                         </div>
-                        <div className='w-10/12 flex items-center justify-between border-t border-gray-400 mt-4 pt-4'>
+                        <div className='w-full lg:w-10/12 flex items-center justify-between border-t border-gray-400 mt-4 pt-4'>
                             <div className='flex flex-col items-start justify-center gap-2'>
                                 <h2 className='opacity-50'>Choose a colour</h2>
                                 <div className='flex items-center justify-center gap-2'>
@@ -156,7 +154,7 @@ function Product() {
                                 </div>
                             </div>
                         </div>
-                        <div className='w-10/12 flex items-center justify-between border-gray-600 mt-2'>
+                        <div className='w-full lg:w-10/12 flex items-center justify-between border-gray-600 mt-2'>
                             <div className='flex flex-col items-start justify-center gap-2'>
                                 <h2 className='opacity-50'>Choose a variant</h2>
                                 <div className='flex items-center justify-center gap-2'>
@@ -168,14 +166,14 @@ function Product() {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex gap-3 w-10/12 mt-4 pt-4">
+                        <div className="flex lg:flex-row flex-col gap-3 w-full lg:w-10/12 mt-4 pt-4">
                             {product?.varients[selectedVarient]?.status === "publish" ? (
                                 <>
-                                    <button className='w-1/3 bg-white flex items-center justify-center gap-4 border-[0.01rem] border-gray-800 rounded-full py-2'>
+                                    <button className='lg:w-1/3 w-full bg-white flex items-center justify-center gap-4 border-[0.01rem] border-gray-800 rounded-full py-2'>
                                         <img src="/icons/bell--yellow-icon.png" alt="" className='w-6' />
                                         <span className='text-black font-semibold text-lg'>Notify Me</span>
                                     </button>
-                                    <button className='w-2/3 bg-black flex items-center justify-center gap-4 rounded-full py-2' onClick={handleAddToCart}>
+                                    <button className='lg:w-2/3 w-full bg-black flex items-center justify-center gap-4 rounded-full py-2' onClick={handleAddToCart}>
                                         <img src="/icons/Frame-bag-icon.png" alt="" className='w-6' />
                                         <span className='text-white font-semibold text-lg'>Add to cart</span>
                                     </button>

@@ -18,15 +18,27 @@ const transactionSchema = new mongoose.Schema({
     paymentStatus: {
         type: String,
         required: true,
-        enum: ['pending', 'processing', 'completed', 'failed', 'refunded', 'cancelled']
+        enum: ['pending', 'completed', 'failed', 'refunded']
     },
-    transactionAmount: {
+    totalAmount: {
         type: Number,
         required: true,
     },
     refundAmount: {
         type: Number,
         default: 0,
+    },
+    pendingAmount: {
+        type: Number,
+        default: function() {
+            return this.paymentStatus === 'pending' ? this.totalAmount : 0;
+        }
+    },
+    amountPaid: {
+        type: Number,
+        default: function() {
+            return this.paymentStatus === 'completed' ? this.totalAmount : 0;
+        }
     }
 })
 const collection = mongoose.model("Transaction", transactionSchema);

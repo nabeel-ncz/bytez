@@ -263,9 +263,9 @@ export const createOrder = createAsyncThunk("user/createOrder", async (data) => 
     }
 })
 
-export const getAllOrders = createAsyncThunk("user/getAllOrders", async (id) => {
+export const getAllOrders = createAsyncThunk("user/getAllOrders", async ({ id, page, limit }) => {
     try {
-        const response = await axios.get(`user/order/all/${id}`, { withCredentials: true });
+        const response = await axios.get(`user/order/all?userId=${id}&page=${page}&limit=${limit}`, { withCredentials: true });
         if (response.data?.status === "ok") {
             return response.data;
         } else {
@@ -276,3 +276,69 @@ export const getAllOrders = createAsyncThunk("user/getAllOrders", async (id) => 
     }
 })
 
+export const getAllUserTransactions = createAsyncThunk("user/getAllUserTransactions", async ({ id, page, limit }) => {
+    try {
+        const response = await axios.get(`user/transaction/all?id=${id}&page=${page}&limit=${limit}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+});
+
+export const getAllWishlistItems = createAsyncThunk("user/getAllWishlistItems", async (userId) => {
+    try {
+        const response = await axios.get(`user/wishlist/all/${userId}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+});
+
+export const AddItemToWishlist = createAsyncThunk("user/addItemToWishlist", async (data, { dispatch }) => {
+    try {
+        const response = await axios.post(`user/wishlist/add`, data, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            await dispatch(getAllWishlistItems(data?.userId));
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const removeItemFromWishlist = createAsyncThunk("user/removeItemFromWishlist", async (data, {dispatch}) => {
+    try {
+        const response = await axios.patch(`user/wishlist/delete`, data, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            await dispatch(getAllWishlistItems(data?.userId));
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+});
+
+export const getWishlistItemsDetails = createAsyncThunk("user/getWishlistItemsDetails", async (userId) => {
+    try {
+        const response = await axios.get(`user/wishlist/details/${userId}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})

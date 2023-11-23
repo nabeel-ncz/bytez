@@ -46,6 +46,8 @@ import UpdateCategory from "./pages/Admin/Categories/updateCategory"
 import UpdateBrand from "./pages/Admin/Brands/UpdateBrand"
 import ForgotPassword from "./pages/Auth/ForgotPassword/ForgotPassword"
 import ResetPassword from "./pages/Auth/ForgotPassword/ResetPassword"
+import UpdateAddress from "./pages/User/Profile/UpdateAddress";
+import Coupons from "./pages/Admin/Coupons/Coupons"
 
 
 function App() {
@@ -87,6 +89,7 @@ function App() {
               <Route path="brands/create" element={<CreateBrand />} />
               <Route path="brands/update/:id" element={<UpdateBrand />} />
               <Route path="customers" element={<Customers />} />
+              <Route path="coupons" element={<Coupons />} />
               <Route path="customers/view/:id" element={<CustomerView />} />
               <Route path="admins" element={<Admins />} />
             </Route>
@@ -112,14 +115,16 @@ function App() {
                 <Route path="account/change_password" element={<ChangePassword />}/>
                 <Route path="address" element={<ShippingAddress />}/>
                 <Route path="address/create" element={<CreateAddress />}/>
+                <Route path="address/update" element={<UpdateAddress />}/>
                 <Route path="wallet" element={<Wallet />}/>
               </Route>
               <Route path="cart" element={user ? <Cart /> : <NoAccount />} />
+              <Route path="wishlist" element={user ? <Wishlist /> : <NoAccount />} />
               <Route path="checkout" element={user ? <Checkout /> : <NoAccount />} />
               <Route path="orders" element={user ? <OrdersList /> : <NoAccount />} />
               <Route path="orders/view/:id" element={user ? <OrderDetails /> : <NoAccount />} />
               <Route path="wishlist" element={user ? <Wishlist /> : <NoAccount/>} />
-              <Route path="verify/email" element={verified ? <>{console.log("working")}<Navigate to={"/"} /></> : <OtpValidation /> } />
+              <Route path="verify/email" element={verified ? <><Navigate to={"/"} /></> : <OtpValidation /> } />
             </Route>
             <Route path="*" element={<h2>ERROR</h2>} />
           </>

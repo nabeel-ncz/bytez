@@ -1,22 +1,90 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllOrders, updateOrderStatus } from '../../../store/actions/admin/adminActions';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Chip } from '@material-tailwind/react';
+import Pagination from '../../../components/Pagination/Pagination';
+import { Tabs, Tab, TabsHeader } from '@material-tailwind/react';
 
 function AdminOrdersList() {
     const navigate = useNavigate();
-    const orders = useSelector(state => state.admin?.orders?.data);
     const dispatch = useDispatch();
+    const orders = useSelector(state => state.admin?.orders?.data);
+    const [activePage, setActivePage] = useState(1);
+    const [totalPage, setTotalPage] = useState(1);
+    const [filterBy, setFilterBy] = useState("");
+    const [searchQuery, setSearchQuery] = useSearchParams();
 
     useEffect(() => {
-        dispatch(getAllOrders());
-    }, [])
+        const value = searchQuery.get('filter_by');
+        setFilterBy(value);
+    },[searchQuery]);
+
+    useEffect(() => {
+        dispatch(getAllOrders({
+            page: activePage,
+            limit: 5,
+            filterBy: filterBy,
+        })).then((response) => {
+            if (response.payload?.totalPage) {
+                setTotalPage(response.payload?.totalPage);
+            }
+        });
+    }, [activePage, filterBy]);
+
+    const next = () => {
+        if (activePage === totalPage) return;
+        setActivePage(state => state + 1);
+    };
+    const prev = () => {
+        if (activePage === 1) return;
+        setActivePage(state => state - 1);
+    };
 
     return (
         <div className='w-full min-h-screen py-6'>
-            <div className='bg-white rounded p-8'>
-                <table className="w-full min-w-max table-auto">
+            <div className="flex justify-between items-center text-xs font-semibold">
+                <div>
+                    <h1 className="font-bold text-2xl">Orders</h1>
+                    {/* <Breadcrumbs>
+                        <Link to={"/admin"} className="opacity-60">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                            </svg>
+                        </Link>
+                        <Link to={"/admin/products"}>
+                            Products
+                        </Link>
+                    </Breadcrumbs> */}
+                </div>
+            </div>
+            <div className="lg:flex justify-between items-center text-xs font-semibold">
+                <div className="flex my-2 gap-3 items-center justify-center">
+                    <label htmlFor="" className='text-base'>Filter By : </label>
+                    <select name="" id="" onChange={(event) => {setFilterBy(event.target.value)}} value={filterBy} className='p-2 text-base'>
+                        <option value='all'>all</option>
+                        <option value='pending'>Pending</option>
+                        <option value='processing'>Processing</option>
+                        <option value='shipped'>Shipped</option>
+                        <option value='delivered'>Delivered</option>
+                        <option value='cancelled'>Cancelled</option>
+                        <option value='rejected'>Rejected</option>
+                        <option value='return requested'>Return Requested</option>
+                        <option value='return cancelled'>Request Cancelled</option>
+                        <option value='request approved'>Request Approved</option>
+                        <option value='return recieved'>Return Recieved</option>
+                        <option value='return rejected'>Return Rejected</option>
+                        <option value='return accepted'>Return Accepted</option>
+                    </select>
+                </div>
+            </div>
+            <div className='bg-white rounded p-8 overflow-x-scroll'>
+                <table className="w-full table-auto">
                     <thead className="font-normal">
                         <tr className="border-b border-gray-200">
                             <th className="font-semibold p-4 text-left border-r">No</th>
@@ -30,7 +98,7 @@ function AdminOrdersList() {
                     <tbody>
                         {orders?.map((doc, index) => (
                             <tr onClick={() => navigate(`/admin/orders/view/${doc._id}`)} key={doc._id} className={`hover:bg-blue-gray-50 active:bg-blue-gray-50 cursor-pointer`}>
-                                <td className="text-sm p-4 text-start border-r">{index + 1}</td>
+                                <td className="text-sm p-4 text-start border-r">{(((activePage - 1) * 5) + (index + 1))}</td>
                                 <td className="text-sm p-4 flex items-center gap-2 text-start border-r">
                                     <div className="w-14 overflow-clip flex justify-center items-center">
                                         <img
@@ -65,10 +133,20 @@ function AdminOrdersList() {
                                                     <Chip variant="ghost" color={"green"} size="sm" value={"Delivered"} className='text-center' />
                                                     : doc?.status === "cancelled" ?
                                                         <Chip variant="ghost" color={"orange"} size="sm" value={"Cancelled"} className='text-center' />
-                                                        : doc?.status === "returned" ?
-                                                            <Chip variant="ghost" color={"red"} size="sm" value={"Returned"} className='text-center' />
-                                                            : doc?.status === "rejected" &&
+                                                        : doc?.status === "rejected" ?
                                                             <Chip variant="ghost" color={"pink"} size="sm" value={"Rejected"} className='text-center' />
+                                                            : doc?.status === "return requested" ?
+                                                                <Chip variant="ghost" color={"yellow"} size="sm" value={"Return Requested"} className='text-center' />
+                                                                : doc?.status === "return cancelled" ?
+                                                                    <Chip variant="ghost" color={"yellow"} size="sm" value={"Request Cancelled"} className='text-center' />
+                                                                    : doc?.status === "request approved" ?
+                                                                        <Chip variant="ghost" color={"blue"} size="sm" value={"Request Approved"} className='text-center' />
+                                                                        : doc?.status === "return recieved" ?
+                                                                            <Chip variant="ghost" color={"green"} size="sm" value={"Return Recieved"} className='text-center' />
+                                                                            : doc?.status === "return accepted" ?
+                                                                                <Chip variant="ghost" color={"indigo"} size="sm" value={"Return Accepted"} className='text-center' />
+                                                                                : doc?.status === "return rejected" &&
+                                                                                <Chip variant="ghost" color={"red"} size="sm" value={"Return Rejected"} className='text-center' />
                                     }
                                 </td>
                                 <td className="text-sm p-4 text-start border-r">{new Date(doc.createdAt).toLocaleString()}</td>
@@ -77,6 +155,9 @@ function AdminOrdersList() {
 
                     </tbody>
                 </table>
+            </div>
+            <div className='flex items-center justify-end p-4'>
+                <Pagination next={next} prev={prev} total={totalPage} active={activePage} />
             </div>
         </div>
     )

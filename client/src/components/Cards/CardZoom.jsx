@@ -15,7 +15,7 @@ function CardZoom({image}) {
     const handleIsFavorite = () => setIsFavorite((cur) => !cur);
     return (
         <>
-            <div className="w-72 bg-transparent cursor-pointer overflow-hidden"
+            <div className="w-64 lg:w-72 bg-transparent cursor-pointer overflow-hidden"
             onClick={handleOpen} >
                 <img
                     alt="nature"

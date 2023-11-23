@@ -9,11 +9,25 @@ const slugify = require('slugify');
 module.exports = {
     getAllProducts: async (req, res) => {
         try {
-            const products = await Product.find().lean();
+            const searchTerm = req.query?.search;
+            const regexParts = searchTerm.split(/\s+/).map(part => `.*${part}.*`);
+            const searchRegex = new RegExp(regexParts.join('|'), 'i');
+            let filter = {};
+            if (searchTerm && searchTerm !== "") {
+                filter.$or = [
+                    { title: { $regex: searchRegex } },
+                    { tags: { $in: [searchRegex] } }
+                ];
+            };
+            const page = Number(req.query?.page) || 1;
+            const limit = Number(req.query?.limit) || 5;
+            const skip = (page - 1) * limit;
+            const products = await Product.find(filter).sort({ updatedAt: 'descending' }).skip(skip).limit(limit).lean();
+            const totalDocuments = await Product.countDocuments(filter);
             if (!products || products.length === 0) {
                 res.json({ status: "error", data: {}, message: "Products not found!" });
             } else {
-                res.json({ status: "ok", data: products });
+                res.json({ status: "ok", data: { products, totalPage: Math.ceil(totalDocuments / limit) } });
             }
         } catch (error) {
             res.json({ status: "error", message: error?.message });
@@ -21,8 +35,8 @@ module.exports = {
     },
     getAllProductsForUsers: async (req, res) => {
         const searchTerm = req.query?.search;
-        const regexParts = searchTerm.split(/\s+/).map(part => `(?=.*\\b${part}\\b)`);
-        const searchRegex = new RegExp(regexParts.join(''), 'i');
+        const regexParts = searchTerm.split(/\s+/).map(part => `.*${part}.*`);
+        const searchRegex = new RegExp(regexParts.join('|'), 'i');
         const queryCategory = req.query?.category;
         const queryBrand = req.query?.brand?.trim();
         const queryAvailability = req.query?.availability;
@@ -30,7 +44,7 @@ module.exports = {
         const queryPriceTo = req.query?.priceTo;
         const queryRating = req.query?.rating;
 
-        console.log(queryCategory,queryBrand,queryAvailability,queryPriceFrom,queryPriceTo)
+        console.log(queryCategory, queryBrand, queryAvailability, queryPriceFrom, queryPriceTo)
 
         let filter = {};
         if (searchTerm !== 'all') {
@@ -50,7 +64,7 @@ module.exports = {
 
         if (queryAvailability && queryAvailability === 'instock') {
             filter['varients.stockQuantity'] = { $gt: 0 };
-        } else if (queryAvailability && queryAvailability === 'outofstock'){
+        } else if (queryAvailability && queryAvailability === 'outofstock') {
             filter['varients.stockQuantity'] = { $lte: 0 };
         }
 
@@ -70,7 +84,9 @@ module.exports = {
         // }
 
         try {
-            const products = await Product.find(filter).populate('category brand').lean();
+            const page = Number(req.query?.page) || 1;
+            const limit = Number(req.query?.limit) || 8;
+            const products = await Product.find(filter).limit(page * limit).populate('category brand').lean();
             if (!products || products.length === 0) {
                 res.json({ status: "error", data: {}, message: "Products not found!" });
             } else {

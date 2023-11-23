@@ -3,14 +3,23 @@ import Hero from '../../../components/Hero/Hero'
 import RowPost from '../../../components/RowPost/RowPost'
 import VerifyMessage from '../../../components/CustomDialog/VerifyMessage';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { fetchUser } from '../../../store/actions/user/userActions';
+import toast from 'react-hot-toast';
 
 function Home() {
   const verified = useSelector(state => state?.user?.user?.data?.verified);
   const user = useSelector(state => state?.user?.user?.data);
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useSearchParams();
+
+  useEffect(() => {
+    let showToast = searchQuery.get('email_send');
+    if(showToast){
+      toast.success("A reset password email has been sent. Please check your emails.");
+    }
+  },[]);
 
   useEffect(() => {
     dispatch(fetchUser());

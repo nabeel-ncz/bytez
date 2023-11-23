@@ -6,19 +6,38 @@ import toast from 'react-hot-toast';
 import { Button } from '@material-tailwind/react';
 import DeleteCartProduct from '../../../components/CustomDialog/deleteCartProduct'
 import { useNavigate } from 'react-router-dom';
+import Pagination from '../../../components/Pagination/Pagination';
 
 function Cart() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-
   const user = useSelector(state => state.user?.user?.data);
   const cart = useSelector(state => state.user?.cart?.data);
-  const dispatch = useDispatch();
+
+  //pagination
+  const [activePage, setActivePage] = useState(0);
+  const [totalCartPage, setTotalCartPage] = useState(1);
+  const [records, setRecords] = useState(null)
+  
+  useEffect(() => {
+    dispatch(getAllCartProducts(user._id)).then(() => {
+      setActivePage(1);
+    })
+  }, []);
+
+  const handlePagination = () => {
+    const recordsPerPage = 4;
+    setTotalCartPage(Math.ceil(cart?.items?.length / recordsPerPage));
+    const lastIndex = (activePage * recordsPerPage);
+    const firstIndex = (lastIndex - recordsPerPage);
+    setRecords(cart?.items?.slice(firstIndex, lastIndex));
+  };
 
   useEffect(() => {
-    dispatch(getAllCartProducts(user._id));
-  }, []);
+    handlePagination();
+  }, [activePage, cart]);
 
   const handleQuantity = (productId, varientId, quantity) => {
     dispatch(changeCartProductQuantity({
@@ -40,6 +59,16 @@ function Cart() {
     setDialogOpen(state => !state);
   }
 
+  const next = () => {
+    if (activePage === totalCartPage) return;
+    setActivePage(state => state + 1);
+  };
+  const prev = () => {
+    if (activePage === 1) return;
+    setActivePage(state => state - 1);
+  };
+
+
   return (
     <>
 
@@ -47,8 +76,8 @@ function Cart() {
         {(!cart || cart.items.length === 0) ? <h2>Cart is empty!</h2> : (
           <div className='w-full flex items-start justify-center gap-2'>
             <div className='w-8/12 flex flex-col items-start justify-center gap-4'>
-              {cart?.items?.map((doc) => (
-                <div className='flex items-end justify-between bg-white shadow-sm w-full h-full py-6 px-12 rounded-md'>
+              {records?.map((doc) => (
+                <div className='flex items-end justify-between bg-white shadow-md w-full h-full py-6 px-12 rounded-md'>
                   <div className='flex items-center justify-start gap-12'>
                     <div>
                       <img src={`http://localhost:3000/products/resized/${doc.image}`} alt="" className='w-24' />
@@ -73,7 +102,7 @@ function Cart() {
                   </div>
                   <div className='flex flex-col items-end justify-center h-full'>
                     <div className='flex items-center justify-center'>
-                      <h2 className='text-xl'><span className='text-sm'>Sub Total : </span>₹ {doc.price * doc.quantity}</h2>
+                      <h2 className='text-xl'><span className='text-sm'>Sub Total : </span>₹ {doc.discountPrice * doc.quantity}</h2>
                     </div>
                     <div className='flex items-center justify-center gap-2 h-12'>
                       <div className='flex items-center justify-center gap-4 border border-blue-gray-700 rounded h-full'>
@@ -99,6 +128,9 @@ function Cart() {
                   </div>
                 </div>
               ))}
+              <div className='w-full flex items-center justify-end py-2 pe-4'>
+                <Pagination next={next} prev={prev} total={totalCartPage} active={activePage} />
+              </div>
             </div>
             <div className='w-4/12 min-h-[20rem] py-6 px-10 shadow-md rounded-md bg-white'>
               <div className='flex flex-col items-start justify-center w-full gap-2'>
@@ -134,7 +166,11 @@ function Cart() {
                   </button>
                 </div>
                 <div className='w-full flex items-center justify-between mt-4'>
-                  <Button onClick={() => navigate('/checkout')} variant='filled' className='w-full items-center justify-center py-4'>Proceed to checkout</Button>
+                  {user?.verified ? (
+                    <Button onClick={() => navigate('/checkout')} variant='filled' className='w-full items-center justify-center py-4'>Proceed to checkout</Button>
+                  ) : (
+                    <Button onClick={() => navigate('/profile/account?verify_request=true')} variant='filled' className='w-full items-center justify-center py-4'>Proceed to checkout</Button>
+                  )}
                 </div>
               </div>
             </div>

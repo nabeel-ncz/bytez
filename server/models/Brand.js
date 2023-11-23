@@ -4,6 +4,7 @@ const brandSchema = new mongoose.Schema({
         type:String,
         required: true,
         unique: true,
+        collation: { locale: 'en', strength: 2 },
     },
     thumbnail:{
         type:String,

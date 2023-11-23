@@ -9,7 +9,7 @@ module.exports = {
                 res.json({ status: "error", messsage: "Image upload error!" });
                 return;
             }
-            await Category.create({ category, thumbnail: filename, status });
+            await Category.create({ category: category.toLowerCase(), thumbnail: filename, status });
             res.json({ status: "ok" });
         } catch (error) {
             res.json({ status: "error", message: error?.message });
@@ -20,9 +20,9 @@ module.exports = {
             const filename = req?.file?.filename;
             const { id, category, fileChanged, status } = req.body;
             if (fileChanged) {
-                await Category.updateOne({ _id: id }, { category, thumbnail: filename, status });
+                await Category.updateOne({ _id: id }, { category: category.toLowerCase(), thumbnail: filename, status });
             } else {
-                await Category.updateOne({ _id: id }, { category, status });
+                await Category.updateOne({ _id: id }, { category: category.toLowerCase(), status });
             }
             res.json({ status: "ok" });
         } catch (error) {

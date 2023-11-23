@@ -23,7 +23,7 @@ function CustomerView() {
         })
     }
     const handleUserStatus = () => {
-        axios.patch(`http://localhost:3000/admin/customer/update/status?id=${user._id}&status=${!user.isBlocked}`, { withCredentials: true }).then((response) => {
+        axios.patch(`http://localhost:3000/admin/customer/update/status?id=${user._id}&status=${!user.isBlocked}`, {}, { withCredentials: true }).then((response) => {
             if (response.data?.status === "ok") {
                 handleFetch();
             }
@@ -62,12 +62,12 @@ function CustomerView() {
                             <div className='w-full flex items-center justify-between px-5'>
                                 <h1 className='font-bold'>Account Info</h1>
                                 <span onClick={handleUserStatus}>
-                                <Chip
-                                    variant="ghost"
-                                    color={user?.isBlocked ? "red" : "green"}
-                                    size="sm"
-                                    value={user?.isBlocked ? "blocked" : "active"}
-                                />
+                                    <Chip
+                                        variant="ghost"
+                                        color={user?.isBlocked ? "red" : "green"}
+                                        size="sm"
+                                        value={user?.isBlocked ? "blocked" : "active"}
+                                    />
                                 </span>
                             </div>
 
@@ -75,7 +75,7 @@ function CustomerView() {
                                 <div className="text-start w-full border-t border-blue-gray-100 px-5 flex flex-col items-start gap-2">
                                     <h2 className="font-medium mt-4">Name : {user.name}</h2>
                                     <h2 className="font-medium">Email : {user.email}</h2>
-                                    <h2 className="font-medium">Phone : nil</h2>
+                                    <h2 className="font-medium">Phone : {user?.phone ? user?.phone : "nil"}</h2>
                                     <h2 className="font-medium">Created At : {date}</h2>
                                     <h2 className={`font-medium ${user.verified ? "text-blue-800" : "text-orange-800"}`}>Account is {user.verified ? "Verified" : "Not Verified"} </h2>
                                 </div>
@@ -83,7 +83,7 @@ function CustomerView() {
                         </div>
                     </div>
                     <div className="lg:w-2/6">
-                        <div className="bg-white p-5 rounded-lg mb-5 text-start flex flex-col gap-2">
+                        {/* <div className="bg-white p-5 rounded-lg mb-5 text-start flex flex-col gap-2">
                             <div className="text-start w-full px-5 flex items-center justify-start gap-4 bg-blue-100 py-4">
                                 <div className='w-fit bg-white p-2'>
                                     <img src="/icons/rocket-icon.png" alt="" className='w-10' />
@@ -111,7 +111,7 @@ function CustomerView() {
                                     <h6 className='font-normal'>Completed Orders</h6>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

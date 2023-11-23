@@ -9,7 +9,7 @@ module.exports = {
                 res.json({ status: "error", messsage: "Image upload error!" });
                 return;
             }
-            await Brand.create({ brand, thumbnail: filename, status });
+            await Brand.create({ brand: brand.toLowerCase(), thumbnail: filename, status });
             res.json({ status: "ok" });
         } catch (error) {
             res.json({ status: "error", message: error?.message });
@@ -20,9 +20,9 @@ module.exports = {
             const filename = req?.file?.filename;
             const { id, brand, fileChanged, status } = req.body;
             if (fileChanged) {
-                await Brand.updateOne({ _id: id }, { brand, status, thumbnail: filename });
+                await Brand.updateOne({ _id: id }, { brand: brand.toLowerCase(), status, thumbnail: filename });
             } else {
-                await Brand.updateOne({ _id: id }, { brand, status });
+                await Brand.updateOne({ _id: id }, { brand: brand.toLowerCase(), status });
             }
             res.json({ status: "ok" });
         } catch (error) {

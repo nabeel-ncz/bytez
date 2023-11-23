@@ -21,7 +21,7 @@ function UpdateCategory() {
     }, []);
 
     const handleFetch = () => {
-        axios.get(`http://localhost:3000/admin/category/${id}`).then((response) => {
+        axios.get(`http://localhost:3000/admin/category/${id}`, { withCredentials: true }).then((response) => {
             if (response.data?.status === "ok") {
                 setData(response?.data?.data);
             }

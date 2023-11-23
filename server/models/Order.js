@@ -45,7 +45,7 @@ const orderSchema = new mongoose.Schema({
     status: {
         type: String,
         required: true,
-        enum: ["pending", "processing", "shipped", "delivered", "cancelled", "returned", "rejected"],
+        enum: ["pending", "processing", "shipped", "delivered", "cancelled", "rejected", "return requested", "return cancelled", "request approved", "return rejected", "return recieved", "return accepted"],
         default: "pending",
     },
     deliveryDate: {
@@ -64,10 +64,22 @@ const orderSchema = new mongoose.Schema({
     paymentStatus: {
         type: String,
         required: true,
-        enum: ['pending', 'processing', 'completed', 'failed', 'refunded', 'cancelled']
+        enum: ['pending', 'completed', 'failed', 'refunded']
     },
     orderNote: {
         type: String,
+    },
+    cancelReason: {
+        type: String,
+    },
+    cancelledAt: {
+        type: Date,
+    },
+    returnReason: {
+        type: String,
+    },
+    returnRequestedAt: {
+        type: Date,
     },
     items: [productSchema],
     itemsQuantity: {type: Number, required: true },

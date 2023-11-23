@@ -9,6 +9,6 @@ const store = configureStore({
         admin: adminReducer,
         products: productsReducer,
     }
-}); 
+});
 
 export default store;

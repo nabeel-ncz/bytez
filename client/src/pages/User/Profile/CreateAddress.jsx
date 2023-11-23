@@ -5,17 +5,26 @@ import { useNavigate } from 'react-router-dom';
 import addressSchema from '../../../schema/user/addressSchema';
 import { useDispatch, useSelector } from 'react-redux';
 import { createAddress } from '../../../store/actions/user/userActions';
+import { useSearchParams } from 'react-router-dom';
 
 function CreateAddress() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const user = useSelector(state => state?.user?.user?.data);
+    const [searchQuery, setSearchQuery] = useSearchParams();
+
+    const isFromOrders = searchQuery.get('from_orders');
+
     const handleFormSubmit = (values) => {
         dispatch(createAddress({
             userId: user._id,
             ...values
         })).then(() => {
-            navigate('/profile/address');
+            if(isFromOrders){
+                navigate('/checkout');
+            } else {
+                navigate('/profile/address');
+            }
         })
     }
     return (

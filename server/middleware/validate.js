@@ -15,6 +15,25 @@ const verifyUser = (req, res, next) => {
         });
     }
 };
+const isVerifiedAccount = (req, res, next) => {
+    const token = req.cookies?.user_key;
+    if (!token) {
+        res.json({ status: 'error', message: "Token doesn't exist!" });
+    } else {
+        jwt.verify(token, process.env.USER_JWT_SECRET, async (error, decoded) => {
+            if (error) {
+                res.json({ status: 'error', message: error?.message });
+            } else {
+                const user = await User.findById(decoded.id);
+                if (!user.verified) {
+                    res.json({ status: 'error', message: "Account is not verified!" });
+                } else {
+                    next();
+                }
+            }
+        });
+    }
+};
 const verifyAdmin = (req, res, next) => {
     const token = req.cookies?.user_key;
     if (!token) {
@@ -40,4 +59,4 @@ const verifyAdmin = (req, res, next) => {
     }
 };
 
-module.exports = { verifyUser, verifyAdmin };
+module.exports = { verifyUser, verifyAdmin, isVerifiedAccount };

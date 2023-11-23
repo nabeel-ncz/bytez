@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Button } from "@material-tailwind/react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser, updateUserInform } from '../../../store/actions/user/userActions';
 import toast from 'react-hot-toast';
@@ -11,7 +11,16 @@ function AccountDetails() {
     const dispatch = useDispatch();
 
     const user = useSelector(state => state.user?.user?.data);
+    const [searchQuery, setSearchQuery] = useSearchParams();
     const [isEditMode, setIsEditMode] = useState(false);
+
+    useEffect(() => {
+        let showToast = searchQuery.get('verify_request');
+        if (showToast) {
+            toast('Please verify your account first!', { icon: '✔️' });
+        }
+    }, []);
+
     const handleEditButton = () => {
         setIsEditMode(true);
     }
@@ -102,9 +111,16 @@ function AccountDetails() {
                             {!user.oauth && (
                                 <div className='w-full flex gap-6 px-12'>
                                     <div className='w-1/2'>
+
                                     </div>
-                                    <div className='w-1/2'>
-                                        <div onClick={() => { navigate('change_password') }} className='flex items-center justify-between px-4 py-2 bg-white border-2 border-gray-400'>
+                                    <div className='w-1/2 flex items-center justify-between gap-2'>
+                                        {!user?.verified && (
+                                            <div onClick={() => { navigate(`/verify/email?request=true&email=${user?.email}`) }} className='w-full flex items-center justify-between px-4 py-2 bg-white border-2 border-green-200 cursor-pointer'>
+                                                <h2>Verify Account</h2>
+                                                <img src="/icons/edit-icon.png" alt="" className='w-6 opacity-0' />
+                                            </div>
+                                        )}
+                                        <div onClick={() => { navigate('change_password') }} className='w-full flex items-center justify-between px-4 py-2 bg-white border-2 border-gray-400'>
                                             <h2>Change Password</h2>
                                             <img src="/icons/edit-icon.png" alt="" className='w-6' />
                                         </div>

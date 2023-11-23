@@ -170,7 +170,7 @@ function EditVarient() {
 
                 <Formik
                     initialValues={{
-                        description: product?.description, stockQuantity: product?.stockQuantity, price: product?.price, discountPrice: product?.price,
+                        description: product?.description, stockQuantity: product?.stockQuantity, price: product?.price, discountPrice: product?.discountPrice,
                         markup: product?.markup, status: product?.status, ramAndRom: product?.ramAndRom
                     }}
                     validationSchema={productVarientSchema}

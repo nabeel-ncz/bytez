@@ -3,6 +3,7 @@ const Cart = require('../models/Cart');
 const Order = require('../models/Order');
 const Address = require('../models/Address');
 const Product = require('../models/Product');
+const Transaction = require('../models/Transaction');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 
@@ -62,13 +63,13 @@ module.exports = {
                     {
                         $project: {
                             _id: 0,
-                            name: "$title", 
-                            image: "$varients.images.mainImage", 
-                            price: "$varients.price", 
-                            discountPrice: "$varients.discountPrice", 
+                            name: "$title",
+                            image: "$varients.images.mainImage",
+                            price: "$varients.price",
+                            discountPrice: "$varients.discountPrice",
                             attributes: {
-                                color: "$varients.color", 
-                                ramAndRom: "$varients.ramAndRom" 
+                                color: "$varients.color",
+                                ramAndRom: "$varients.ramAndRom"
                             }
                         }
                     }
@@ -102,6 +103,15 @@ module.exports = {
             if (paymentMode === "RazorPay") {
                 paymentStatus = "completed";
             };
+            if (paymentMode === "Wallet") {
+                const user = await User.findById(userId);
+                if (user.wallet < cart.totalPrice) {
+                    throw new Error("There is no enough money in the wallet");
+                }
+                await user.updateOne({ $inc: { wallet: -cart.totalPrice } });
+                await user.save();
+                paymentStatus = "completed";
+            }
             const order = await Order.create({
                 userId: userId,
                 address,
@@ -114,7 +124,27 @@ module.exports = {
                 discount: cart.discount,
                 totalPrice: cart.totalPrice
             });
-            //online payment - razorpay
+            await Transaction.create({
+                userId: userId,
+                orderId: order?._id,
+                paymentMethod: paymentMode,
+                paymentStatus: paymentStatus,
+                totalAmount: order?.totalPrice
+            });
+
+            const decreaseStock = cartItems.map(async (doc) => {
+                return await Product.updateOne(
+                    {
+                        _id: doc.productId,
+                        'varients.varientId': doc.varientId,
+                    },
+                    {
+                        $inc: { 'varients.$.stockQuantity': -doc.quantity },
+                    }
+                );
+            });
+            await Promise.all(decreaseStock);
+
             await Cart.findByIdAndUpdate(cartId, { items: [], subTotal: 0, discount: 0, shipping: 0, totalPrice: 0 });
             res.json({ status: 'ok', data: { order } });
         } catch (error) {
@@ -174,12 +204,16 @@ module.exports = {
     },
     getUserOrders: async (req, res) => {
         try {
-            const userId = req.params?.id;
-            const result = await Order.find({ userId: userId });
+            const userId = req.query?.userId;
+            const page = Number(req.query?.page) || 1;
+            const limit = Number(req.query?.limit) || 4;
+            const skip = (page - 1) * limit;
+            const totalDocuments = await Order.countDocuments({ userId: userId });
+            const result = await Order.find({ userId: userId }).sort({ createdAt: 'descending' }).skip(skip).limit(limit);
             if (!result) {
                 return res.json({ status: 'error', message: 'There is something went wrong, There is no items in the orders!' });
             }
-            res.json({ status: 'ok', data: result });
+            res.json({ status: 'ok', data: { orders: result, totalCount: Math.ceil((totalDocuments / limit)) } });
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
         }
@@ -198,11 +232,20 @@ module.exports = {
     },
     getAllOrders: async (req, res) => {
         try {
-            const result = await Order.find({}).lean();
+            const filterBy = req.query?.filterBy;
+            const page = Number(req.query?.page) || 1;
+            const limit = Number(req.query?.limit) || 5;
+            const skip = (page - 1) * limit;
+            let filter = {};
+            if (filterBy !== "all") {
+                filter['status'] = filterBy;
+            }
+            const result = await Order.find(filter).sort({ updatedAt: 'descending' }).skip(skip).limit(limit).lean();
+            const totalDocuments = await Order.countDocuments(filter);
             if (!result) {
                 return res.json({ status: 'error', message: 'There is something went wrong, There is no items in the orders!' });
             }
-            res.json({ status: 'ok', data: result });
+            res.json({ status: 'ok', data: { orders: result, totalPage: totalDocuments === 0 ? 1 : Math.ceil(totalDocuments / limit) } });
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
         }
@@ -214,9 +257,40 @@ module.exports = {
             if (!id || !status) {
                 return res.json({ status: 'error', message: 'There is something went wrong!' })
             }
-            const result = await Order.findByIdAndUpdate(id, { status: status }, { new: true });
+            let result;
+            if (status === 'delivered') {
+                result = await Order.findByIdAndUpdate(id, { status: status, deliveryDate: new Date() }, { new: true });
+            } else {
+                result = await Order.findByIdAndUpdate(id, { status: status }, { new: true });
+            }
             if (!result) {
                 return res.json({ status: 'error', message: 'There is something went wrong, There is no items in the orders!' });
+            }
+            if (status === "delivered" && result.paymentMode === "COD") {
+                try {
+                    await Transaction.findOneAndUpdate({ orderId: id }, { $set: { amountPaid: result.totalPrice, pendingAmount: 0 } });
+                } catch (error) {
+                    throw new Error(error?.message);
+                }
+            } else if (status === "return accepted") {
+                try {
+                    await User.findByIdAndUpdate(result.userId, { $inc: { wallet: result.totalPrice } });
+                    await Transaction.findOneAndUpdate({ orderId: id }, { $set: { refundAmount: result.totalPrice } });
+                    const increaseStock = result?.items?.map(async (doc) => {
+                        return await Product.updateOne(
+                            {
+                                _id: doc.productId,
+                                'varients.varientId': doc.varientId,
+                            },
+                            {
+                                $inc: { 'varients.$.stockQuantity': doc.quantity },
+                            }
+                        );
+                    });
+                    await Promise.all(increaseStock);
+                } catch (error) {
+                    throw new Error(error?.message);
+                }
             }
             res.json({ status: 'ok', data: result });
         } catch (error) {
@@ -225,12 +299,163 @@ module.exports = {
     },
     cancelOrder: async (req, res) => {
         try {
-            const orderId = req.params?.id;
-            await Order.findByIdAndUpdate(orderId, { $set: { status: 'cancelled' } });
-            res.json({ status: 'ok' });
+            const { orderId, reason } = req.body;
+            const date = new Date();
+            const order = await Order.findById(orderId);
+            if (order?.status === "pending" || order?.status === "processing") {
+                await order.updateOne({ $set: { status: 'cancelled', cancelReason: reason, cancelledAt: date } });
+                const increaseStock = order?.items?.map(async (doc) => {
+                    return await Product.updateOne(
+                        {
+                            _id: doc.productId,
+                            'varients.varientId': doc.varientId,
+                        },
+                        {
+                            $inc: { 'varients.$.stockQuantity': doc.quantity },
+                        }
+                    );
+                });
+                await Promise.all(increaseStock);
+                await order.save();
+                if (order.paymentMode === "RazorPay" || order.paymentMode === "Wallet") {
+                    try {
+                        await User.findByIdAndUpdate(order.userId, { $inc: { wallet: order.totalPrice } });
+                        await Transaction.findOneAndUpdate({ orderId: orderId }, { $set: { refundAmount: order.totalPrice } });
+                    } catch (error) {
+                        throw new Error(error?.message);
+                    }
+                }
+                return res.json({ status: 'ok' });
+            }
+            res.json({ status: 'error', message: 'Order cancellation is not possible now!' });
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        }
+    },
+    requestReturnOrder: async (req, res) => {
+        try {
+            const { orderId, reason } = req.body;
+            const date = new Date();
+            const order = await Order.findById(orderId);
+            if (((date.getTime() - new Date(order?.deliveryDate).getTime()) / (1000 * 3600 * 24)) > 7) {
+                return res.json({ status: 'error', message: "Can't request for return the order after 7 days!" });
+            }
+            if (order?.status === "delivered") {
+                await order.updateOne({ $set: { status: "return requested", returnReason: reason, returnRequestedAt: date } });
+                await order.save();
+                res.json({ status: 'ok' });
+            } else {
+                res.json({ status: 'error', message: 'Order return not possible this time!' });
+            }
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        }
+    },
+    cancelReturnRequest: async (req, res) => {
+        try {
+            const { orderId } = req.body;
+            const order = await Order.findById(orderId);
+            if (order?.status === "return requested") {
+                await order.updateOne({ $set: { status: "return cancelled" } });
+                await order.save();
+                res.json({ status: 'ok' });
+            } else {
+                res.json({ status: 'error', message: 'Return cancellation is not possible this time!' });
+            }
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
         }
     },
 
+
+    getSalesReport: async (req, res) => {
+        const period = req.params?.period;
+        let startDate, endDate, groupBy;
+        switch (period) {
+            case "daily":
+                startDate = new Date(`${new Date().getFullYear()}-${new Date().getMonth() + 1}-01`);
+                endDate = new Date(`${new Date().getFullYear()}-${new Date().getMonth() + 1}-31`);
+                groupBy = { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } };
+                break;
+            case "monthly":
+                startDate = new Date(`${new Date().getFullYear()}-01-01`);
+                endDate = new Date(`${new Date().getFullYear()}-12-30`);
+                groupBy = { $dateToString: { format: '%Y-%m', date: '$createdAt' } };
+                break;
+            case "yearly":
+                startDate = new Date(`${new Date().getFullYear() - 10}-01-01`);
+                endDate = new Date(`${new Date().getFullYear()}-01-01`);
+                groupBy = { $dateToString: { format: '%Y', date: '$createdAt' } };
+                break;
+            default:
+                return res.json({ status: 'error', message: 'Invalid period' });
+        }
+
+        try {
+            const salesReport = await Order.aggregate([
+                {
+                    $match: {
+                        status: { $eq: 'delivered' },
+                    }
+                },
+                {
+                    $group: {
+                        _id: groupBy,
+                        totalSales: { $sum: '$totalPrice' },
+                    },
+                },
+                {
+                    $sort: {
+                        _id: 1,
+                    },
+                },
+            ]);
+            let dateArray = getDates(startDate, endDate);
+            function getDates(startDate, endDate) {
+                const dateArray = [];
+                let currentDate = startDate;
+                while (currentDate <= endDate) {
+                    dateArray.push(new Date(currentDate));
+                    switch (period) {
+                        case "daily": {
+                            currentDate.setDate(currentDate.getDate() + 1);
+                            break;
+                        } case "monthly": {
+                            currentDate.setMonth(currentDate.getMonth() + 1);
+                            break;
+                        } case "yearly": {
+                            currentDate.setFullYear(currentDate.getFullYear() + 1);
+                            break;
+                        }
+                    }
+                }
+                return dateArray;
+            }
+            const finalReport = dateArray.map((date) => {
+                let dateString = "";
+                switch (period) {
+                    case "daily": {
+                        dateString = date.toISOString().split('T')[0];
+                        break;
+                    }
+                    case "monthly": {
+                        dateString = date.toISOString().split('T')[0].split('-').splice(0, 2).join('-');
+                        break;
+                    }
+                    case "yearly": {
+                        dateString = date.toISOString().split('T')[0].split('-').splice(0, 1)[0];
+                        break;
+                    }
+                }
+                const matchingEntry = salesReport.find((entry) => entry._id === dateString);
+                return {
+                    date: dateString,
+                    totalSales: matchingEntry ? matchingEntry.totalSales : 0,
+                };
+            });
+            res.json({ status: 'ok', data: finalReport });
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        }
+    }
 }

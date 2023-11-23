@@ -25,7 +25,7 @@ function UserDashboard() {
         <>
             {console.log(defaultAddress)}
             <div className='w-9/12 shadow-sm'>
-                <div className='flex items-center justify-between gap-4'>
+                {/* <div className='flex items-center justify-between gap-4'>
                     <div className="text-start w-full px-5 flex items-center justify-start gap-4 bg-blue-100 py-4">
                         <div className='w-fit bg-white p-2'>
                             <img src="/icons/rocket-icon.png" alt="" className='w-10' />
@@ -53,7 +53,7 @@ function UserDashboard() {
                             <h6 className='font-normal'>Completed Orders</h6>
                         </div>
                     </div>
-                </div>
+                </div> */}
                 <div className='flex flex-col items-start justify-center gap-2 mt-6'>
                     <h2 className='text-lg font-medium'>Hello, {user?.name}</h2>
                     <p className='text-start font-light text-xs'>From your account dashboard. you can easily check & view your Recent Orders, manage your Shipping and Billing Addresses and edit your Password and Account Details.</p>
@@ -64,10 +64,10 @@ function UserDashboard() {
                             <h2 className='text-start font-medium text-sm'>Account Info</h2>
                         </div>
                         <div className='flex flex-col items-start justify-center ps-4 py-6 gap-2'>
-                            <h2 className='font-medium text-sm'>{user?.name}</h2>
-                            <h2 className='font-medium text-sm'>Email: {user?.email}</h2>
-                            <h2 className='font-medium text-sm'>Phone: {user?.phone ? user.phone : defaultAddress?.phone}</h2>
-                        </div>
+                            <h2 className='font-medium text-sm'>Name : {user?.name}</h2>
+                            <h2 className='font-medium text-sm'>Email : {user?.email}</h2>
+                            <h2 className='font-medium text-sm'>Phone : {user?.phone ? user.phone : defaultAddress?.phone}</h2>
+                        </div> 
                     </div>
                     <div className='w-1/2 bg-white py-4 rounded shadow-sm'>
                         <div className='w-full border-b border-gray-600 ps-4 pb-2'>
