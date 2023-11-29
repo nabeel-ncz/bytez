@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Breadcrumbs, Button } from '@material-tailwind/react';
+import { Breadcrumbs, Button, Switch } from '@material-tailwind/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addNewBrand } from '../../../store/actions/admin/adminActions';
@@ -28,14 +28,14 @@ function CreateBrand() {
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
-        if(!thumbnail){
+        if (!thumbnail) {
             toast.error("Thumbnail is required!");
             return;
         }
         dispatch(addNewBrand({ brand: data?.brand, file: thumbnail, status: data?.status })).then((response) => {
             if (response?.payload?.status === "ok") {
                 toast.success("Brand created successfully!");
-                setData({brand:"", status:""});
+                setData({ brand: "", status: "" });
                 navigate('/admin/brands')
             } else {
                 toast.error("There is something went wrong!");
@@ -79,6 +79,10 @@ function CreateBrand() {
                         <label htmlFor="">
                             <input type="radio" name='status' value={"block"} checked={data?.status === "block"} onChange={handleChange} />
                             Block
+                        </label>
+                        <label htmlFor="" className='flex items-center justify-start gap-2'>
+                            <input type="checkbox" className='w-6 h-6'/>
+                            Add Offer
                         </label>
                         <Button type='submit' variant='gradient' className='w-full py-2 mt-4'>Save</Button>
                     </form>

@@ -25,6 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }));
 app.use(cookieParser());
 app.use('/products/resized', express.static(path.join(__dirname, "public", "products", "resized")));
+app.use('/banners/resized', express.static(path.join(__dirname, "public", "banners", "resized")));
 app.use('/uploads', express.static(path.join(__dirname, "public", "uploads")));
 
 app.use('/user', userRouter);

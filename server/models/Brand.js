@@ -13,7 +13,14 @@ const brandSchema = new mongoose.Schema({
         type: String,
         default: "active",
         enum: ['active', 'block']
+    },
+    offerApplied: {
+        type: Boolean,
+        default: false,
+    },
+    offerDiscount: {
+        type: Number,
     }
-})
+});
 const collection = mongoose.model("Brand", brandSchema);
 module.exports = collection;

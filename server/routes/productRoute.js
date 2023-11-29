@@ -10,6 +10,7 @@ const {
     getProductVarient,
     getAllProductsForUsers,
     sampleControllerTwo,
+    getProductsByBrand
 } = require('../controllers/productController');
 const router = express.Router();
 
@@ -19,6 +20,7 @@ router.get('/sample', sampleControllerTwo)
 router.get('/store', getAllProductsForUsers);
 router.get('/view/:id', getProduct);
 router.get('/varient/view', getProductVarient);
+router.get('/:brand', getProductsByBrand)
 
 router.get('/varient/available/color', getProductIndexBasedOnColorAndId);
 router.get('/varient/available/attribute', getProductIndexBasedOnAttributeAndId);

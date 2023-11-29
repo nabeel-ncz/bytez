@@ -6,6 +6,8 @@ const { generateUserToken, generateOtpToken, verifyOtpToken, verifyUserToken, ge
 const { generateOTP } = require('../helper/otpHelper');
 const { sendOtpMail, sendResetPasswordMail } = require('../helper/mailHelper');
 const mongoose = require('mongoose');
+const { validateCouponApplied } = require('../helper/couponHelper');
+const Coupon = require('../models/Coupon');
 
 module.exports = {
     registerUser: async (req, res) => {
@@ -209,16 +211,39 @@ module.exports = {
                 if (varientExist) {
                     return res.json({ status: "error", message: "Varient is already exist in the cart!" });
                 }
-                exist.items.push({
-                    productId: productId,
-                    varientId: varient.varientId,
-                    quantity: 1,
-                });
-                exist.subTotal += varient.price;
-                exist.totalPrice += varient.discountPrice;
-                exist.discount += (varient.price - varient.discountPrice);
-                await exist.save();
-                res.json({ status: 'ok' });
+                if (exist?.couponApplied !== 0) {
+                    const subTotalAmount = exist.subTotal + varient.price;
+                    const totalAmount = exist.totalPrice + varient.discountPrice;
+                    const couponDetails = await Coupon.findById(exist?.coupon);
+                    const isCouponApplicable = validateCouponApplied(totalAmount, couponDetails);
+                    if (isCouponApplicable) {
+                        const discountAmount = Math.floor(((totalAmount * couponDetails?.discountPercentage) / 100));
+                        exist.subTotal = subTotalAmount;
+                        exist.totalPrice = totalAmount - discountAmount;
+                        exist.couponApplied = discountAmount;
+                        exist.discount = (subTotalAmount - (totalAmount - discountAmount));
+                        exist.items.push({
+                            productId: productId,
+                            varientId: varient.varientId,
+                            quantity: 1,
+                        });
+                        const updatedCart = await exist.save();
+                        res.json({ status: 'ok', data: updatedCart });
+                    } else {
+                        res.json({ status: 'coupon_cannot_applicable', message: `Coupon cannot be applicable above ${couponDetails.maximumApplicableAmount} purchase` });
+                    }
+                } else {
+                    exist.items.push({
+                        productId: productId,
+                        varientId: varient.varientId,
+                        quantity: 1,
+                    });
+                    exist.subTotal += varient.price;
+                    exist.totalPrice += varient.discountPrice;
+                    exist.discount += (varient.price - varient.discountPrice);
+                    const updatedCart = await exist.save();
+                    res.json({ status: 'ok', data: updatedCart });
+                }
             }
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
@@ -265,14 +290,14 @@ module.exports = {
             await Promise.all(getVarientData);
             const totalPrice = result.items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
             const discountPrice = result.items.reduce((sum, item) => sum + (item.quantity * item.discountPrice), 0);
-            await Cart.updateOne({ userId: userId }, {
-                subTotal: totalPrice,
-                discount: totalPrice - discountPrice,
-                totalPrice: discountPrice
-            });
+            const cart = await Cart.findOne({ userId: userId });
+            cart.subTotal = totalPrice;
+            cart.discount = totalPrice - discountPrice;
+            cart.totalPrice = discountPrice - cart?.couponApplied;
+            await cart.save();
             result.subTotal = totalPrice;
             result.discount = totalPrice - discountPrice;
-            result.totalPrice = discountPrice;
+            result.totalPrice = discountPrice - cart?.couponApplied;
             res.json({ status: 'ok', data: result });
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
@@ -340,11 +365,30 @@ module.exports = {
             });
             await Promise.all(getVarientData);
             console.log(cartItems)
-            cart.subTotal = cartItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
-            cart.totalPrice = cartItems.reduce((sum, item) => sum + (item.quantity * item.discountPrice), 0);
-            cart.discount = cart.subTotal - cart.totalPrice;
-            const updatedCart = await cart.save();
-            res.json({ status: 'ok', data: updatedCart });
+            const subTotalAmount = cartItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+            const totalAmount = cartItems.reduce((sum, item) => sum + (item.quantity * item.discountPrice), 0);
+            const couponDetails = await Coupon.findById(cart?.coupon);
+            if (cart?.couponApplied !== 0) {
+                const isCouponApplicable = validateCouponApplied(totalAmount, couponDetails);
+                if (isCouponApplicable) {
+                    const discountAmount = Math.floor(((totalAmount * couponDetails?.discountPercentage) / 100));
+                    console.log(discountAmount, totalAmount, couponDetails, "discount amount");
+                    cart.subTotal = subTotalAmount;
+                    cart.totalPrice = totalAmount - discountAmount;
+                    cart.couponApplied = discountAmount;
+                    cart.discount = (subTotalAmount - (totalAmount - discountAmount));
+                    const updatedCart = await cart.save();
+                    res.json({ status: 'ok', data: updatedCart });
+                } else {
+                    res.json({ status: 'coupon_cannot_applicable', message: `Coupon can only apply the price range between ${couponDetails?.minimumApplicableAmount} - ${couponDetails.maximumApplicableAmount}` });
+                }
+            } else {
+                cart.subTotal = subTotalAmount;
+                cart.totalPrice = totalAmount;
+                cart.discount = subTotalAmount - totalAmount;
+                const updatedCart = await cart.save();
+                res.json({ status: 'ok', data: updatedCart });
+            }
         } catch (error) {
             res.json({ status: 'error', error: error?.message });
         }
@@ -380,15 +424,31 @@ module.exports = {
             const totalPrice = cart.totalPrice - (itemToDelete.quantity * productToDelete[0].discountPrice);
             const discount = subTotal - totalPrice;
             const updatedItems = cart.items.filter((doc) => doc.varientId !== varientId);
-
-            const updatedCart = await Cart.findOneAndUpdate({ userId }, {
-                items: updatedItems,
-                subTotal,
-                totalPrice,
-                discount,
-            }, { new: true });
-
-            res.json({ status: 'ok', data: updatedCart });
+            if (cart?.couponApplied !== 0) {
+                const couponDetails = await Coupon.findById(cart?.coupon);
+                const isCouponApplicable = validateCouponApplied(totalPrice, couponDetails);
+                if (isCouponApplicable) {
+                    const couponDiscount = Math.floor(((totalPrice * couponDetails?.discountPercentage) / 100));
+                    const updatedCart = await Cart.findOneAndUpdate({ userId }, {
+                        items: updatedItems,
+                        subTotal,
+                        totalPrice: totalPrice - couponDiscount,
+                        couponApplied: couponDiscount,
+                        discount,
+                    }, { new: true });
+                    res.json({ status: 'ok', data: updatedCart });
+                } else {
+                    res.json({ status: 'coupon_cannot_applicable', message: `Coupon can only apply the price range between ${couponDetails?.minimumApplicableAmount} - ${couponDetails.maximumApplicableAmount}` });
+                }
+            } else {
+                const updatedCart = await Cart.findOneAndUpdate({ userId }, {
+                    items: updatedItems,
+                    subTotal,
+                    totalPrice,
+                    discount,
+                }, { new: true });
+                res.json({ status: 'ok', data: updatedCart });
+            }
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
         }

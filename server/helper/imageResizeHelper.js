@@ -12,10 +12,23 @@ const resizeProductImage = async (files) => {
                 .toFile(`../server/public/products/resized/${file.filename}`);
             resizedFiles.push(file.filename);
         }
-        return {status:"ok", data: resizedFiles};
+        return { status: "ok", data: resizedFiles };
     } catch (error) {
-        return { status:"error", message: error?.message};
+        return { status: "error", message: error?.message };
     }
 }
 
-module.exports = { resizeProductImage }
+const resizeBannerImage = async (file) => {
+    console.log(file)
+    try {
+        await sharp(file.path)
+            .resize(2990, 2165, { position: 'centre' })
+            .toFormat('png')
+            .toFile(`../server/public/banners/resized/${file.filename}`);
+        return { status: "ok", data: file.filename };
+    } catch (error) {
+        return { status: "error", message: error?.message };
+    }
+}
+
+module.exports = { resizeProductImage, resizeBannerImage }

@@ -1,11 +1,13 @@
 import React from 'react';
 import { Carousel } from "@material-tailwind/react";
 
-function CustomCarousel() {
+function CustomCarousel({ images }) {
+
     return (
         <div className='w-full h-[246px] md:w-[870px] md:h-[546px] md:z-auto' >
+            {console.log(images)}
             <Carousel
-                className="rounded-xl bg-[#79baef65]"
+                className="rounded-xl bg-[#79baef65] overflow-hidden"
                 navigation={({ setActiveIndex, activeIndex, length }) => (
                     <div className="absolute bottom-4 left-2/4 flex -translate-x-2/4 gap-2">
                         {new Array(length).fill("").map((_, i) => (
@@ -18,21 +20,13 @@ function CustomCarousel() {
                     </div>
                 )}
             >
-                <img
-                    src="/images/bytez-main-banner-trsp.png"
-                    alt="image 1"
-                    className="h-full absolute left-8 object-cover"
-                />
-                <img
-                    src="/images/bytez-main-banner-trsp.png"
-                    alt="image 2"
-                    className="h-full absolute left-8 object-cover"
-                />
-                <img
-                    src="/images/bytez-main-banner-trsp.png"
-                    alt="image 2"
-                    className="h-full absolute left-8 object-cover"
-                />
+                {images?.map((item) => (
+                    <img
+                        src={`http://localhost:3000/banners/resized/${item.image}`}
+                        alt="image 1"
+                        className="absolute object-cover"
+                    />
+                ))}
             </Carousel>
         </div>
     )

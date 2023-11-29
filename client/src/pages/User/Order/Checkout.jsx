@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from '@material-tailwind/react';
-import { getAllAddresses, fetchUser, getAllCartProducts, createOrder } from '../../../store/actions/user/userActions';
+import { getAllAddresses, fetchUser, getAllCartProducts, createOrder, validateCoupon } from '../../../store/actions/user/userActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
@@ -26,6 +26,21 @@ function Checkout() {
     const handleOrderNoteChange = (event) => {
         setOrderNote(event.target.value);
     }
+
+    useEffect(() => {
+        handleValidateCoupon();
+    }, []);
+
+    const handleValidateCoupon = () => {
+        if (cart?.couponApplied > 0) {
+            dispatch(validateCoupon({ id: cart?.coupon, price: (cart?.subTotal - cart?.discount) })).then((response) => {
+                if (response.payload?.status === "error" || response?.error) {
+                    navigate('/cart');
+                    toast.error(response?.payload?.message || response?.error?.message);
+                }
+            })
+        }
+    };
 
     const initOnlinePayment = (key, data) => {
         const options = {
@@ -82,77 +97,84 @@ function Checkout() {
     }
 
     const handleCheckout = () => {
-        if (!user) {
-            toast.error("User not exist!, Please Authenticate");
-        } else if (!cart) {
-            toast.error("There is no items in the cart");
-        } else if (!defaultAddress) {
-            toast.error("Please add an address first!");
-        } else {
-            if (paymentMode === "RazorPay") {
-                axios.post('http://localhost:3000/user/razorpay/create_order', { totalAmount: cart?.totalPrice, cartId: cart?._id }, { withCredentials: true }).then((result) => {
-                    if (result?.data?.status === "ok") {
-                        const data = result?.data?.data;
-                        axios.get('http://localhost:3000/user/razorpay/key', { withCredentials: true }).then((response) => {
-                            if (response.data?.status === "ok") {
-                                const key = response?.data?.data?.razorpay_key;
-                                initOnlinePayment(key, data);
+        dispatch(validateCoupon({ id: cart?.coupon, price: (cart?.subTotal - cart?.discount) })).then((response) => {
+            if (response.payload?.status === "error" || response?.error) {
+                navigate('/cart');
+                toast.error(response?.payload?.message || response?.error?.message);
+            } else {
+                if (!user) {
+                    toast.error("User not exist!, Please Authenticate");
+                } else if (!cart) {
+                    toast.error("There is no items in the cart");
+                } else if (!defaultAddress) {
+                    toast.error("Please add an address first!");
+                } else {
+                    if (paymentMode === "RazorPay") {
+                        axios.post('http://localhost:3000/user/razorpay/create_order', { totalAmount: cart?.totalPrice, cartId: cart?._id }, { withCredentials: true }).then((result) => {
+                            if (result?.data?.status === "ok") {
+                                const data = result?.data?.data;
+                                axios.get('http://localhost:3000/user/razorpay/key', { withCredentials: true }).then((response) => {
+                                    if (response.data?.status === "ok") {
+                                        const key = response?.data?.data?.razorpay_key;
+                                        initOnlinePayment(key, data);
+                                    }
+                                }).catch((error) => {
+                                    toast.error(error?.message);
+                                })
+                            } else {
+                                toast.error(result.data?.message ?? (result.error?.message ? result.error?.message : "There is something went wrong!"))
                             }
                         }).catch((error) => {
                             toast.error(error?.message);
                         })
-                    } else {
-                        toast.error(result.data?.message ?? (result.error?.message ? result.error?.message : "There is something went wrong!"))
-                    }
-                }).catch((error) => {
-                    toast.error(error?.message);
-                })
-            } else if (paymentMode === "COD") {
-                dispatch(createOrder({
-                    userId: user?._id,
-                    cartId: cart?._id,
-                    paymentMode: paymentMode,
-                    orderNote: orderNote,
-                    addressId: defaultAddress?._id,
-                })).then((response) => {
-                    if (response.error) {
-                        toast.error(response?.error?.message);
-                        navigate('/cart');
-                    } else if (response.payload.status === "ok") {
-                        handleDialogOpen();
-                    } else if (response.payload?.status === 'error') {
-                        toast.error(response.payload?.message);
-                    } else {
-                        toast.error(response?.error?.message);
-                    }
-                });
-            } else if (paymentMode === "Wallet") {
-                if (user?.wallet >= cart?.totalPrice) {
-                    dispatch(createOrder({
-                        userId: user?._id,
-                        cartId: cart?._id,
-                        paymentMode: paymentMode,
-                        orderNote: orderNote,
-                        addressId: defaultAddress?._id,
-                    })).then((response) => {
-                        if (response.error) {
-                            toast.error(response?.error?.message);
-                            navigate('/cart');
-                        } else if (response.payload.status === "ok") {
-                            handleDialogOpen();
-                        } else if (response.payload?.status === 'error') {
-                            toast.error(response.payload?.message);
+                    } else if (paymentMode === "COD") {
+                        dispatch(createOrder({
+                            userId: user?._id,
+                            cartId: cart?._id,
+                            paymentMode: paymentMode,
+                            orderNote: orderNote,
+                            addressId: defaultAddress?._id,
+                        })).then((response) => {
+                            if (response.error) {
+                                toast.error(response?.error?.message);
+                                navigate('/cart');
+                            } else if (response.payload.status === "ok") {
+                                handleDialogOpen();
+                            } else if (response.payload?.status === 'error') {
+                                toast.error(response.payload?.message);
+                            } else {
+                                toast.error(response?.error?.message);
+                            }
+                        });
+                    } else if (paymentMode === "Wallet") {
+                        if (user?.wallet >= cart?.totalPrice) {
+                            dispatch(createOrder({
+                                userId: user?._id,
+                                cartId: cart?._id,
+                                paymentMode: paymentMode,
+                                orderNote: orderNote,
+                                addressId: defaultAddress?._id,
+                            })).then((response) => {
+                                if (response.error) {
+                                    toast.error(response?.error?.message);
+                                    navigate('/cart');
+                                } else if (response.payload.status === "ok") {
+                                    handleDialogOpen();
+                                } else if (response.payload?.status === 'error') {
+                                    toast.error(response.payload?.message);
+                                } else {
+                                    toast.error(response?.error?.message);
+                                }
+                            });
                         } else {
-                            toast.error(response?.error?.message);
+                            toast.error("There is no enough money in the wallet");
                         }
-                    });
-                } else {
-                    toast.error("There is no enough money in the wallet");
+                    } else {
+                        toast("Please choose a available payment mode");
+                    }
                 }
-            } else {
-                toast("Please choose a available payment mode");
             }
-        }
+        })
     }
 
     useEffect(() => {

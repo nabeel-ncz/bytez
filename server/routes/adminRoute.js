@@ -42,20 +42,29 @@ const {
 const {
     getAllCoupons,
     createCoupon,
-    updateCoupon
+    updateCoupon,
+    getCouponDetails
 } = require('../controllers/couponController');
 
 const {
     getAllTransactions
 } = require('../controllers/transactionController');
 
+const {
+    getAllBanners,
+    createBanner,
+    updateBanner,
+    deleteBanner
+} = require('../controllers/bannerController');
+
 const { uploadFiles, uploadSingleFile } = require('../helper/fileUploadHelper');
 const { verifyAdmin } = require('../middleware/validate');
+
+router.get('/banner/:type', getAllBanners);
 
 router.use(verifyAdmin);
 
 router.get('/dashboard/sales/:period', getSalesReport);
-
 router.get('/customer/all', getAllUsers);
 router.patch('/customer/update/status', changeUserStatus);
 router.get('/customer/:id', getUser);
@@ -88,9 +97,13 @@ router.patch('/order/update/status', updateOrderStatus);
 
 router.get('/transactions/all', getAllTransactions);
 
-router.get('/coupon/all', getAllCoupons);
-router.post('/coupon/create', createCoupon);
-router.put('/coupon/update', updateCoupon);
+router.get('/coupons/all', getAllCoupons);
+router.post('/coupons/create', createCoupon);
+router.patch('/coupons/update', updateCoupon);
+router.get('/coupons/details/:id', getCouponDetails)
 
+router.post('/banner/create', uploadSingleFile, createBanner);
+router.patch('/banner/update', updateBanner);
+router.delete('/banner/delete/:id', deleteBanner);
 
 module.exports = router;

@@ -11,6 +11,8 @@ const cartSchema = new mongoose.Schema({
     subTotal: { type: Number, required: true },
     discount: { type: Number, required: true },
     shipping: { type: Number, default: 0 },
+    couponApplied: { type: Number, default: 0 },
+    coupon: { type: mongoose.Schema.Types.ObjectId, ref: "Coupon" },
     totalPrice: { type: Number, required: true },
 }, {
     timestamps: true,

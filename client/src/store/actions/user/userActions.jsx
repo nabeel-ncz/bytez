@@ -140,7 +140,7 @@ export const deleteProductFromCart = createAsyncThunk("user/deleteProductFromCar
         if (response.data?.status === "ok") {
             return response.data;
         } else {
-            throw new Error(response.data?.message);
+            return response.data;
         }
     } catch (error) {
         throw new Error(error?.message);
@@ -316,7 +316,7 @@ export const AddItemToWishlist = createAsyncThunk("user/addItemToWishlist", asyn
     }
 })
 
-export const removeItemFromWishlist = createAsyncThunk("user/removeItemFromWishlist", async (data, {dispatch}) => {
+export const removeItemFromWishlist = createAsyncThunk("user/removeItemFromWishlist", async (data, { dispatch }) => {
     try {
         const response = await axios.patch(`user/wishlist/delete`, data, { withCredentials: true });
         if (response.data?.status === "ok") {
@@ -337,6 +337,44 @@ export const getWishlistItemsDetails = createAsyncThunk("user/getWishlistItemsDe
             return response.data;
         } else {
             throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const applyCouponInCart = createAsyncThunk("user/applyCouponInCart", async (data) => {
+    try {
+        const response = await axios.post(`user/cart/apply_coupon`, data, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const removeCouponFromCart = createAsyncThunk("user/removeCouponFromCart", async (data) => {
+    try {
+        const response = await axios.patch(`user/cart/remove_coupon`, data, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+export const validateCoupon = createAsyncThunk("user/validateCoupon", async ({ id, price }) => {
+    try {
+        const response = await axios.get(`user/cart/validate_coupon?id=${id}&price=${price}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response?.data;
+        } else {
+            throw new Error(response?.data?.message);
         }
     } catch (error) {
         throw new Error(error?.message);

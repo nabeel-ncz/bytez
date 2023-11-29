@@ -48,6 +48,12 @@ import ForgotPassword from "./pages/Auth/ForgotPassword/ForgotPassword"
 import ResetPassword from "./pages/Auth/ForgotPassword/ResetPassword"
 import UpdateAddress from "./pages/User/Profile/UpdateAddress";
 import Coupons from "./pages/Admin/Coupons/Coupons"
+import CreateCoupon from "./pages/Admin/Coupons/CreateCoupon"
+import UpdateCoupon from "./pages/Admin/Coupons/UpdateCoupon"
+import Carousel from "./pages/Admin/Banners/Carousel"
+import Banners from "./pages/Admin/Banners/Banners";
+import Posters from "./pages/Admin/Banners/Posters";
+import News from "./pages/Admin/Banners/News"
 
 
 function App() {
@@ -88,8 +94,14 @@ function App() {
               <Route path="brands" element={<Brands />} />
               <Route path="brands/create" element={<CreateBrand />} />
               <Route path="brands/update/:id" element={<UpdateBrand />} />
+              <Route path="banners" element={<Banners />} />
+              <Route path="banners/carousel" element={<Carousel />} />
+              <Route path="banners/poster" element={<Posters />} />
+              <Route path="banners/news" element={<News />} />
               <Route path="customers" element={<Customers />} />
               <Route path="coupons" element={<Coupons />} />
+              <Route path="coupons/create" element={<CreateCoupon />} />
+              <Route path="coupons/update/:id" element={<UpdateCoupon />} />
               <Route path="customers/view/:id" element={<CustomerView />} />
               <Route path="admins" element={<Admins />} />
             </Route>

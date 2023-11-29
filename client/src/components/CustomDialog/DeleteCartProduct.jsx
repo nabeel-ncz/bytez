@@ -8,19 +8,26 @@ import {
 } from "@material-tailwind/react";
 import { useDispatch } from 'react-redux';
 import { deleteProductFromCart, getAllCartProducts } from '../../store/actions/user/userActions';
+import toast from 'react-hot-toast';
 
-function DeleteCartProduct({ open, handleOpen, userId, deleteId, setDeleteId,  }) {
+function DeleteCartProduct({ open, handleOpen, userId, deleteId, setDeleteId, openCouponRemoveDialog }) {
     const dispatch = useDispatch();
 
     const handleProductDelete = () => {
         dispatch(deleteProductFromCart({
             userId: userId,
             varientId: deleteId,
-        })).then(() => {
-            setDeleteId(null);
-            dispatch(getAllCartProducts(userId)).then(() => {
+        })).then((response) => {
+            console.log(response)
+            if (response?.payload?.status == "ok") {
+                setDeleteId(null);
+                dispatch(getAllCartProducts(userId)).then(() => {
+                    handleOpen();
+                })
+            } else if (response?.payload?.status === "coupon_cannot_applicable") {
                 handleOpen();
-            })
+                openCouponRemoveDialog();
+            }
         })
     }
 

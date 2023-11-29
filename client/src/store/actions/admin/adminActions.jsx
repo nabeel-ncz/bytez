@@ -197,9 +197,9 @@ export const getAllAttribute = createAsyncThunk("admin/getAllAttribute", async (
         throw new Error(error?.message);
     }
 })
-export const getAllOrders = createAsyncThunk("admin/getAllOrders", async ({ page, limit, filterBy }) => {
+export const getAllOrders = createAsyncThunk("admin/getAllOrders", async ({ page, limit, filterBy, startDate, endDate }) => {
     try {
-        const response = await axios.get(`/admin/order/all?page=${page}&limit=${limit}&filterBy=${filterBy ? filterBy : "all"}`, { withCredentials: true });
+        const response = await axios.get(`/admin/order/all?page=${page}&limit=${limit}&filterBy=${filterBy ? filterBy : "all"}&startDate=${startDate}&endDate=${endDate}`, { withCredentials: true });
         if (response?.data?.status === "ok") {
             return response.data?.data;
         } else {
@@ -221,11 +221,141 @@ export const updateOrderStatus = createAsyncThunk("admin/updateOrderStatus", asy
         throw new Error(error?.message);
     }
 })
-export const getAllTransactions = createAsyncThunk("admin/getAllTransactions", async ({page, limit}) => {
+export const getAllTransactions = createAsyncThunk("admin/getAllTransactions", async ({ page, limit }) => {
     try {
         const response = await axios.get(`/admin/transactions/all?page=${page}&limit=${limit}`, { withCredentials: true });
         if (response?.data?.status === "ok") {
             return response.data?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+});
+
+export const createCoupon = createAsyncThunk("admin/createCoupon", async (data, { dispatch }) => {
+    try {
+        const response = await axios.post(`/admin/coupons/create`, data, { withCredentials: true });
+        if (response?.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const updateCoupon = createAsyncThunk("admin/updateCoupon", async (data) => {
+    try {
+        const response = await axios.patch('/admin/coupons/update', data, { withCredentials: true });
+        if (response?.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    };
+})
+
+export const getAllCoupons = createAsyncThunk("admin/getAllCoupons", async (data) => {
+    try {
+        const response = await axios.get(`/admin/coupons/all`, { withCredentials: true });
+        if (response?.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const getCouponDetails = createAsyncThunk("admin/getCouponDetails", async (id) => {
+    try {
+        const response = await axios.get(`/admin/coupons/details/${id}`, { withCredentials: true });
+        if (response?.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const createBanner = createAsyncThunk("admin/createBanner", async (data) => {
+    try {
+        const response = await axios.post(`/admin/banner/create`, data, { withCredentials: true });
+        if (response?.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const updateBanner = createAsyncThunk("admin/createBanner", async (data) => {
+    try {
+        const response = await axios.patch(`/admin/banner/update`, data, { headers: { 'Content-Type': 'multipart/form-data' }, withCredentials: true });
+        if (response?.data?.status === "ok") {
+            return response.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+});
+
+export const getAllCarouselImages = createAsyncThunk("admin/getAllCarouselImages", async () => {
+    try {
+        const response = await axios.get('/admin/banner/carousel', { withCredentials: true });
+        if (response?.data?.status === "ok") {
+            return response?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const getAllPosterImages = createAsyncThunk("admin/getAllPosterImages", async () => {
+    try {
+        const response = await axios.get('/admin/banner/poster', { withCredentials: true });
+        if (response?.data?.status === "ok") {
+            return response?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+});
+
+export const getAllNewsImages = createAsyncThunk("admin/getAllNewsImages", async () => {
+    try {
+        const response = await axios.get('/admin/banner/news', { withCredentials: true });
+        if (response?.data?.status === "ok") {
+            return response?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+});
+
+export const deleteBanner = createAsyncThunk("admin/deleteBanner", async (id) => {
+    try {
+        const response = await axios.delete(`/admin/banner/delete/${id}`, { withCredentials: true });
+        if (response?.data?.status === "ok") {
+            return response?.data;
         } else {
             throw new Error(response?.data?.message);
         }

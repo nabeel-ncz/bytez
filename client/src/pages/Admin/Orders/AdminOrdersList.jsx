@@ -4,7 +4,8 @@ import { getAllOrders, updateOrderStatus } from '../../../store/actions/admin/ad
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Chip } from '@material-tailwind/react';
 import Pagination from '../../../components/Pagination/Pagination';
-import { Tabs, Tab, TabsHeader } from '@material-tailwind/react';
+import { Tabs, Tab, TabsHeader, Button } from '@material-tailwind/react';
+import { handleDownloadPDF } from '../../../components/ExportFile/PdfFileExport';
 
 function AdminOrdersList() {
     const navigate = useNavigate();
@@ -13,24 +14,28 @@ function AdminOrdersList() {
     const [activePage, setActivePage] = useState(1);
     const [totalPage, setTotalPage] = useState(1);
     const [filterBy, setFilterBy] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
     const [searchQuery, setSearchQuery] = useSearchParams();
 
     useEffect(() => {
         const value = searchQuery.get('filter_by');
         setFilterBy(value);
-    },[searchQuery]);
+    }, [searchQuery]);
 
     useEffect(() => {
         dispatch(getAllOrders({
             page: activePage,
             limit: 5,
             filterBy: filterBy,
+            startDate,
+            endDate,
         })).then((response) => {
             if (response.payload?.totalPage) {
                 setTotalPage(response.payload?.totalPage);
             }
         });
-    }, [activePage, filterBy]);
+    }, [activePage, filterBy, startDate, endDate]);
 
     const next = () => {
         if (activePage === totalPage) return;
@@ -62,11 +67,14 @@ function AdminOrdersList() {
                         </Link>
                     </Breadcrumbs> */}
                 </div>
+                <div>
+                    <Button onClick={() => handleDownloadPDF(orders)}>Download</Button>
+                </div>
             </div>
             <div className="lg:flex justify-between items-center text-xs font-semibold">
                 <div className="flex my-2 gap-3 items-center justify-center">
-                    <label htmlFor="" className='text-base'>Filter By : </label>
-                    <select name="" id="" onChange={(event) => {setFilterBy(event.target.value)}} value={filterBy} className='p-2 text-base'>
+                    <label htmlFor="" className='text-base'>Filter By Status : </label>
+                    <select name="" id="" onChange={(event) => { setFilterBy(event.target.value) }} value={filterBy} className='p-2 text-base'>
                         <option value='all'>all</option>
                         <option value='pending'>Pending</option>
                         <option value='processing'>Processing</option>
@@ -81,6 +89,12 @@ function AdminOrdersList() {
                         <option value='return rejected'>Return Rejected</option>
                         <option value='return accepted'>Return Accepted</option>
                     </select>
+                </div>
+                <div className="flex my-2 gap-3 items-center justify-center">
+                    <label htmlFor="" className='text-sm'>Start Date : </label>
+                    <input type="date" className='text-base font-normal p-2' onChange={(evt) => setStartDate(evt.target.value)}/>
+                    <label htmlFor="" className='text-sm'>End Date : </label>
+                    <input type="date" className='text-base font-normal p-2' onChange={(evt) => setEndDate(evt.target.value)}/>
                 </div>
             </div>
             <div className='bg-white rounded p-8 overflow-x-scroll'>

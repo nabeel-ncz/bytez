@@ -145,7 +145,7 @@ module.exports = {
             });
             await Promise.all(decreaseStock);
 
-            await Cart.findByIdAndUpdate(cartId, { items: [], subTotal: 0, discount: 0, shipping: 0, totalPrice: 0 });
+            await Cart.findByIdAndUpdate(cartId, { items: [], subTotal: 0, discount: 0, shipping: 0, totalPrice: 0, couponApplied: 0 });
             res.json({ status: 'ok', data: { order } });
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
@@ -194,7 +194,7 @@ module.exports = {
             const sign = razorpay_order_id + "|" + razorpay_payment_id;
             const expectedSign = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET).update(sign.toString()).digest('hex');
             if (expectedSign === razorpay_signature) {
-                await Cart.findByIdAndUpdate(cartId, { items: [], subTotal: 0, discount: 0, shipping: 0, totalPrice: 0 });
+                await Cart.findByIdAndUpdate(cartId, { items: [], subTotal: 0, discount: 0, shipping: 0, totalPrice: 0, couponApplied: 0 });
                 return res.json({ status: 'ok' });
             }
             res.json({ status: 'error' })
@@ -233,6 +233,8 @@ module.exports = {
     getAllOrders: async (req, res) => {
         try {
             const filterBy = req.query?.filterBy;
+            const startDate = req.query?.startDate || null;
+            const endDate = req.query?.endDate || null;
             const page = Number(req.query?.page) || 1;
             const limit = Number(req.query?.limit) || 5;
             const skip = (page - 1) * limit;
@@ -240,6 +242,11 @@ module.exports = {
             if (filterBy !== "all") {
                 filter['status'] = filterBy;
             }
+            if (startDate && startDate !== "" && endDate && endDate !== "") {
+                const s = new Date(startDate);
+                const e = new Date(endDate);
+                filter['createdAt'] = { $gte: s, $lte: e }
+            };
             const result = await Order.find(filter).sort({ updatedAt: 'descending' }).skip(skip).limit(limit).lean();
             const totalDocuments = await Order.countDocuments(filter);
             if (!result) {

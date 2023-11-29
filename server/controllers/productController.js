@@ -492,5 +492,40 @@ module.exports = {
         } catch (error) {
             res.json({ status: 'error' });
         }
+    },
+    getProductsByBrand: async (req, res) => {
+        try {
+            const queryBrand = req.params?.brand;
+            const products = await Product.aggregate([
+                {
+                    $lookup: {
+                        from: 'categories',
+                        localField: 'category',
+                        foreignField: '_id',
+                        as: 'category',
+                    }
+                },
+                {
+                    $unwind: "$category"
+                },
+                {
+                    $lookup: {
+                        from: 'brands',
+                        localField: 'brand',
+                        foreignField: '_id',
+                        as: 'brand',
+                    }
+                },
+                {
+                    $unwind: "$brand"
+                },
+                {
+                    $match: { "brand.brand": queryBrand }
+                }
+            ]);
+            res.json({ status: 'ok', data: products });
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        }
     }
 }

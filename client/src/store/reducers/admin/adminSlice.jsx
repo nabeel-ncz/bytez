@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { createProduct, deleteProduct, getAllAttribute, getAllBrands, getAllCategories, getAllProducts, getAllTransactions, getAllUsers } from "../../actions/admin/adminActions";
+import { createProduct, deleteProduct, getAllAttribute, getAllBrands, getAllCarouselImages, getAllCategories, getAllCoupons, getAllNewsImages, getAllPosterImages, getAllProducts, getAllTransactions, getAllUsers } from "../../actions/admin/adminActions";
 import { getAllOrders, updateOrderStatus } from "../../actions/admin/adminActions";
 
 const INITIAL_STATE = {
@@ -38,7 +38,26 @@ const INITIAL_STATE = {
         data: null,
         error: null,
     },
-
+    coupons: {
+        loading: false,
+        data: null,
+        error: null,
+    },
+    carousel: {
+        loading: false,
+        data: null,
+        error: null,
+    },
+    poster: {
+        loading: false,
+        data: null,
+        error: null,
+    },
+    news: {
+        loading: false,
+        data: null,
+        error: null,
+    }
 }
 const adminSlice = createSlice({
     name: "admin",
@@ -129,6 +148,21 @@ const adminSlice = createSlice({
             .addCase(getAllTransactions.fulfilled, (state, action) => {
                 state.transactions.data = action.payload?.transactions;
             })
+            .addCase(getAllCoupons.fulfilled, (state, action) => {
+                state.coupons.data = action.payload?.data;
+            })
+
+            .addCase(getAllCarouselImages.fulfilled, (state, action) => {
+                state.carousel.data = action.payload?.data;
+            })
+
+            .addCase(getAllPosterImages.fulfilled, (state, action) => {
+                state.poster.data = action.payload?.data;
+            })
+            
+            .addCase(getAllNewsImages.fulfilled, (state, action) => {
+                state.news.data = action.payload?.data;
+            });
     }
 })
 

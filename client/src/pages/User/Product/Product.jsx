@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ProductImageSlider from '../../../components/Slider/ProductImageSlider'
 import { Chip, Rating, Button, IconButton } from '@material-tailwind/react'
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import CardZoom from '../../../components/Cards/CardZoom';
 import StarCardLarge from '../../../components/StarRating/StarCardLarge';
@@ -20,10 +20,18 @@ function Product() {
     const [availableColors, setAvailableColors] = useState(null);
     const user = useSelector(state => state.user?.user?.data);
     const dispatch = useDispatch();
+    const [searchQuery, setSearchQuery] = useSearchParams();
 
     const { id } = useParams();
     useEffect(() => {
         handleFetch();
+    }, []);
+
+    useEffect(() => {
+        const showMessage = searchQuery.get('sv');
+        if (showMessage) {
+            toast("Please choose your varient", { icon: "👆" })
+        }
     }, []);
 
 

@@ -53,12 +53,29 @@ const {
     getWishlistDetails
 } = require('../controllers/wishlistController');
 
+const {
+    getCarouselImagesForUser,
+    getPosterImagesForUser
+} = require('../controllers/bannerController');
+
+const {
+    getAvailabeUserCoupons,
+    validateCoupon
+} = require('../controllers/couponController');
+
+const {
+    applyCouponInCart,
+    removeCouponFromCart
+} = require('../controllers/cartController');
+
 const { verifyUser, isVerifiedAccount } = require('../middleware/validate');
 const { getAllActiveCategories } = require('../controllers/categoryController');
 const { getAllActiveBrands } = require('../controllers/brandController');
 
 router.use(passport.initialize());
 router.use(passport.session());
+
+router.get('/coupons/available/:id', getAvailabeUserCoupons);
 
 router.post('/auth/signup', registerUser);
 router.post('/auth/login', loginUser);
@@ -83,6 +100,9 @@ router.get('/cart/product/all/:id', getAllCartProducts);
 router.post('/cart/product/add', addProductToCart);
 router.patch('/cart/product/change_quantity', changeProductQuantity);
 router.put('/cart/product/delete', deleteProductFromCart);
+router.post('/cart/apply_coupon', applyCouponInCart)
+router.patch('/cart/remove_coupon', removeCouponFromCart);
+router.get('/cart/validate_coupon', validateCoupon)
 
 router.get('/wishlist/all/:id', getWishlistItems);
 router.post('/wishlist/add',addItemsToWishlist);
@@ -113,5 +133,7 @@ router.post('/razorpay/create_order', makeRazorpayOrder)
 
 router.get('/transaction/all', getAllTransactionsByUserId);
 
+router.get('/banner/carousel', getCarouselImagesForUser);
+router.get('/banner/poster', getPosterImagesForUser);
 
 module.exports = router;

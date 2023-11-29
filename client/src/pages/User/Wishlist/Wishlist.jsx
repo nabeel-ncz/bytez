@@ -3,9 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getWishlistItemsDetails, removeItemFromWishlist } from '../../../store/actions/user/userActions';
 import axios from 'axios';
 import Pagination from '../../../components/Pagination/Pagination';
+import { useNavigate } from 'react-router-dom';
 
 function Wishlist() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector(state => state.user?.user?.data);
   const wishlist = useSelector(state => state.user?.wishlist?.data);
   const [data, setData] = useState(null);
@@ -40,8 +42,8 @@ function Wishlist() {
 
   return (
     <>
-
-      <div className='w-full flex items-start justify-center gap-2 py-2 lg:py-6 px-4 lg:px-24'>
+      {(!data || data?.length === 0) && (<h2 className='text-center w-full mt-4'>Wishlist is empty!</h2>)}
+      <div className='w-full min-h-[60vh] flex items-start justify-center gap-2 py-2 lg:py-6 px-4 lg:px-24'>
         <div className='w-full flex flex-col items-start justify-center gap-4'>
           {data?.map((doc) => (
             <div className='flex items-end justify-between bg-white shadow-md w-full h-full py-6 px-12 rounded-md'>
@@ -74,8 +76,13 @@ function Wishlist() {
                 </div>
               </div>
               <div className='flex flex-col items-end justify-center h-full'>
-                <div className='w-14 flex items-center justify-center gap-2 h-12'>
-                  <div onClick={() => { handleRemoveItem(doc._id) }} className='flex items-center justify-center border border-red-100 hover:border-red-400 cursor-pointer rounded px-4 h-full'>
+                <div className='flex items-center justify-center gap-2 h-12'>
+                  <div onClick={() => {
+                    navigate(`/product/${doc?._id}?sv=true`);
+                  }} className='w-36 flex items-center justify-center border border-gray-300 hover:border-gray-900 cursor-pointer rounded px-4 h-full'>
+                    <span>Add to cart</span>
+                  </div>
+                  <div onClick={() => { handleRemoveItem(doc._id) }} className='w-14 flex items-center justify-center border border-red-100 hover:border-red-400 cursor-pointer rounded px-4 h-full'>
                     <img src="/icons/bin.png" alt="" className='w-full' />
                   </div>
                 </div>

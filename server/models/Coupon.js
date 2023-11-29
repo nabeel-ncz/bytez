@@ -17,6 +17,14 @@ const couponSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
+    minimumApplicableAmount:{
+        type: Number,
+        required: true,
+    },
+    maximumApplicableAmount:{
+        type: Number,
+        required: true,
+    },
     couponType: {
         type: String,
         enum: ['public_coupon', 'private_coupon', 'welcome_coupon'],
@@ -29,6 +37,9 @@ const couponSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true,
+    },
+    minimumPurchaseAmount:{
+        type:Number,
     }
 }, {
     timestamps: true,

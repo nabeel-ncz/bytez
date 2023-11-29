@@ -1,28 +1,38 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { changeCartProductQuantity, deleteProductFromCart, getAllCartProducts } from '../../../store/actions/user/userActions';
+import { applyCouponInCart, changeCartProductQuantity, deleteProductFromCart, getAllCartProducts } from '../../../store/actions/user/userActions';
 import toast from 'react-hot-toast';
 import { Button } from '@material-tailwind/react';
 import DeleteCartProduct from '../../../components/CustomDialog/deleteCartProduct'
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../../components/Pagination/Pagination';
+import RemoveCouponFromCart from '../../../components/CustomDialog/RemoveCouponFromCart';
 
 function Cart() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
   const user = useSelector(state => state.user?.user?.data);
   const cart = useSelector(state => state.user?.cart?.data);
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  const [couponRemoveDialog, setCouponRemoveDialog] = useState(false);
 
   //pagination
   const [activePage, setActivePage] = useState(0);
   const [totalCartPage, setTotalCartPage] = useState(1);
-  const [records, setRecords] = useState(null)
-  
+  const [records, setRecords] = useState(null);
+
+  const [couponCode, setCouponCode] = useState("");
+  const [couponStatus, setCouponStatus] = useState("not_applied");
+  const [couponError, setCouponError] = useState("");
+
   useEffect(() => {
-    dispatch(getAllCartProducts(user._id)).then(() => {
+    dispatch(getAllCartProducts(user._id)).then((response) => {
+      if (response?.payload?.couponApplied > 0) {
+        setCouponStatus('applied');
+      }
       setActivePage(1);
     })
   }, []);
@@ -55,8 +65,34 @@ function Cart() {
     })
   }
 
+  const handleApplyCoupon = () => {
+    dispatch(applyCouponInCart({
+      id: user?._id,
+      cartId: cart?._id,
+      couponCode: couponCode,
+    })).then((response) => {
+      if (response.payload?.status === "ok") {
+        dispatch(getAllCartProducts(user._id));
+        setCouponStatus('applied');
+        setCouponError("");
+      } else {
+        setCouponStatus('error');
+        setCouponError(response.payload?.message || response?.error?.message);
+      }
+    })
+  };
+
   const handleDialogOpen = () => {
     setDialogOpen(state => !state);
+  }
+
+  const handleCouponRemoveDialog = () => {
+    setCouponRemoveDialog(state => !state);
+  }
+
+  const handleCouponStatus = (status) => {
+    setCouponStatus(status);
+    setCouponCode("");
   }
 
   const next = () => {
@@ -149,7 +185,7 @@ function Cart() {
                 </div>
                 <div className='w-full flex items-center justify-between'>
                   <span>Coupon Applied</span>
-                  <span>₹ 0</span>
+                  <span>₹ {cart?.couponApplied || 0}</span>
                 </div>
                 <div className='w-full mt-4 border-t pt-4 border-gray-800 flex items-center justify-between'>
                   <span>Total</span>
@@ -159,11 +195,19 @@ function Cart() {
                   <span>Estimated delivery by</span>
                   <span>{new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString()}</span>
                 </div>
-                <div className='mt-4 w-full h-12 flex items-center border border-gray-800 justify-between'>
-                  <input type="text" placeholder='Coupon Code' className='outline-none w-10/12 h-full ps-4' />
-                  <button className='w-2/12 h-full bg-black flex items-center justify-center'>
-                    <img src="/icons/tick-white-trsp.png" alt="" className='w-6' />
-                  </button>
+                <div className='mt-4 w-full flex flex-col gap-1 items-start justify-center'>
+                  {couponStatus === 'applied' && <><h2 className='tex-xs font-medium text-green-800'>Coupon applied successfully</h2> <Button onClick={handleCouponRemoveDialog} className='tex-xs font-normal flex items-center justify-center px-3 py-1' size='sm' variant='gradient' color='yellow'>Remove Coupon</Button></>}
+                  {(couponStatus === "not_applied" || couponStatus === "error") && (<>
+                    <div className='mt-4 w-full h-12 flex items-center border border-gray-800 justify-between'>
+                      <input type="text" value={couponCode} onChange={(event) => {
+                        setCouponCode(event.target.value);
+                      }} placeholder='Coupon Code' className='outline-none w-10/12 h-full ps-4' />
+                      <button onClick={handleApplyCoupon} className='w-2/12 h-full bg-black flex items-center justify-center'>
+                        <img src="/icons/tick-white-trsp.png" alt="" className='w-6' />
+                      </button>
+                    </div>
+                  </>)}
+                  {couponStatus === "error" && (<><h2 className='tex-xs font-medium text-red-400'>{couponError}</h2></>)}
                 </div>
                 <div className='w-full flex items-center justify-between mt-4'>
                   {user?.verified ? (
@@ -177,7 +221,8 @@ function Cart() {
           </div>
         )}
       </div>
-      <DeleteCartProduct userId={user?._id} open={dialogOpen} handleOpen={handleDialogOpen} deleteId={deleteId} setDeleteId={setDeleteId} />
+      <DeleteCartProduct userId={user?._id} open={dialogOpen} handleOpen={handleDialogOpen} deleteId={deleteId} setDeleteId={setDeleteId} openCouponRemoveDialog={handleCouponRemoveDialog} />
+      <RemoveCouponFromCart open={couponRemoveDialog} handleOpen={handleCouponRemoveDialog} userId={user?._id} cartId={cart?._id} handleCouponStatus={handleCouponStatus} />
     </>
   )
 }
