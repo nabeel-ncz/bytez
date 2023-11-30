@@ -7,11 +7,12 @@ const { generateOTP } = require('../helper/otpHelper');
 const { sendOtpMail, sendResetPasswordMail } = require('../helper/mailHelper');
 const mongoose = require('mongoose');
 const { validateCouponApplied } = require('../helper/couponHelper');
+const { validateRefferalCode, generateReferralCode } = require('../helper/manageRefferalCode');
 const Coupon = require('../models/Coupon');
 
 module.exports = {
     registerUser: async (req, res) => {
-        const { name, email, password } = req.body;
+        const { name, email, password, referral } = req.body;
         try {
             const salt = bcrypt.genSaltSync(10);
             const hash = bcrypt.hashSync(password, salt);
@@ -21,6 +22,22 @@ module.exports = {
                 res.json({ status: "error", message: "Something went wrong!" });
                 return;
             }
+            if (referral) {
+                const isValid = validateRefferalCode(referral);
+                if (isValid) {
+                    const user = await User.findById(isValid.id);
+                    if (user) {
+                        user.wallet += 100;
+                        if(user.referral){
+                            user.referral += 100;
+                        } else {
+                            user.referral = 100;
+                        }
+                        await user.save();
+                    };
+                }
+            }
+
             const token = generateUserToken({ id: user._id, isVerified: false });
             res.cookie("user_key", token, { maxAge: 1000 * 60 * 60 * 24 * 2, httpOnly: true });
             res.json({ status: "ok", data: user });
@@ -537,5 +554,13 @@ module.exports = {
         } catch (error) {
             return res.json({ status: 'error', message: error?.message });
         }
+    },
+    getReferralCode: (req, res) => {
+        const id = req.params?.id;
+        if (!id) {
+            return res.json({ status: 'error', message: 'User not exist!' });
+        };
+        const code = generateReferralCode(id);
+        res.json({ status: "ok", data: { code } });
     }
 }

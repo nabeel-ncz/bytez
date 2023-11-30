@@ -19,6 +19,7 @@ const {
     updateUserPassword,
     resetPassword,
     verifyResetPassword,
+    getReferralCode
 } = require('../controllers/userController');
 
 const {
@@ -132,6 +133,7 @@ router.get('/razorpay/key', getRazorpayKey);
 router.post('/razorpay/create_order', makeRazorpayOrder)
 
 router.get('/transaction/all', getAllTransactionsByUserId);
+router.get('/referral_code/:id', getReferralCode)
 
 router.get('/banner/carousel', getCarouselImagesForUser);
 router.get('/banner/poster', getPosterImagesForUser);

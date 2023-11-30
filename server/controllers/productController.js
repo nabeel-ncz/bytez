@@ -124,9 +124,10 @@ module.exports = {
                 const result = await resizeProductImage(req.files);
                 let product = null;
                 const slug = slugify(title, { replacement: '-', lower: true });
+
                 if (result.status === "ok") {
                     const uniqueId = uuid.v4();
-                    product = await Product.create({
+                    product = new Product({
                         title,
                         slug,
                         category,
@@ -148,8 +149,18 @@ module.exports = {
                                     subImages: result?.data.slice(1)
                                 },
                             }
-                        ]
+                        ],
                     });
+                    const brandDetails = await Brand.findById(brand);
+                    if (!brandDetails) {
+                        return res.json({ status: 'error', messsage: 'Brand not exist!' });
+                    };
+                    if (brandDetails?.offerApplied) {
+                        let offer = Math.floor(((product?.varients[0]?.discountPrice * brandDetails?.offerDiscount) / 100));
+                        product.varients[0].discountPrice = product?.varients[0]?.discountPrice - offer;
+                        product.varients[0].brandOffer = offer;
+                    }
+                    await product.save();
                     res.json({ status: "ok", data: product });
                 } else {
                     res.json({ status: "error", message: "Image resize failed" });
@@ -445,15 +456,39 @@ module.exports = {
         const { id, title, category, brand, tags } = req.body;
         const slug = slugify(title, { replacement: '-', lower: true });
         try {
-            await Product.updateOne({ _id: id }, {
-                $set: {
-                    title,
-                    slug,
-                    category,
-                    brand,
-                    tags
-                }
-            });
+            const product = await Product.findById(id);
+            const brandDetails = await Brand.findById(brand);
+            if (!brandDetails) {
+                return res.json({ status: 'error', messsage: 'Brand not exist!' });
+            };
+            if (brandDetails?.offerApplied) {
+                product.varients?.forEach((item) => {
+                    item.discountPrice += item.brandOffer;
+                    const offer = Math.floor(((item.discountPrice * brandDetails?.offerDiscount) / 100));
+                    item.discountPrice -= offer;
+                    item.brandOffer = offer;
+                })
+            } else {
+                product.varients?.forEach((item) => {
+                    item.discountPrice += item.brandOffer;
+                    item.brandOffer = 0;
+                })
+            }
+            product.title = title;
+            product.slug = slug;
+            product.category = category;
+            product.brand = brand;
+            product.tags = tags;
+            await product.save();
+            // await Product.updateOne({ _id: id }, {
+            //     $set: {
+            //         title,
+            //         slug,
+            //         category,
+            //         brand,
+            //         tags
+            //     }
+            // });
             res.json({ status: "ok" });
         } catch (error) {
             res.json({ status: "error" });
@@ -527,5 +562,5 @@ module.exports = {
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
         }
-    }
+    },
 }

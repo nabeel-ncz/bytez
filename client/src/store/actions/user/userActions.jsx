@@ -380,3 +380,16 @@ export const validateCoupon = createAsyncThunk("user/validateCoupon", async ({ i
         throw new Error(error?.message);
     }
 })
+
+export const generateReferralCode = createAsyncThunk("user/generateReferralCode", async (id) => {
+    try {
+        const response = await axios.get(`user/referral_code/${id}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})

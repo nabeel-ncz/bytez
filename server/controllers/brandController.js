@@ -1,15 +1,20 @@
 const Brand = require('../models/Brand');
+const Product = require('../models/Product');
 
 module.exports = {
     createBrand: async (req, res) => {
         try {
             const filename = req?.file?.filename;
-            const { brand, status } = req.body;
+            const { brand, status, offerApplied, offerDiscount, offerExpireFrom, offerExpireTo } = req.body;
             if (!filename) {
                 res.json({ status: "error", messsage: "Image upload error!" });
                 return;
             }
-            await Brand.create({ brand: brand.toLowerCase(), thumbnail: filename, status });
+            if (offerApplied) {
+                await Brand.create({ brand: brand.toLowerCase(), thumbnail: filename, status, offerApplied, offerDiscount, offerExpireFrom, offerExpireTo });
+            } else {
+                await Brand.create({ brand: brand.toLowerCase(), thumbnail: filename, status });
+            }
             res.json({ status: "ok" });
         } catch (error) {
             res.json({ status: "error", message: error?.message });
@@ -18,12 +23,46 @@ module.exports = {
     updateBrand: async (req, res) => {
         try {
             const filename = req?.file?.filename;
-            const { id, brand, fileChanged, status } = req.body;
-            if (fileChanged) {
-                await Brand.updateOne({ _id: id }, { brand: brand.toLowerCase(), status, thumbnail: filename });
+            const { id, brand, fileChanged, status, offerApplied, offerDiscount, offerExpireFrom, offerExpireTo } = req.body;
+            let updateFields = {};
+            if (offerApplied === "true") {
+                updateFields = { offerApplied, offerDiscount, offerExpireFrom, offerExpireTo };
+                //updating the products
+                const products = await Product.find({ brand: id });
+                for (const product of products) {
+                    if (product.varients && product.varients.length > 0) {
+                        product.varients.forEach((item) => {
+                            const discount = Math.floor((item.discountPrice * offerDiscount) / 100);
+                            item.discountPrice = item.discountPrice - discount;
+                            item.brandOffer = discount;
+                        });
+                        await product.save();
+                    }
+                }
             } else {
-                await Brand.updateOne({ _id: id }, { brand: brand.toLowerCase(), status });
-            }
+                console.log('offer not applied working')
+                updateFields = { offerApplied, offerDiscount: null, offerExpireFrom: null, offerExpireTo: null };
+                const existBrand = await Brand.findById(id);
+                if (existBrand?.offerApplied) {
+                    //update products
+                    const products = await Product.find({ brand: id });
+                    for (const product of products) {
+                        if (product.varients && product.varients.length > 0) {
+                            product.varients.forEach((item) => {
+                                item.discountPrice = item.discountPrice + item.brandOffer;
+                                item.brandOffer = 0;
+                            });
+                            await product.save();
+                        }
+                    }
+                }
+
+            };
+            updateFields = { ...updateFields, brand: brand.toLowerCase(), status };
+            if (fileChanged) {
+                updateFields = { ...updateFields, thumbnail: filename };
+            };
+            await Brand.findByIdAndUpdate(id, { $set: { ...updateFields } });
             res.json({ status: "ok" });
         } catch (error) {
             res.json({ status: "error", message: error?.message });
@@ -37,10 +76,10 @@ module.exports = {
                 res.json({ status: "error", message: "Brand is not found!" });
             } else {
                 await Brand.updateOne({ _id: id }, { isBlocked: status });
-                res.json({ status:"ok" });
+                res.json({ status: "ok" });
             }
         } catch (error) {
-            res.json({status:"error", message: error?.message});
+            res.json({ status: "error", message: error?.message });
         }
     },
     getAllBrands: async (req, res) => {
@@ -70,7 +109,7 @@ module.exports = {
     },
     getAllActiveBrands: async (req, res) => {
         try {
-            const result = await Brand.find({status:'active'}).lean();
+            const result = await Brand.find({ status: 'active' }).lean();
             if (!result) {
                 res.json({ staus: "error", message: "Brand not found!" });
             } else {

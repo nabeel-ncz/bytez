@@ -49,6 +49,7 @@ const verifyResetPasswordToken = (token) => {
         }
     })
 }
+
 module.exports = { 
     generateUserToken,
     generateOtpToken, 

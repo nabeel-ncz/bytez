@@ -10,7 +10,9 @@ import axios from 'axios';
 function UpdateBrand() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [data, setData] = useState(null);
+    const [data, setData] = useState({
+        brand: "", status: "active", offerApplied: false, offerExpireFrom: "", offerExpireTo: "", offerDiscount: ""
+    });
     const [thumbnail, setThumbnail] = useState(null);
     const [isThumbnailChanged, setIsThumbnailChanged] = useState(false);
 
@@ -39,6 +41,13 @@ function UpdateBrand() {
     const handleThumbnail = (file) => {
         setThumbnail(file);
     }
+    
+    const handleCheckbox = (event) => {
+        setData((data) => ({
+            ...data,
+            offerApplied: event.target.checked,
+        }));
+    }
 
     const clearExistingThumbnail = () => {
         setData((state) => ({
@@ -58,10 +67,9 @@ function UpdateBrand() {
         } else {
             axios.put(`http://localhost:3000/admin/brand/update`, {
                 id: id,
-                brand: data.brand,
-                status: data.status,
                 fileChanged: isThumbnailChanged,
                 file: thumbnail,
+                ...data
             }, {
                 headers: { 'Content-Type': 'multipart/form-data' },
                 withCredentials: true,
@@ -122,6 +130,20 @@ function UpdateBrand() {
                             <input type="radio" name='status' value={"block"} checked={data?.status === "block"} onChange={handleChange} />
                             Block
                         </label>
+                        <label htmlFor="" className='flex items-center justify-start gap-2'>
+                            <input type="checkbox" checked={data?.offerApplied} className='w-6 h-6' onChange={handleCheckbox} />
+                            Add Offer
+                        </label>
+                        {data?.offerApplied && (
+                            <>
+                                <label >Offer Expired From : </label>
+                                <input type='datetime-local' name='offerExpireFrom' onChange={handleChange} value={new Date(data?.offerExpireFrom)?.toISOString()?.slice(0, 16)} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
+                                <label >Offer Expired To : </label>
+                                <input type='datetime-local' name='offerExpireTo' onChange={handleChange} value={new Date(data?.offerExpireTo)?.toISOString()?.slice(0, 16)} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
+                                <label >Discount Percentage : </label>
+                                <input type='number' name='offerDiscount' min={0} max={100} onChange={handleChange} value={data?.offerDiscount} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
+                            </>
+                        )}
                         <Button type='submit' variant='gradient' className='w-full py-2 mt-4'>Save</Button>
                     </form>
                 </div>

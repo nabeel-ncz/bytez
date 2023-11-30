@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 function Signup() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [search, setSearch] = useSearchParams();
     const user = useSelector((state) => state.user?.user);
     const verified = useSelector(state => state.user?.user?.data?.verified);
 
@@ -19,7 +20,8 @@ function Signup() {
     },[]);
 
     const handleSubmit = (data) => {
-        dispatch(register({ userCredentials: data })).then((response) => {
+        const referral = search.get('referral') || null;
+        dispatch(register({ userCredentials: {...data, referral} })).then((response) => {
             if(response?.payload?.status === "ok"){
                 navigate(`/verify/email?request=true&email=${data.email}`);
             }

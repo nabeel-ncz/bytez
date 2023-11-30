@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchUser, getAddress, getAllAddresses } from '../../../store/actions/user/userActions';
+import { fetchUser, generateReferralCode, getAddress, getAllAddresses } from '../../../store/actions/user/userActions';
+import { useLocation } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 function UserDashboard() {
     const [defaultAddress, setDefaultAddress] = useState(null);
     const dispatch = useDispatch();
     const user = useSelector(state => state?.user?.user?.data);
+    const [link, setLink] = useState(null);
+    const location = useLocation();
 
     useEffect(() => {
         dispatch(fetchUser()).then((userData) => {
@@ -18,8 +22,22 @@ function UserDashboard() {
                 })
             }
         })
-
     }, []);
+
+    useEffect(() => {
+        if (user) {
+            dispatch(generateReferralCode(user?._id)).then((response) => {
+                if (response?.payload?.status === "ok") {
+                    setLink(`${window.location.protocol}://${window.location.host}/signup?referral=${response?.payload?.data?.code}`);
+                }
+            })
+        }
+    }, []);
+
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(link);
+        toast("Link copied successfully!");
+    }
 
     return (
         <>
@@ -67,7 +85,7 @@ function UserDashboard() {
                             <h2 className='font-medium text-sm'>Name : {user?.name}</h2>
                             <h2 className='font-medium text-sm'>Email : {user?.email}</h2>
                             <h2 className='font-medium text-sm'>Phone : {user?.phone ? user.phone : defaultAddress?.phone}</h2>
-                        </div> 
+                        </div>
                     </div>
                     <div className='w-1/2 bg-white py-4 rounded shadow-sm'>
                         <div className='w-full border-b border-gray-600 ps-4 pb-2'>
@@ -83,6 +101,16 @@ function UserDashboard() {
                         ) : (
                             <h2>Please add an address</h2>
                         )}
+                    </div>
+                </div>
+                <div className='w-full flex text-start items-start justify-between mt-6 bg-white px-4 py-4'>
+                    <div className='w-8/12'>
+                        {
+                            link && (<h2 className='overflow-clip'>Referral Link : <span className='text-xs font-medium text-blue-400'>{link}</span></h2>)
+                        }
+                    </div>
+                    <div className='w-4/12 flex items-center justify-end'>
+                        <button onClick={handleCopyLink} className='px-2 py-1 border border-gray-800 rounded hover:bg-gray-100'>copy</button>
                     </div>
                 </div>
             </div>

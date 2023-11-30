@@ -32,6 +32,9 @@ const userSchema = new mongoose.Schema({
     wallet:{
         type:Number,
     },
+    referral:{
+        type: Number
+    },
     oauth:{
         type:Boolean,
     }

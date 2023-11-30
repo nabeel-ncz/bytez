@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 const brandSchema = new mongoose.Schema({
-    brand:{
-        type:String,
+    brand: {
+        type: String,
         required: true,
         unique: true,
         collation: { locale: 'en', strength: 2 },
     },
-    thumbnail:{
-        type:String,
+    thumbnail: {
+        type: String,
     },
     status: {
         type: String,
@@ -20,6 +20,12 @@ const brandSchema = new mongoose.Schema({
     },
     offerDiscount: {
         type: Number,
+    },
+    offerExpireFrom: {
+        type: Date,
+    },
+    offerExpireTo: {
+        type: Date,
     }
 });
 const collection = mongoose.model("Brand", brandSchema);

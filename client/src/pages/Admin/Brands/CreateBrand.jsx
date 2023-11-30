@@ -9,7 +9,7 @@ import CustomFileInput from '../../../components/CustomFileInput/CustomFileInput
 
 function CreateBrand() {
     const [data, setData] = useState({
-        brand: "", status: "active"
+        brand: "", status: "active", offerApplied: false, offerExpireFrom: "", offerExpireTo: "", offerDiscount: ""
     });
     const [thumbnail, setThumbnail] = useState(null);
     const dispatch = useDispatch();
@@ -26,13 +26,20 @@ function CreateBrand() {
         setThumbnail(file);
     }
 
+    const handleCheckbox = (event) => {
+        setData((data) => ({
+            ...data,
+            offerApplied: event.target.checked,
+        }));
+    }
+
     const handleFormSubmit = (event) => {
         event.preventDefault();
         if (!thumbnail) {
             toast.error("Thumbnail is required!");
             return;
         }
-        dispatch(addNewBrand({ brand: data?.brand, file: thumbnail, status: data?.status })).then((response) => {
+        dispatch(addNewBrand({ file: thumbnail, ...data })).then((response) => {
             if (response?.payload?.status === "ok") {
                 toast.success("Brand created successfully!");
                 setData({ brand: "", status: "" });
@@ -81,9 +88,19 @@ function CreateBrand() {
                             Block
                         </label>
                         <label htmlFor="" className='flex items-center justify-start gap-2'>
-                            <input type="checkbox" className='w-6 h-6'/>
+                            <input type="checkbox" checked={data?.offerApplied} className='w-6 h-6' onChange={handleCheckbox} />
                             Add Offer
                         </label>
+                        {data?.offerApplied && (
+                            <>
+                                <label >Offer Expired From : </label>
+                                <input type='datetime-local' name='offerExpireFrom' onChange={handleChange} value={data?.offerExpireFrom} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
+                                <label >Offer Expired To : </label>
+                                <input type='datetime-local' name='offerExpireTo' onChange={handleChange} value={data?.offerExpireTo} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
+                                <label >Discount Percentage : </label>
+                                <input type='number' name='offerDiscount' min={0} max={100} onChange={handleChange} value={data?.offerDiscount} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
+                            </>
+                        )}
                         <Button type='submit' variant='gradient' className='w-full py-2 mt-4'>Save</Button>
                     </form>
                 </div>

@@ -3,3 +3,4 @@ build/
 *.env
 public/uploads/
 public/products/resized/
+public/banners/
