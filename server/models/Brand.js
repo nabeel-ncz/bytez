@@ -21,10 +21,7 @@ const brandSchema = new mongoose.Schema({
     offerDiscount: {
         type: Number,
     },
-    offerExpireFrom: {
-        type: Date,
-    },
-    offerExpireTo: {
+    offerExpireAt: {
         type: Date,
     }
 });

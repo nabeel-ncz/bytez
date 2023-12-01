@@ -40,7 +40,9 @@ const {
     getRazorpayKey,
     makeRazorpayOrder,
     requestReturnOrder,
-    cancelReturnRequest
+    cancelReturnRequest,
+    cancelSingleProduct,
+    returnSingleProduct
 } = require('../controllers/orderController');
 
 const { 
@@ -128,6 +130,8 @@ router.get('/order/find/:id', getOrderById);
 router.patch('/order/cancel', cancelOrder);
 router.patch('/order/return', requestReturnOrder);
 router.patch('/order/return/cancel', cancelReturnRequest);
+router.put('/order/cancel_single',cancelSingleProduct);
+router.put('/order/return_single',returnSingleProduct)
 
 router.get('/razorpay/key', getRazorpayKey);
 router.post('/razorpay/create_order', makeRazorpayOrder)

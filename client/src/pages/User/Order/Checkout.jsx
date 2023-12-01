@@ -97,7 +97,7 @@ function Checkout() {
     }
 
     const handleCheckout = () => {
-        dispatch(validateCoupon({ id: cart?.coupon, price: (cart?.subTotal - cart?.discount) })).then((response) => {
+        dispatch(validateCoupon({ id: cart?.coupon, status: cart?.couponApplied, price: (cart?.subTotal - cart?.discount) })).then((response) => {
             if (response.payload?.status === "error" || response?.error) {
                 navigate('/cart');
                 toast.error(response?.payload?.message || response?.error?.message);

@@ -11,7 +11,7 @@ function UpdateBrand() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [data, setData] = useState({
-        brand: "", status: "active", offerApplied: false, offerExpireFrom: "", offerExpireTo: "", offerDiscount: ""
+        brand: "", status: "active", offerApplied: false, offerExpireAt: "", offerDiscount: ""
     });
     const [thumbnail, setThumbnail] = useState(null);
     const [isThumbnailChanged, setIsThumbnailChanged] = useState(false);
@@ -59,6 +59,10 @@ function UpdateBrand() {
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
+        if(new Date(data?.offerExpireAt) - new Date() < 0){
+            toast.error("Choose a valid date")
+            return;
+        }
         if (isThumbnailChanged && !thumbnail) {
             toast.error("Thumbnail is required");
             return;
@@ -136,10 +140,8 @@ function UpdateBrand() {
                         </label>
                         {data?.offerApplied && (
                             <>
-                                <label >Offer Expired From : </label>
-                                <input type='datetime-local' name='offerExpireFrom' onChange={handleChange} value={new Date(data?.offerExpireFrom)?.toISOString()?.slice(0, 16)} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
-                                <label >Offer Expired To : </label>
-                                <input type='datetime-local' name='offerExpireTo' onChange={handleChange} value={new Date(data?.offerExpireTo)?.toISOString()?.slice(0, 16)} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
+                                <label >Offer Expire At : </label>
+                                <input type='datetime-local' name='offerExpireAt' onChange={handleChange} value={data?.offerExpireAt ? new Date(data?.offerExpireAt)?.toISOString()?.slice(0, 16) : new Date()} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
                                 <label >Discount Percentage : </label>
                                 <input type='number' name='offerDiscount' min={0} max={100} onChange={handleChange} value={data?.offerDiscount} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
                             </>

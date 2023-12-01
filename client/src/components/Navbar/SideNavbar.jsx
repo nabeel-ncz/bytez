@@ -3,6 +3,16 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../store/actions/user/userActions';
+import { RxDashboard } from "react-icons/rx";
+import { FiShoppingBag } from 'react-icons/fi';
+import { IoCashOutline } from 'react-icons/io5';
+import { RiCouponLine } from "react-icons/ri";
+import { BsPostcard } from "react-icons/bs"
+import { AiOutlineBlock } from 'react-icons/ai'
+import { TbBrandAppgallery } from "react-icons/tb";
+import { TbBrandBumble } from "react-icons/tb";
+import { MdOutlineAdminPanelSettings } from "react-icons/md";
+import { LuUsers2 } from "react-icons/lu";
 
 function SideNavbar({ sidebarOpen, setSidebarOpen }) {
     const dispatch = useDispatch();
@@ -98,6 +108,7 @@ function SideNavbar({ sidebarOpen, setSidebarOpen }) {
                                         to=""
                                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out hover:bg-gray-300 ${pathname.includes('dashboard') && "bg-gray-300"}`}
                                     >
+                                        <RxDashboard />
                                         Dashboard
                                     </NavLink>
                                 </li>
@@ -106,6 +117,7 @@ function SideNavbar({ sidebarOpen, setSidebarOpen }) {
                                         to="orders"
                                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out hover:bg-gray-300 ${pathname.includes('dashboard') && "bg-gray-300"}`}
                                     >
+                                        <FiShoppingBag />
                                         Orders List
                                     </NavLink>
                                 </li>
@@ -114,6 +126,7 @@ function SideNavbar({ sidebarOpen, setSidebarOpen }) {
                                         to="products"
                                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out hover:bg-gray-300 ${pathname.includes('dashboard') && "bg-gray-300"}`}
                                     >
+                                        <TbBrandAppgallery />
                                         Products List
                                     </NavLink>
                                 </li>
@@ -122,6 +135,7 @@ function SideNavbar({ sidebarOpen, setSidebarOpen }) {
                                         to="payments"
                                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out hover:bg-gray-300 ${pathname.includes('dashboard') && "bg-gray-300"}`}
                                     >
+                                        <IoCashOutline />
                                         Payments
                                     </NavLink>
                                 </li>
@@ -130,6 +144,7 @@ function SideNavbar({ sidebarOpen, setSidebarOpen }) {
                                         to="coupons"
                                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out hover:bg-gray-300 ${pathname.includes('dashboard') && "bg-gray-300"}`}
                                     >
+                                        <RiCouponLine />
                                         Coupons
                                     </NavLink>
                                 </li>
@@ -138,6 +153,7 @@ function SideNavbar({ sidebarOpen, setSidebarOpen }) {
                                         to="banners"
                                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out hover:bg-gray-300 ${pathname.includes('dashboard') && "bg-gray-300"}`}
                                     >
+                                        <BsPostcard />
                                         Banners
                                     </NavLink>
                                 </li>
@@ -146,6 +162,7 @@ function SideNavbar({ sidebarOpen, setSidebarOpen }) {
                                         to="categories"
                                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out hover:bg-gray-300 ${pathname.includes('dashboard') && "bg-gray-300"}`}
                                     >
+                                        <AiOutlineBlock />
                                         Categories
                                     </NavLink>
                                 </li>
@@ -154,10 +171,11 @@ function SideNavbar({ sidebarOpen, setSidebarOpen }) {
                                         to="brands"
                                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out hover:bg-gray-300 ${pathname.includes('dashboard') && "bg-gray-300"}`}
                                     >
+                                        <TbBrandBumble />
                                         Brands
                                     </NavLink>
                                 </li>
-                                
+
                             </ul>
                         </div>
                         <div>
@@ -170,6 +188,7 @@ function SideNavbar({ sidebarOpen, setSidebarOpen }) {
                                         to="customers"
                                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out hover:bg-gray-300 ${pathname.includes('dashboard') && "bg-gray-300"}`}
                                     >
+                                        <LuUsers2 />
                                         Customers
                                     </NavLink>
                                 </li>
@@ -178,6 +197,7 @@ function SideNavbar({ sidebarOpen, setSidebarOpen }) {
                                         to="admins"
                                         className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium duration-300 ease-in-out hover:bg-gray-300 ${pathname.includes('dashboard') && "bg-gray-300"}`}
                                     >
+                                        <MdOutlineAdminPanelSettings />
                                         Admins
                                     </NavLink>
                                 </li>

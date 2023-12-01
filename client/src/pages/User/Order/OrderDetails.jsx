@@ -12,6 +12,8 @@ import OrderReturned from '../../../components/Stepper/OrderReturned';
 import OrderReturnRejected from '../../../components/Stepper/OrderReturnRejected';
 import CancelReturn from '../../../components/CustomDialog/CancelReturn';
 import ReturnRequestCancelled from '../../../components/Stepper/ReturnRequestCancelled';
+import CancelSingleProduct from '../../../components/CustomDialog/CancelSingleProduct';
+import ReturnSingleProduct from '../../../components/CustomDialog/ReturnSingleProduct';
 
 function OrderDetails() {
     const { id } = useParams();
@@ -20,6 +22,9 @@ function OrderDetails() {
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
     const [returnDialogOpen, setReturnDialogOpen] = useState(false);
     const [returnCancelDialogOpen, setReturnCancelDialogOpen] = useState(false);
+    const [singleCancelDialog, setSingleCancelDialog] = useState(false);
+    const [singleReturnDialog, setSingleReturnDialog] = useState(false);
+    const [singleCancelOrReturnData, setSingleCancelOrReturnData] = useState(null);
 
     useEffect(() => {
         handleFetchOrderDetails();
@@ -76,10 +81,31 @@ function OrderDetails() {
             handleDialog();
         }
     }
-
     const handleReturnOrder = () => {
         handleReturnDialog();
     }
+
+    const handleCancelSingleProduct = (productId, varientId) => {
+        if (order?.status === "shipped" || order?.status === "delivered") {
+            toast.error("Order Cancel is not possible after shipping the order");
+        } else {
+            setSingleCancelOrReturnData({
+                orderId: order?._id,
+                productId,
+                varientId,
+            });
+            setSingleCancelDialog(true);
+        }
+    };
+
+    const handleReturnSingleProduct = (productId, varientId) => {
+        setSingleCancelOrReturnData({
+            orderId: order?._id,
+            productId,
+            varientId,
+        });
+        setSingleReturnDialog(true);
+    };
 
     return (
         <>
@@ -101,7 +127,7 @@ function OrderDetails() {
                         <h2 className='text-start text-xs font-normal w-full px-6'>Return requested At : {new Date(order?.returnRequestedAt).toLocaleString()}</h2>
                     ) : (
                         order?.status === "delivered" ? (
-                            <h2 className='text-start text-xs font-normal w-full px-6'>Order Delivered At : {new Date(order?.deliveryDate).toLocaleString()}</h2>   
+                            <h2 className='text-start text-xs font-normal w-full px-6'>Order Delivered At : {new Date(order?.deliveryDate).toLocaleString()}</h2>
                         ) : (
                             <h2 className='text-start text-xs font-normal w-full px-6'>Expected Order Delivery : {new Date(order?.deliveryDate).toLocaleString()}</h2>
                         )
@@ -125,6 +151,7 @@ function OrderDetails() {
                                 <tr className="border-b border-gray-200">
                                     <th className="font-semibold ps-2 text-left border-r">No</th>
                                     <th className="font-semibold text-left border-r">Item</th>
+                                    <th className="font-semibold text-left border-r"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -144,6 +171,23 @@ function OrderDetails() {
                                                 <h2 className='text-xs font-normal'>{doc.quantity} x {doc.price}</h2>
                                             </div>
                                         </td>
+                                        {order?.items?.length > 1 && (
+                                            <td>
+                                                {(order?.status === "pending" || order?.status === "processing") && (
+                                                    <div className='w-full flex flex-col items-end justify-end'>
+                                                        <Button variant='outlined' size='sm' color='red' onClick={() => {handleCancelSingleProduct(doc.productId, doc.varientId)}}>Cancel Product</Button>
+                                                    </div>
+                                                )}
+
+                                                {(((new Date().getTime() - new Date(order?.deliveryDate).getTime()) - (1000 * 3600 * 24)) <= 7) && (
+                                                    (order?.status === "delivered") && (
+                                                        <div className='w-full flex flex-col items-end justify-end'>
+                                                            <Button variant='outlined' size='sm' color='red' onClick={() =>{handleReturnSingleProduct(doc.productId, doc.varientId)}}>Return Product</Button>
+                                                        </div>
+                                                    )
+                                                )}
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>
@@ -186,6 +230,8 @@ function OrderDetails() {
             <CancelOrder open={cancelDialogOpen} handleOpen={handleDialog} orderId={order?._id} handleFetchOrderDetails={handleFetchOrderDetails} />
             <ReturnOrder open={returnDialogOpen} handleOpen={handleReturnDialog} orderId={order?._id} handleFetchOrderDetails={handleFetchOrderDetails} />
             <CancelReturn open={returnCancelDialogOpen} handleOpen={handleReturnCancelDialog} orderId={order?._id} handleFetchOrderDetails={handleFetchOrderDetails} />
+            <CancelSingleProduct open={singleCancelDialog} handleOpen={() => { setSingleCancelDialog(state => !state) }} data={singleCancelOrReturnData} clearData={() => {setSingleCancelOrReturnData(null)}} handleFetchOrderDetails={handleFetchOrderDetails} />
+            <ReturnSingleProduct open={singleReturnDialog} handleOpen={() => { setSingleReturnDialog(state => !state) }} data={singleCancelOrReturnData} clearData={() => {setSingleCancelOrReturnData(null)}} handleFetchOrderDetails={handleFetchOrderDetails} />
         </>
     )
 }

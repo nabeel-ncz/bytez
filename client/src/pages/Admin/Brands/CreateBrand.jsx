@@ -9,7 +9,7 @@ import CustomFileInput from '../../../components/CustomFileInput/CustomFileInput
 
 function CreateBrand() {
     const [data, setData] = useState({
-        brand: "", status: "active", offerApplied: false, offerExpireFrom: "", offerExpireTo: "", offerDiscount: ""
+        brand: "", status: "active", offerApplied: false, offerExpireAt: "", offerDiscount: ""
     });
     const [thumbnail, setThumbnail] = useState(null);
     const dispatch = useDispatch();
@@ -37,6 +37,10 @@ function CreateBrand() {
         event.preventDefault();
         if (!thumbnail) {
             toast.error("Thumbnail is required!");
+            return;
+        }
+        if(data?.offerExpireAt - new Date() < 0){
+            toast.error("Choose a valid date")
             return;
         }
         dispatch(addNewBrand({ file: thumbnail, ...data })).then((response) => {
@@ -93,10 +97,8 @@ function CreateBrand() {
                         </label>
                         {data?.offerApplied && (
                             <>
-                                <label >Offer Expired From : </label>
-                                <input type='datetime-local' name='offerExpireFrom' onChange={handleChange} value={data?.offerExpireFrom} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
-                                <label >Offer Expired To : </label>
-                                <input type='datetime-local' name='offerExpireTo' onChange={handleChange} value={data?.offerExpireTo} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
+                                <label >Offer Expire At : </label>
+                                <input type='datetime-local' name='offerExpireAt' onChange={handleChange} value={data?.offerExpireAt} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
                                 <label >Discount Percentage : </label>
                                 <input type='number' name='offerDiscount' min={0} max={100} onChange={handleChange} value={data?.offerDiscount} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
                             </>

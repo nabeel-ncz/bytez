@@ -464,5 +464,128 @@ module.exports = {
         } catch (error) {
             res.json({ status: 'error', message: error?.message });
         }
-    }
+    },
+    cancelSingleProduct: async (req, res) => {
+        try {
+            const { productId, varientId, orderId, cancelReason } = req.body;
+            if (!productId || !varientId || !orderId) {
+                return res.json({ status: 'error', message: 'Something went wrong!' });
+            }
+            const order = await Order.findById(orderId);
+            if (!order) {
+                return res.json({ status: 'error', message: 'Something went wrong!' });
+            };
+            const item = order.items.find((doc) => doc.productId === productId && doc.varientId === varientId);
+            if (!item) {
+                return res.json({ status: 'error', message: 'Item not exist!' });
+            };
+            const product = await Product.findById(productId);
+            const varient = product.varients?.find((doc) => doc.varientId === varientId);
+            if (!varient) {
+                return res.json({ status: 'error', message: 'Product Varient is not exist!' });
+            }
+
+            await order.updateOne({ $pull: { items: { productId, varientId } } });
+            order.itemsQuantity -= 1;
+            order.subTotal = order.subTotal - varient.price;
+            order.totalPrice = order.totalPrice - varient.discountPrice;
+            order.discount = order.subTotal - order.totalPrice;
+            await order.save();
+
+            const newOrder = new Order({
+                userId: order?.userId,
+                address: order?.address,
+                deliveryDate: order?.deliveryDate,
+                paymentMode: order?.paymentMode,
+                paymentStatus: order?.paymentStatus,
+                orderNote: order?.orderNote,
+                items: [{
+                    productId,
+                    varientId,
+                    ...item,
+                }],
+                status: "cancelled",
+                cancelReason,
+                cancelledAt: new Date(Date.now()),
+                itemsQuantity: 1,
+                subTotal: varient.price,
+                discount: varient.price - varient.discountPrice,
+                totalPrice: varient.discountPrice
+            });
+            await newOrder.save();
+
+            await Product.updateOne(
+                { _id: productId, 'varients.varientId': varientId },
+                { $inc: { 'varients.$.stockQuantity': item.quantity } }
+            );
+            if (newOrder.paymentMode === "RazorPay" || newOrder.paymentMode === "Wallet") {
+                try {
+                    await User.findByIdAndUpdate(newOrder.userId, { $inc: { wallet: newOrder.totalPrice } });
+                    await Transaction.findOneAndUpdate({ orderId: newOrder._id }, { $set: { refundAmount: newOrder.totalPrice } });
+                } catch (error) {
+                    throw new Error(error?.message);
+                }
+            }
+
+            res.json({ status: 'ok' });
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        };
+    },
+    returnSingleProduct: async (req, res) => {
+        try {
+            const { productId, varientId, orderId, returnReason } = req.body;
+            if (!productId || !varientId || !orderId) {
+                return res.json({ status: 'error', message: 'Something went wrong!' });
+            }
+            const order = await Order.findById(orderId);
+            if (!order) {
+                return res.json({ status: 'error', message: 'Something went wrong!' });
+            };
+            if (((new Date(Date.now()).getTime() - new Date(order?.deliveryDate).getTime()) / (1000 * 3600 * 24)) > 7) {
+                return res.json({ status: 'error', message: "Can't request for return the order after 7 days!" });
+            }
+            const item = order.items.find((doc) => doc.productId === productId && doc.varientId === varientId);
+            if (!item) {
+                return res.json({ status: 'error', message: 'Item not exist!' });
+            };
+            const product = await Product.findById(productId);
+            const varient = product.varients?.find((doc) => doc.varientId === varientId);
+            if (!varient) {
+                return res.json({ status: 'error', message: 'Product Varient is not exist!' });
+            }
+
+            await order.updateOne({ $pull: { items: { productId, varientId } } });
+            order.itemsQuantity -= 1;
+            order.subTotal = order.subTotal - varient.price;
+            order.totalPrice = order.totalPrice - varient.discountPrice;
+            order.discount = order.subTotal - order.totalPrice;
+            await order.save();
+
+            const newOrder = new Order({
+                userId: order?.userId,
+                address: order?.address,
+                deliveryDate: order?.deliveryDate,
+                paymentMode: order?.paymentMode,
+                paymentStatus: order?.paymentStatus,
+                orderNote: order?.orderNote,
+                items: [{
+                    productId,
+                    varientId,
+                    ...item,
+                }],
+                status: "return requested",
+                returnReason,
+                returnRequestedAt: new Date(Date.now()),
+                itemsQuantity: 1,
+                subTotal: varient.price,
+                discount: varient.price - varient.discountPrice,
+                totalPrice: varient.discountPrice
+            });
+            await newOrder.save();
+            res.json({ status: 'ok' });
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        };
+    },
 }

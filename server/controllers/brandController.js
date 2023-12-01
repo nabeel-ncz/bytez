@@ -5,13 +5,13 @@ module.exports = {
     createBrand: async (req, res) => {
         try {
             const filename = req?.file?.filename;
-            const { brand, status, offerApplied, offerDiscount, offerExpireFrom, offerExpireTo } = req.body;
+            const { brand, status, offerApplied, offerDiscount, offerExpireAt } = req.body;
             if (!filename) {
                 res.json({ status: "error", messsage: "Image upload error!" });
                 return;
             }
             if (offerApplied) {
-                await Brand.create({ brand: brand.toLowerCase(), thumbnail: filename, status, offerApplied, offerDiscount, offerExpireFrom, offerExpireTo });
+                await Brand.create({ brand: brand.toLowerCase(), thumbnail: filename, status, offerApplied, offerDiscount, offerExpireAt });
             } else {
                 await Brand.create({ brand: brand.toLowerCase(), thumbnail: filename, status });
             }
@@ -23,15 +23,16 @@ module.exports = {
     updateBrand: async (req, res) => {
         try {
             const filename = req?.file?.filename;
-            const { id, brand, fileChanged, status, offerApplied, offerDiscount, offerExpireFrom, offerExpireTo } = req.body;
+            const { id, brand, fileChanged, status, offerApplied, offerDiscount, offerExpireAt } = req.body;
             let updateFields = {};
             if (offerApplied === "true") {
-                updateFields = { offerApplied, offerDiscount, offerExpireFrom, offerExpireTo };
+                updateFields = { offerApplied, offerDiscount, offerExpireAt };
                 //updating the products
                 const products = await Product.find({ brand: id });
                 for (const product of products) {
                     if (product.varients && product.varients.length > 0) {
                         product.varients.forEach((item) => {
+                            item.discountPrice = item.discountPrice + item.brandOffer;
                             const discount = Math.floor((item.discountPrice * offerDiscount) / 100);
                             item.discountPrice = item.discountPrice - discount;
                             item.brandOffer = discount;
@@ -40,8 +41,7 @@ module.exports = {
                     }
                 }
             } else {
-                console.log('offer not applied working')
-                updateFields = { offerApplied, offerDiscount: null, offerExpireFrom: null, offerExpireTo: null };
+                updateFields = { offerApplied, offerDiscount: null, offerExpireAt: null };
                 const existBrand = await Brand.findById(id);
                 if (existBrand?.offerApplied) {
                     //update products

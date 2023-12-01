@@ -11,6 +11,7 @@ const userRouter = require('./routes/userRoute');
 const adminRouter = require('./routes/adminRoute');
 const productRouter = require('./routes/productRoute');
 const { deleteUnverifiedUsers } = require('./cron/deleteUnverifiedUsers');
+const { removeBrandOffer } = require('./cron/removeBrandOffer');
 const app = express();
 connectDb();
 
@@ -34,7 +35,8 @@ app.use('/products', productRouter);
 
 cron.schedule('0 0 * * *', () => {
     deleteUnverifiedUsers();
+    removeBrandOffer();
 });
 app.listen(process.env.PORT || 3000, () => {
-    console.log(`\x1b[30m\x1b[42mServer Running at ${process.env?.PORT} Port \x1b[0m`);
+    console.log(`\x1b[30m\x1b[42mServer Running at ${process.env?.PORT || 3000} Port \x1b[0m`);
 });
