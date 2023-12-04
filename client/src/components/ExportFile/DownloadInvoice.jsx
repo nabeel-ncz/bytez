@@ -11,15 +11,19 @@ function DownloadInvoice({ orderId }) {
 
     const handleDownload = async () => {
         setLoading(true);
-        const response = await axios.get(`http://localhost:3000/user/order/invoice_data?oId=${orderId}`, { withCredentials: true })
-        if (response.data?.status === "ok") {
-            const invoice = await easyinvoice.createInvoice(response.data?.data);
-            easyinvoice.download(`invoice-${new Date(Date.now()).toLocaleString()}`, invoice.pdf);
+        try {
+            const response = await axios.get(`http://localhost:3000/user/order/invoice_data?oId=${orderId}`,
+                { responseType: "blob" });
+            const blob = new Blob([response.data], { type: "application/pdf" });
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(blob);
+            link.download = "invoice.pdf";
+            link.click();
+        } catch (error) {
+            console.error("Error generating invoice:", error);
+        } finally {
             setLoading(false);
-        } else {
-            toast.error('There is something went wrong!');
-            setLoading(false);
-        };
+        }
     }
     return (
         <>

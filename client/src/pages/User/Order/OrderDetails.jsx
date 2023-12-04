@@ -15,7 +15,6 @@ import ReturnRequestCancelled from '../../../components/Stepper/ReturnRequestCan
 import CancelSingleProduct from '../../../components/CustomDialog/CancelSingleProduct';
 import ReturnSingleProduct from '../../../components/CustomDialog/ReturnSingleProduct';
 import DownloadInvoice from '../../../components/ExportFile/DownloadInvoice';
-import { IoDownloadOutline } from "react-icons/io5";
 
 function OrderDetails() {
     const { id } = useParams();
@@ -177,14 +176,14 @@ function OrderDetails() {
                                             <td>
                                                 {(order?.status === "pending" || order?.status === "processing") && (
                                                     <div className='w-full flex flex-col items-end justify-end'>
-                                                        <Button variant='outlined' size='sm' color='red' onClick={() => {handleCancelSingleProduct(doc.productId, doc.varientId)}}>Cancel Product</Button>
+                                                        <Button variant='outlined' size='sm' color='red' onClick={() => { handleCancelSingleProduct(doc.productId, doc.varientId) }}>Cancel Product</Button>
                                                     </div>
                                                 )}
 
                                                 {(((new Date().getTime() - new Date(order?.deliveryDate).getTime()) - (1000 * 3600 * 24)) <= 7) && (
                                                     (order?.status === "delivered") && (
                                                         <div className='w-full flex flex-col items-end justify-end'>
-                                                            <Button variant='outlined' size='sm' color='red' onClick={() =>{handleReturnSingleProduct(doc.productId, doc.varientId)}}>Return Product</Button>
+                                                            <Button variant='outlined' size='sm' color='red' onClick={() => { handleReturnSingleProduct(doc.productId, doc.varientId) }}>Return Product</Button>
                                                         </div>
                                                     )
                                                 )}
@@ -225,7 +224,9 @@ function OrderDetails() {
                                     <Button variant='outlined' color='red' onClick={handleReturnCancelDialog}>Cancel Return Request</Button>
                                 </div>
                             )}
-                            <DownloadInvoice orderId={order?._id || null}/>
+                            {(order?.status !== "pending" && order?.status !== "processing" && order?.status !== "shipped" && order?.status !== "cancelled" && order?.status !== "rejected") && (
+                                <DownloadInvoice orderId={order?._id || null} />
+                            )}
                         </div>
                     </div>
                 </div>
@@ -233,8 +234,8 @@ function OrderDetails() {
             <CancelOrder open={cancelDialogOpen} handleOpen={handleDialog} orderId={order?._id} handleFetchOrderDetails={handleFetchOrderDetails} />
             <ReturnOrder open={returnDialogOpen} handleOpen={handleReturnDialog} orderId={order?._id} handleFetchOrderDetails={handleFetchOrderDetails} />
             <CancelReturn open={returnCancelDialogOpen} handleOpen={handleReturnCancelDialog} orderId={order?._id} handleFetchOrderDetails={handleFetchOrderDetails} />
-            <CancelSingleProduct open={singleCancelDialog} handleOpen={() => { setSingleCancelDialog(state => !state) }} data={singleCancelOrReturnData} clearData={() => {setSingleCancelOrReturnData(null)}} handleFetchOrderDetails={handleFetchOrderDetails} />
-            <ReturnSingleProduct open={singleReturnDialog} handleOpen={() => { setSingleReturnDialog(state => !state) }} data={singleCancelOrReturnData} clearData={() => {setSingleCancelOrReturnData(null)}} handleFetchOrderDetails={handleFetchOrderDetails} />
+            <CancelSingleProduct open={singleCancelDialog} handleOpen={() => { setSingleCancelDialog(state => !state) }} data={singleCancelOrReturnData} clearData={() => { setSingleCancelOrReturnData(null) }} handleFetchOrderDetails={handleFetchOrderDetails} />
+            <ReturnSingleProduct open={singleReturnDialog} handleOpen={() => { setSingleReturnDialog(state => !state) }} data={singleCancelOrReturnData} clearData={() => { setSingleCancelOrReturnData(null) }} handleFetchOrderDetails={handleFetchOrderDetails} />
         </>
     )
 }

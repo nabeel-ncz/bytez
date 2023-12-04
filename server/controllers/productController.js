@@ -78,10 +78,11 @@ module.exports = {
                 $lte: parseFloat(queryPriceTo)
             };
         }
+        if (queryRating && queryRating !== 'all') {
+            filter['totalRating'] = { $gte: parseFloat(queryRating) };
+        }
+
         console.log(filter)
-        // if (queryRating && queryRating !== 'all') {
-        //     filter['varients.totalRating'] = parseFloat(queryRating);
-        // }
 
         try {
             const page = Number(req.query?.page) || 1;
