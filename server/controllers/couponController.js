@@ -16,7 +16,7 @@ module.exports = {
 
     },
     createCoupon: async (req, res) => {
-        const { code, discountPercentage, validFrom, validTo, maxUsesPerUser, isActive, couponType, minimumApplicableAmount, maximumApplicableAmount, minimumPurchaseAmount } = req.body;
+        const { code, discountPercentage, validFrom, validTo, maxUsesPerUser, couponType, minimumApplicableAmount, maximumApplicableAmount, minimumPurchaseAmount } = req.body;
         try {
             await Coupon.create({
                 code,
@@ -24,7 +24,6 @@ module.exports = {
                 validFrom,
                 validTo,
                 maxUsesPerUser,
-                isActive,
                 couponType,
                 minimumApplicableAmount,
                 maximumApplicableAmount,
@@ -36,7 +35,7 @@ module.exports = {
         }
     },
     updateCoupon: async (req, res) => {
-        const { id, code, discountPercentage, validFrom, validTo, minimumApplicableAmount, maximumApplicableAmount, maxUsesPerUser, status, couponType, minimumPurchaseAmount } = req.body;
+        const { id, code, discountPercentage, validFrom, validTo, minimumApplicableAmount, maximumApplicableAmount, maxUsesPerUser, couponType, minimumPurchaseAmount } = req.body;
         try {
             await Coupon.findByIdAndUpdate(id, {
                 code,
@@ -44,7 +43,6 @@ module.exports = {
                 validFrom,
                 validTo,
                 maxUsesPerUser,
-                isActive: status,
                 couponType,
                 minimumPurchaseAmount,
                 maximumApplicableAmount,
@@ -67,12 +65,13 @@ module.exports = {
     getAvailabeUserCoupons: async (req, res) => {
         try {
             const id = req.params?.id;
-            const publicAndWelcomeCoupons = await Coupon.find({ couponType: { $in: ['public_coupon', 'welcome_coupon'] } });
+            const currDate = new Date(Date.now());
+            const publicAndWelcomeCoupons = await Coupon.find({ couponType: { $in: ['public_coupon', 'welcome_coupon'] }, validTo: { $gt: currDate } });
             const userData = await Order.aggregate([
                 {
                     $match: {
                         userId: new mongoose.Types.ObjectId(id),
-                        status: 'delivered',
+                        status: { $in: ["delivered", "return requested", "return cancelled", "request approved", "return rejected", "return recieved", "return accepted"] },
                     },
                 },
                 {
@@ -82,7 +81,7 @@ module.exports = {
                     }
                 },
             ]);
-            const privateCoupons = await Coupon.find({ couponType: 'private_coupon', minimumPurchaseAmount: { $lte: userData[0]?.maxPurchaseAmount } });
+            const privateCoupons = await Coupon.find({ couponType: 'private_coupon', minimumPurchaseAmount: { $lte: userData[0]?.maxPurchaseAmount }, validTo: { $gt: currDate } });
             res.json({ status: 'ok', data: [...publicAndWelcomeCoupons, ...privateCoupons] });
         } catch (error) {
             res.json({ status: 'error', message: error?.message });

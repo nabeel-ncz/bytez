@@ -9,11 +9,11 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    name:{
+    name: {
         type: String,
         required: true,
     },
-    image:{
+    image: {
         type: String,
         required: true,
     },
@@ -82,13 +82,14 @@ const orderSchema = new mongoose.Schema({
         type: Date,
     },
     items: [productSchema],
-    itemsQuantity: {type: Number, required: true },
+    itemsQuantity: { type: Number, required: true },
     subTotal: { type: Number, required: true },
     discount: { type: Number, required: true },
     shipping: { type: Number, default: 0 },
+    couponApplied: { type: Number, default: 0 },
     totalPrice: { type: Number, required: true },
 },
-{ timestamps: true });
+    { timestamps: true });
 
 const collection = mongoose.model('Order', orderSchema);
 module.exports = collection;

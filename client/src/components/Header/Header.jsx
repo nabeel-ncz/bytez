@@ -76,6 +76,7 @@ function Header() {
                                                     <>
                                                         <ListItem onClick={() => navigate("wishlist")}>Wishlist</ListItem>
                                                         <ListItem onClick={() => navigate("orders")}>Orders</ListItem>
+                                                        <ListItem onClick={() => navigate("coupons")}>Coupons</ListItem>
                                                         <ListItem onClick={() => navigate("profile")}>Profile</ListItem>
                                                         <ListItem onClick={handleLogout}>Log Out</ListItem>
                                                     </>

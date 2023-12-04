@@ -59,7 +59,7 @@ function UpdateBrand() {
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
-        if(new Date(data?.offerExpireAt) - new Date() < 0){
+        if(data?.offerApplied && new Date(data?.offerExpireAt) - new Date() < 0){
             toast.error("Choose a valid date")
             return;
         }
@@ -80,6 +80,8 @@ function UpdateBrand() {
             }).then((response) => {
                 if(response.data.status === "ok"){
                     navigate('/admin/brands');
+                } else {
+                    toast.error(response?.data?.message || "There is something went wrong!")
                 }
             })
         }

@@ -14,7 +14,7 @@ module.exports = {
                 {
                     $match: {
                         userId: new mongoose.Types.ObjectId(id),
-                        status: 'delivered',
+                        status: { $in: ["delivered", "return requested", "return cancelled", "request approved", "return rejected", "return recieved", "return accepted"] },
                     }
                 },
                 {
@@ -29,7 +29,7 @@ module.exports = {
             const match = totalCoupons.find((item) => item.code === couponCode);
             if (match) {
                 const isDateValid = validateCouponDate(match);
-                if(!isDateValid){
+                if (!isDateValid) {
                     return res.json({ status: 'error', message: "Coupon is valid!" });
                 }
                 const cart = await Cart.findById(cartId);

@@ -16,7 +16,6 @@ function CreateCoupon() {
         maximumApplicableAmount: 0,
         couponType: "public_coupon",
         maxUsesPerUser: 1,
-        isActive: true,
         minimumPurchaseAmount: ""
     });
     const handleChange = (event) => {
@@ -58,15 +57,6 @@ function CreateCoupon() {
                     <form onSubmit={handleFormSubmit} className='mt-6 w-full flex flex-col items-start gap-2'>
                         <label >Coupon Code : </label>
                         <input name='code' onChange={handleChange} value={data?.code} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
-                        <label >Status : </label>
-                        <label htmlFor="">
-                            <input type="radio" name='isActive' value={true} checked={data?.isActive === true} onChange={handleChange} required />
-                            Active
-                        </label>
-                        <label htmlFor="">
-                            <input type="radio" name='isActive' value={false} checked={data?.isActive === false} onChange={handleChange} required />
-                            Block
-                        </label>
                         <label >Valid From : </label>
                         <input type='datetime-local' name='validFrom' onChange={handleChange} value={data?.validFrom} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
                         <label >Valid To : </label>

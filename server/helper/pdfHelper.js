@@ -95,7 +95,17 @@ const generateInvoicePDF = async (order) => {
                 "",
                 order.discount
             );
-            const duePosition = paidToDatePosition + 30;
+            const couponAppliedPosition = paidToDatePosition + 30;
+            generateTableRowNoLine(
+                doc,
+                couponAppliedPosition,
+                "",
+                "",
+                "Coupon Applied",
+                "",
+                order?.couponApplied || 0
+            );
+            const duePosition = couponAppliedPosition + 30;
             generateTableRowNoLine(
                 doc,
                 duePosition,

@@ -173,9 +173,9 @@ function Product() {
                         <div className="w-full lg:w-1/2 pt-12">
                             <div className='flex items-center justify-between w-full lg:w-10/12'>
                                 <h1 className="text-3xl font-semibold text-start">{product?.title}</h1>
-                                <IconButton variant="outlined" className='w-2/12'>
+                                {/* <IconButton variant="outlined" className='w-2/12'>
                                     <img src="/icons/heart-icon.png" alt="" className='w-5 h-5' />
-                                </IconButton>
+                                </IconButton> */}
                             </div>
                             <p className='text-start w-full lg:w-10/12 mt-2 opacity-50 line-clamp-2'>{product?.varients[selectedVarient]?.description}</p>
                             <div className='w-full lg:w-10/12 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-2 lg:gap-0 border-t border-gray-400 mt-4 pt-4'>
@@ -188,8 +188,10 @@ function Product() {
                                     </h1>
                                 </div>
                                 <div className='flex items-start justify-center lg:gap-0 gap-2'>
-                                    <StarCardLarge />
-                                    <ReviewCount />
+                                    {(product?.totalRating && product?.totalRating !== 0) && (
+                                        <StarCardLarge value={product?.totalRating} />
+                                    )}
+                                    <ReviewCount value={productReviews?.length || 0} />
                                 </div>
                             </div>
                             <div className='w-full lg:w-10/12 flex items-center justify-between border-t border-gray-400 mt-4 pt-4'>

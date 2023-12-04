@@ -23,7 +23,7 @@ function Home() {
     console.log(response.data?.data)  
     if (response.data?.status === "ok") {
         const temp = response.data?.data?.map((item) => item.brand);
-        const random = getRandomElements(temp, 3)
+        const random = getRandomElements(temp, 3);
         setBrands(state => ({ ...state, first: random[0], second: random[1], third: random[2]}));
       }
     })
@@ -61,8 +61,8 @@ function Home() {
       {(user && !verified) && <VerifyMessage open={open} handleOpen={handleOpen} email={user?.email} />}
       <Hero />
       <RowPost title={brands?.first} />
-      <RowPost title={brands?.second} />
       <RowBanner />
+      <RowPost title={brands?.second} />
       <RowPost title={brands?.third} />
     </div>
   )

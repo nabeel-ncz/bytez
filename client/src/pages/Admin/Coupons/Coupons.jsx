@@ -55,11 +55,11 @@ function Coupons() {
                 <td className="text-sm p-4 text-start border-r">{doc.discountPercentage}%</td>
                 <td className="text-sm p-4 text-start border-r">{doc.couponType.split('_').join(' ').toUpperCase()}</td>
                 <td className="text-sm p-4 text-start border-r">
-                  {doc.isActive ?
+                  {new Date(doc.validTo) > new Date(Date.now()) ?
                     (
                       <Chip variant="ghost" color={"blue"} size="sm" value={"Active"} className='text-center' />
                     ) : (
-                      <Chip variant="ghost" color={"red"} size="sm" value={"Block"} className='text-center' />
+                      <Chip variant="ghost" color={"brown"} size="sm" value={"InActive"} className='text-center' />
                     )
                   }
                 </td>

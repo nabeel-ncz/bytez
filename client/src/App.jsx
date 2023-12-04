@@ -54,6 +54,7 @@ import Carousel from "./pages/Admin/Banners/Carousel"
 import Banners from "./pages/Admin/Banners/Banners";
 import Posters from "./pages/Admin/Banners/Posters";
 import News from "./pages/Admin/Banners/News"
+import UserCoupons from "./pages/User/Coupons/UserCoupons"
 
 
 function App() {
@@ -121,7 +122,7 @@ function App() {
               <Route path="store" element={<Store />} />
               <Route path="product/:id" element={<Product />} />
               <Route path="contact" element={<Contact />} />
-              <Route path="profile" element={<Profile />} >
+              <Route path="profile" element={user ? <Profile /> : <NoAccount />} >
                 <Route index element={<UserDashboard />} />
                 <Route path="account" element={<AccountDetails />}/>
                 <Route path="account/change_password" element={<ChangePassword />}/>
@@ -130,6 +131,7 @@ function App() {
                 <Route path="address/update" element={<UpdateAddress />}/>
                 <Route path="wallet" element={<Wallet />}/>
               </Route>
+              <Route path="coupons" element={user ? <UserCoupons /> : <NoAccount />} />
               <Route path="cart" element={user ? <Cart /> : <NoAccount />} />
               <Route path="wishlist" element={user ? <Wishlist /> : <NoAccount />} />
               <Route path="checkout" element={user ? <Checkout /> : <NoAccount />} />

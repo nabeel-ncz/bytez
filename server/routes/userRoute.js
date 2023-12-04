@@ -91,8 +91,6 @@ router.use(passport.session());
 
 router.get('/order/invoice_data', getOrderInvoiceData);
 
-router.get('/coupons/available/:id', getAvailabeUserCoupons);
-
 router.post('/auth/signup', registerUser);
 router.post('/auth/login', loginUser);
 router.post('/auth/verify/email', verifyEmail);
@@ -119,6 +117,8 @@ router.put('/cart/product/delete', deleteProductFromCart);
 router.post('/cart/apply_coupon', applyCouponInCart)
 router.patch('/cart/remove_coupon', removeCouponFromCart);
 router.get('/cart/validate_coupon', validateCoupon)
+
+router.get('/coupons/available/:id', getAvailabeUserCoupons);
 
 router.get('/wishlist/all/:id', getWishlistItems);
 router.post('/wishlist/add',addItemsToWishlist);

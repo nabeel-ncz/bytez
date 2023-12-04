@@ -41,11 +41,18 @@ function Wallet() {
         <div className='flex items-center justify-start gap-4'>
           <img src="/icons/wallet_black.png" alt="" className='w-14 opacity-60' />
           <div className='flex flex-col items-start justify-center'>
-            <h2 className='text-2xl font-semibold'>₹.{user?.wallet}</h2>
+            <h2 className='text-2xl font-semibold'>₹.{user?.wallet || 0}</h2>
             <h2 className='text-xs font-base'>My Wallet Balance</h2>
           </div>
         </div>
         <Button onClick={() => { navigate(`/store`) }} size='sm'>Purchase</Button>
+      </div>
+      <div className='bg-white w-full flex items-center justify-start ps-8'>
+        {user?.referral && (
+          <h6>Referral : <span className='text-base font-medium'>{user?.referral || 0}</span>
+            <span className="text-xs font-medium"> x {user?.referral / 100}</span>
+          </h6>
+        )}
       </div>
       <div className='w-full bg-white rounded shadow-sm flex items-center justify-center px-8 py-4'>
         <table className="w-full min-w-max table-auto">

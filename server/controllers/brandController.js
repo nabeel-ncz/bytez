@@ -10,11 +10,18 @@ module.exports = {
                 res.json({ status: "error", messsage: "Image upload error!" });
                 return;
             }
-            if (offerApplied) {
-                await Brand.create({ brand: brand.toLowerCase(), thumbnail: filename, status, offerApplied, offerDiscount, offerExpireAt });
-            } else {
-                await Brand.create({ brand: brand.toLowerCase(), thumbnail: filename, status });
+            const isExist = await Brand.findOne({ brand: brand.toLowerCase(), status: "active" });
+            if (isExist) {
+                return res.json({ status: 'error', message: 'Brand is already exist' });
             }
+            const extraField = offerApplied ? { offerApplied, offerDiscount, offerExpireAt } : {};
+            const newBrand = new Brand({
+                brand: brand.toLowerCase(),
+                thumbnail: filename, 
+                status,
+                ...extraField,
+            });
+            newBrand.save();
             res.json({ status: "ok" });
         } catch (error) {
             res.json({ status: "error", message: error?.message });
@@ -24,6 +31,10 @@ module.exports = {
         try {
             const filename = req?.file?.filename;
             const { id, brand, fileChanged, status, offerApplied, offerDiscount, offerExpireAt } = req.body;
+            const isExist = await Brand.findOne({ brand: brand.toLowerCase(), status: "active" });
+            if (isExist && isExist._id.toString() !== id) {
+                return res.json({ status: 'error', message: 'Brand is already exist' });
+            };
             let updateFields = {};
             if (offerApplied === "true") {
                 updateFields = { offerApplied, offerDiscount, offerExpireAt };

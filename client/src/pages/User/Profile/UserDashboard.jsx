@@ -103,16 +103,17 @@ function UserDashboard() {
                         )}
                     </div>
                 </div>
-                <div className='w-full flex text-start items-start justify-between mt-6 bg-white px-4 py-4'>
-                    <div className='w-8/12'>
-                        {
-                            link && (<h2 className='overflow-clip'>Referral Link : <span className='text-xs font-medium text-blue-400'>{link}</span></h2>)
-                        }
+                {link && (
+                    <div className='w-full flex text-start items-start justify-between mt-6 bg-white px-4 py-4'>
+                        <div className='w-8/12'>
+                            <h2 className='overflow-clip'>Referral Link : <span className='text-xs font-medium text-blue-400'>{link}</span></h2>
+                        </div>
+                        <div className='w-4/12 flex items-center justify-end'>
+                            <button onClick={handleCopyLink} className='px-2 py-1 border border-gray-800 rounded hover:bg-gray-100'>copy</button>
+                        </div>
                     </div>
-                    <div className='w-4/12 flex items-center justify-end'>
-                        <button onClick={handleCopyLink} className='px-2 py-1 border border-gray-800 rounded hover:bg-gray-100'>copy</button>
-                    </div>
-                </div>
+                )}
+
             </div>
         </>
     )

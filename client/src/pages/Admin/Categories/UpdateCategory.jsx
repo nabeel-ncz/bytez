@@ -67,6 +67,8 @@ function UpdateCategory() {
             }).then((response) => {
                 if(response.data.status === "ok"){
                     navigate('/admin/categories');
+                } else {
+                    toast.error(response.data?.message);
                 }
             })
         }

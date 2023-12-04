@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Breadcrumbs, Button } from '@material-tailwind/react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getAllCarouselImages, getAllPosterImages } from '../../../store/actions/admin/adminActions';
+import { getAllCarouselImages, getAllPosterImages, getAllNewsImages } from '../../../store/actions/admin/adminActions';
 
 function Banners() {
   const dispatch = useDispatch();
@@ -14,6 +14,7 @@ function Banners() {
   useEffect(() => {
     dispatch(getAllCarouselImages());
     dispatch(getAllPosterImages());
+    dispatch(getAllNewsImages());
   }, []);
 
   return (

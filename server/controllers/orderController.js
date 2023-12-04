@@ -124,7 +124,8 @@ module.exports = {
                 itemsQuantity,
                 subTotal: cart.subTotal,
                 discount: cart.discount,
-                totalPrice: cart.totalPrice
+                totalPrice: cart.totalPrice,
+                couponApplied: cart?.couponApplied || 0
             });
             await Transaction.create({
                 userId: userId,

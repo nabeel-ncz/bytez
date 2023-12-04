@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Button } from "@material-tailwind/react"
-import easyinvoice from 'easyinvoice';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { IoDownloadOutline } from "react-icons/io5";

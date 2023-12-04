@@ -37,8 +37,9 @@ function CreateCategory() {
             if (response?.payload?.status === "ok") {
                 toast.success("Category created successfully!");
                 setCategory('');
+                navigate('/admin/categories')
             } else {
-                toast.error("There is something went wrong!");
+                toast.error(response?.error?.message || response?.payload?.message || "There is something went wrong!");
             }
         })
     };

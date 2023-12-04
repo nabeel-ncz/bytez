@@ -39,7 +39,7 @@ function CreateBrand() {
             toast.error("Thumbnail is required!");
             return;
         }
-        if(data?.offerExpireAt - new Date() < 0){
+        if(data?.offerApplied && data?.offerExpireAt - new Date() < 0){
             toast.error("Choose a valid date")
             return;
         }
@@ -49,7 +49,7 @@ function CreateBrand() {
                 setData({ brand: "", status: "" });
                 navigate('/admin/brands')
             } else {
-                toast.error("There is something went wrong!");
+                toast.error(response?.error?.message || response?.payload?.message || "There is something went wrong");
             }
         })
     };
