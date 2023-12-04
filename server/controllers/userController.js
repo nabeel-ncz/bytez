@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
+const Order = require('../models/Order');
 const { generateUserToken, generateOtpToken, verifyOtpToken, verifyUserToken, generateResetPasswordToken, verifyResetPasswordToken } = require('../helper/jwtHelper');
 const { generateOTP } = require('../helper/otpHelper');
 const { sendOtpMail, sendResetPasswordMail } = require('../helper/mailHelper');
@@ -28,7 +29,7 @@ module.exports = {
                     const user = await User.findById(isValid.id);
                     if (user) {
                         user.wallet += 100;
-                        if(user.referral){
+                        if (user.referral) {
                             user.referral += 100;
                         } else {
                             user.referral = 100;
@@ -562,5 +563,19 @@ module.exports = {
         };
         const code = generateReferralCode(id);
         res.json({ status: "ok", data: { code } });
+    },
+    checkUserCanAddReview: async (req, res) => {
+        const userId = req.query?.uId;
+        const productId = req.query?.pId;
+        try {
+            const result = await Order.findOne({ userId, 'items.productId': productId, status: { $in: ["delivered", "return requested", "return cancelled", "request approved", "return rejected", "return recieved", "return accepted"] } });
+            if (result) {
+                res.json({ status: 'ok', data: { user: true } });
+            } else {
+                res.json({ status: 'ok', data: { user: false } });
+            }
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        }
     }
 }

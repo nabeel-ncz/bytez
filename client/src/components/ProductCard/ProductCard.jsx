@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddItemToWishlist, removeItemFromWishlist } from '../../store/actions/user/userActions';
 
-function ProductCard({ id, image, varients, title, description, price }) {
+function ProductCard({ id, image, varients, title, description, price, rating }) {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const user = useSelector(state => state?.user?.user?.data);
@@ -61,7 +61,9 @@ function ProductCard({ id, image, varients, title, description, price }) {
                     <div className='w-full flex flex-col px-6 py-4 items-start'>
                         <div className='w-full flex items-center justify-between'>
                             <h2 className='font-semibold text-2xl'>₹{price}</h2>
-                            <StarCard />
+                            {(rating && rating !== 0) && (
+                                <StarCard value={rating} />
+                            )}
                         </div>
                         <div className='w-full flex flex-col items-start'>
                             <h2 className='w-full text-start font-semibold text-lg truncate'>{title}</h2>

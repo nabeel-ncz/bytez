@@ -19,7 +19,8 @@ const {
     updateUserPassword,
     resetPassword,
     verifyResetPassword,
-    getReferralCode
+    getReferralCode,
+    checkUserCanAddReview
 } = require('../controllers/userController');
 
 const {
@@ -42,7 +43,8 @@ const {
     requestReturnOrder,
     cancelReturnRequest,
     cancelSingleProduct,
-    returnSingleProduct
+    returnSingleProduct,
+    getOrderInvoiceData
 } = require('../controllers/orderController');
 
 const { 
@@ -71,12 +73,23 @@ const {
     removeCouponFromCart
 } = require('../controllers/cartController');
 
+const {
+    getProductReviews,
+    addProductReview,
+    updateProductReview,
+    deleteProductReview,
+    getReview,
+} = require('../controllers/reviewController');
+
 const { verifyUser, isVerifiedAccount } = require('../middleware/validate');
 const { getAllActiveCategories } = require('../controllers/categoryController');
 const { getAllActiveBrands } = require('../controllers/brandController');
 
 router.use(passport.initialize());
 router.use(passport.session());
+
+
+router.get('/order/invoice_data', getOrderInvoiceData);
 
 router.get('/coupons/available/:id', getAvailabeUserCoupons);
 
@@ -131,7 +144,7 @@ router.patch('/order/cancel', cancelOrder);
 router.patch('/order/return', requestReturnOrder);
 router.patch('/order/return/cancel', cancelReturnRequest);
 router.put('/order/cancel_single',cancelSingleProduct);
-router.put('/order/return_single',returnSingleProduct)
+router.put('/order/return_single',returnSingleProduct);
 
 router.get('/razorpay/key', getRazorpayKey);
 router.post('/razorpay/create_order', makeRazorpayOrder)
@@ -141,5 +154,12 @@ router.get('/referral_code/:id', getReferralCode)
 
 router.get('/banner/carousel', getCarouselImagesForUser);
 router.get('/banner/poster', getPosterImagesForUser);
+
+router.get('/product/review', getReview);
+router.get('/product/review/check', checkUserCanAddReview);
+router.get('/product/get_review', getProductReviews);
+router.post('/product/add_review', addProductReview);
+router.put('/product/update_review', updateProductReview);
+router.delete('/product/delete_review', deleteProductReview);
 
 module.exports = router;

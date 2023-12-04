@@ -171,7 +171,7 @@ function Store() {
                     <div className='w-full max-h-[74vh] overflow-y-scroll hidden lg:flex items-start justify-start flex-wrap my-2 gap-10 custom-scrollbar'>
                         {products?.map((doc) => (
                             <ProductCard id={doc._id} image={doc?.varients[0]?.images?.mainImage} title={doc?.title}
-                                description={doc?.varients[0]?.description} price={doc.varients[0]?.discountPrice} varients={doc?.varients} />
+                                description={doc?.varients[0]?.description} price={doc.varients[0]?.discountPrice} varients={doc?.varients} rating={doc?.totalRating}/>
                         ))}
                         <div className='w-full py-4 pe-8 flex items-center justify-center'>
                             <Button onClick={handleLoadMore} variant='outlined' size='sm'>Load More</Button>

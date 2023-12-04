@@ -40,7 +40,8 @@ const productSchema = new Schema({
             brandOffer: { type: Number, default: 0 }
         }
     ],
-    tags: [{ type: String }]
+    tags: [{ type: String }],
+    totalRating: { type: Number, default: 0 },
 },
     {
         timestamps: true,

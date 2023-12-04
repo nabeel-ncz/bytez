@@ -397,3 +397,83 @@ export const generateReferralCode = createAsyncThunk("user/generateReferralCode"
         throw new Error(error?.message);
     }
 })
+
+export const addProductReview = createAsyncThunk("user/addProductReview", async (data) => {
+    try {
+        const response = await axios.post(`user/product/add_review`,data, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const updateProductReview = createAsyncThunk("user/updateProductReview", async (data) => {
+    try {
+        const response = await axios.put(`user/product/update_review`,data, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const deleteProductReview = createAsyncThunk("user/deleteProductReview", async (id) => {
+    try {
+        const response = await axios.delete(`user/product/delete_review?id=${id}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const getAllProductReviews = createAsyncThunk("user/getAllProductReviews", async (id) => {
+    try {
+        const response = await axios.get(`user/product/get_review?pId=${id}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const getReview = createAsyncThunk("user/getReview", async (id) => {
+    try {
+        const response = await axios.get(`user/product/review?id=${id}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+export const checkUserCanAddReview = createAsyncThunk("user/checkUserCanAddReview", async ({userId, productId}) => {
+    try {
+        const response = await axios.get(`user/product/review/check?pId=${productId}&uId=${userId}`, { withCredentials: true });
+        if (response.data?.status === "ok") {
+            return response?.data;
+        } else {
+            throw new Error(response?.data?.message);
+        }
+    } catch (error) {
+        throw new Error(error?.message);
+    }
+})
+
+

@@ -6,6 +6,7 @@ const Product = require('../models/Product');
 const Transaction = require('../models/Transaction');
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
+const mongoose = require('mongoose');
 
 module.exports = {
     createOrder: async (req, res) => {
@@ -588,4 +589,62 @@ module.exports = {
             res.json({ status: 'error', message: error?.message });
         };
     },
+    getOrderInvoiceData: async (req, res) => {
+        try {
+            const orderId = req.query?.oId;
+            const result = await Order.findById(orderId).populate('userId');
+            const productsDetails = [];
+            const getProductsData = result?.items?.map(async (doc) => {
+                const product = await Product.aggregate([
+                    {
+                        $match: { _id: new mongoose.Types.ObjectId(doc.productId) }
+                    },
+                    {
+                        $unwind: '$varients'
+                    },
+                    {
+                        $match: { 'varients.varientId': doc.varientId }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            description: "$title",
+                            price: "$varients.discountPrice"
+                            // variant: "$varients.ramAndRom"
+                        }
+                    }
+
+                ])
+                productsDetails.push({ ...product[0], quantity: doc.quantity, "tax-rate": 0 });
+            });
+            await Promise.all(getProductsData);
+            const data = {
+                images: {
+                    logo: 'https://public.easyinvoice.cloud/img/logo_en_original.png',
+                },
+                sender: {
+                    company: 'bytez@web.com',
+                    address: 'Indial PVT LMTD',
+                    zip: '4567 CD',
+                },
+                client: {
+                    company: result.address.email,
+                    address: result.address.address,
+                    zip: result.address.zipcode,
+                },
+                information: {
+                    number: new Date(Date.now()).toISOString().substring(10,19),
+                    date: '12-12-2021',
+                    'due-date': '31-12-2021'
+                },
+                products: productsDetails,
+                settings: {
+                    currency: 'USD'
+                }
+            };
+            res.json({ status: 'ok', data: data })
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message })
+        }
+    }
 }

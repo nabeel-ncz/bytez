@@ -14,6 +14,8 @@ import CancelReturn from '../../../components/CustomDialog/CancelReturn';
 import ReturnRequestCancelled from '../../../components/Stepper/ReturnRequestCancelled';
 import CancelSingleProduct from '../../../components/CustomDialog/CancelSingleProduct';
 import ReturnSingleProduct from '../../../components/CustomDialog/ReturnSingleProduct';
+import DownloadInvoice from '../../../components/ExportFile/DownloadInvoice';
+import { IoDownloadOutline } from "react-icons/io5";
 
 function OrderDetails() {
     const { id } = useParams();
@@ -115,7 +117,7 @@ function OrderDetails() {
                     <div className='w-full p-6'>
                         <div className='w-full flex items-center justify-between bg-gray-100 p-4 rounded border'>
                             <div className='flex flex-col items-start'>
-                                <h2 className='font-medium text-xl'>{order?._id}</h2>
+                                <h2 className='font-medium text-xl'>ODR{order?._id}</h2>
                                 <h2 className='text-xs font-normal'>{order?.itemsQuantity} Products, Order Placed at {new Date(order?.createdAt).toLocaleString()}</h2>
                             </div>
                             <h2 className='font-medium text-xl'>₹ {order?.totalPrice}</h2>
@@ -223,6 +225,7 @@ function OrderDetails() {
                                     <Button variant='outlined' color='red' onClick={handleReturnCancelDialog}>Cancel Return Request</Button>
                                 </div>
                             )}
+                            <DownloadInvoice orderId={order?._id || null}/>
                         </div>
                     </div>
                 </div>
