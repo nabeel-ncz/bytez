@@ -12,7 +12,7 @@ function DownloadInvoice({ orderId }) {
         setLoading(true);
         try {
             const response = await axios.get(`http://localhost:3000/user/order/invoice_data?oId=${orderId}`,
-                { responseType: "blob" });
+                { responseType: "blob", withCredentials: true });
             const blob = new Blob([response.data], { type: "application/pdf" });
             const link = document.createElement("a");
             link.href = window.URL.createObjectURL(blob);

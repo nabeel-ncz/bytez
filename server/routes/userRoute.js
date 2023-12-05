@@ -89,8 +89,6 @@ router.use(passport.initialize());
 router.use(passport.session());
 
 
-router.get('/order/invoice_data', getOrderInvoiceData);
-
 router.post('/auth/signup', registerUser);
 router.post('/auth/login', loginUser);
 router.post('/auth/verify/email', verifyEmail);
@@ -107,6 +105,7 @@ router.get('/oauth2/google/failed',googleAuthFailed);
 
 router.get('/categories/all/active', getAllActiveCategories);
 router.get('/brands/all/active', getAllActiveBrands);
+router.get('/product/get_review', getProductReviews);
 
 router.use(verifyUser);
 
@@ -145,6 +144,7 @@ router.patch('/order/return', requestReturnOrder);
 router.patch('/order/return/cancel', cancelReturnRequest);
 router.put('/order/cancel_single',cancelSingleProduct);
 router.put('/order/return_single',returnSingleProduct);
+router.get('/order/invoice_data', getOrderInvoiceData);
 
 router.get('/razorpay/key', getRazorpayKey);
 router.post('/razorpay/create_order', makeRazorpayOrder)
@@ -157,7 +157,6 @@ router.get('/banner/poster', getPosterImagesForUser);
 
 router.get('/product/review', getReview);
 router.get('/product/review/check', checkUserCanAddReview);
-router.get('/product/get_review', getProductReviews);
 router.post('/product/add_review', addProductReview);
 router.put('/product/update_review', updateProductReview);
 router.delete('/product/delete_review', deleteProductReview);

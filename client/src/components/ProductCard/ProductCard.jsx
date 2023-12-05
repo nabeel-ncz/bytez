@@ -21,7 +21,7 @@ function ProductCard({ id, image, varients, title, description, price, rating })
             varientId: varients[0]?.varientId
         }))
     }
-    
+
     const handleRemoveFromWishlist = () => {
         dispatch(removeItemFromWishlist({
             userId: user?._id,
@@ -31,7 +31,7 @@ function ProductCard({ id, image, varients, title, description, price, rating })
 
     return (
         <>
-        {console.log(wishlist)}
+            {console.log(wishlist)}
             <div onClick={() => navigate(`/product/${id}`)} className='card w-[240px] h-[300px] relative bg-white flex flex-col' style={{ "boxShadow": "0px 1px 20px 2px rgba(0, 0, 0, 0.08)" }}>
                 <div className='my-4 img-container relative w-full flex items-center justify-center'>
                     <img src={image ? `http://localhost:3000/products/resized/${image}` : "/images/dummy-product-1.webp"} alt="" className='h-[160px]' />
@@ -39,16 +39,19 @@ function ProductCard({ id, image, varients, title, description, price, rating })
                         event.stopPropagation();
                         setLike(state => !state);
                     }}>
-                        {wishlist?.includes(id) ? (
-                            <IconButton variant="text" onClick={handleRemoveFromWishlist}>
-                                <img src="/icons/heart-red-icon.png" alt="" className='w-5 h-5' />
-                            </IconButton>
-                        ) : (
-                            <IconButton variant="text" onClick={handleAddToWishlist}>
-                                <img src="/icons/heart-icon.png" alt="" className='w-5 h-5' />
-                            </IconButton>
+                        {user && (
+                            <>
+                                {wishlist?.includes(id) ? (
+                                    <IconButton variant="text" onClick={handleRemoveFromWishlist}>
+                                        <img src="/icons/heart-red-icon.png" alt="" className='w-5 h-5' />
+                                    </IconButton>
+                                ) : (
+                                    <IconButton variant="text" onClick={handleAddToWishlist}>
+                                        <img src="/icons/heart-icon.png" alt="" className='w-5 h-5' />
+                                    </IconButton>
+                                )}
+                            </>
                         )}
-
                     </div>
                 </div>
                 <div className='flex flex-col items-center justify-center'>
