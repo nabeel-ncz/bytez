@@ -23,6 +23,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "../client/dist")));
 app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }));
 app.use(cookieParser());
 app.use('/products/resized', express.static(path.join(__dirname, "public", "products", "resized")));
