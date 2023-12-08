@@ -38,6 +38,10 @@ cron.schedule('0 0 * * *', () => {
     deleteUnverifiedUsers();
     removeBrandOffer();
 });
+// Handle all other routes by serving the React app
+app.get('/*', (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/dist", "index.html"));
+});
 app.listen(process.env.PORT || 3000, () => {
     console.log(`\x1b[30m\x1b[42mServer Running at ${process.env?.PORT || 3000} Port \x1b[0m`);
 });
