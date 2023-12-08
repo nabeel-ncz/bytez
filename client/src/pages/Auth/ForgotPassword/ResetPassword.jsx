@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { resetPasswordVerifyApi } from '../../../services/api';
 
 function ResetPassword() {
     const navigate = useNavigate();
@@ -19,7 +20,7 @@ function ResetPassword() {
         } else if (!token) {
             setError("Token is not exist, Please try again!");
         } else {
-            axios.patch(`http://localhost:3000/user/auth/verify/reset_password`, {
+            resetPasswordVerifyApi({
                 token,
                 password
             }).then((response) => {
@@ -48,13 +49,13 @@ function ResetPassword() {
                             {error && <h2 className="text-red-500 text-xs text-start">{error}</h2>}
                             <div className='form-control'>
                                 <img src="/icons/lock-icon.png" alt="" className='w-5' />
-                                <input type="password"  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$" title="Must contain at least one lowercase letter, one uppercase letter, and one number"
-                                 value={password} onChange={(event) => { setPassword(event.target.value) }} required placeholder="New password" className="form-control-input bg-custom-selection" autoComplete="off" />
+                                <input type="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$" title="Must contain at least one lowercase letter, one uppercase letter, and one number"
+                                    value={password} onChange={(event) => { setPassword(event.target.value) }} required placeholder="New password" className="form-control-input bg-custom-selection" autoComplete="off" />
                             </div>
                             <div className='form-control'>
                                 <img src="/icons/lock-icon.png" alt="" className='w-5' />
-                                <input type="password"  pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$" title="Must contain at least one lowercase letter, one uppercase letter, and one number"
-                                 value={confirmPassword} onChange={(event) => { setConfirmPassword(event.target.value) }} required placeholder="Confirm password" className="form-control-input bg-custom-selection" autoComplete="off" />
+                                <input type="password" pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$" title="Must contain at least one lowercase letter, one uppercase letter, and one number"
+                                    value={confirmPassword} onChange={(event) => { setConfirmPassword(event.target.value) }} required placeholder="Confirm password" className="form-control-input bg-custom-selection" autoComplete="off" />
                             </div>
                             <button type='submit' className='form-control-button'>
                                 <span className='font-semibold text-base'>Continue</span>

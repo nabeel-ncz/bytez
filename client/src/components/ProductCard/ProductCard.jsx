@@ -5,6 +5,7 @@ import { IconButton } from "@material-tailwind/react";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AddItemToWishlist, removeItemFromWishlist } from '../../store/actions/user/userActions';
+import { BASE_URL } from '../../constants/urls';
 
 function ProductCard({ id, image, varients, title, description, price, rating }) {
     const navigate = useNavigate();
@@ -34,7 +35,7 @@ function ProductCard({ id, image, varients, title, description, price, rating })
             {console.log(wishlist)}
             <div onClick={() => navigate(`/product/${id}`)} className='card w-[240px] h-[300px] relative bg-white flex flex-col' style={{ "boxShadow": "0px 1px 20px 2px rgba(0, 0, 0, 0.08)" }}>
                 <div className='my-4 img-container relative w-full flex items-center justify-center'>
-                    <img src={image ? `http://localhost:3000/products/resized/${image}` : "/images/dummy-product-1.webp"} alt="" className='h-[160px]' />
+                    <img src={image ? `${BASE_URL}/products/resized/${image}` : "/images/dummy-product-1.webp"} alt="" className='h-[160px]' />
                     <div className='absolute top-0 right-4' onClick={(event) => {
                         event.stopPropagation();
                         setLike(state => !state);

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { getAllNewsImages } from '../../store/actions/admin/adminActions';
+import { BASE_URL } from '../../constants/urls';
 
 function RowBanner({ title }) {
     const dispatch = useDispatch();
@@ -16,7 +17,7 @@ function RowBanner({ title }) {
         <>
             <div className='w-full pb-12 px-6 lg:px-32 flex flex-row items-center justify-between gap-2'>
                 {posters?.map((doc) => (
-                    <img src={`http://localhost:3000/banners/resized/${doc.image}`} alt="" className='w-[320px] object-cover self-start rounded-lg' />
+                    <img src={`${BASE_URL}/banners/resized/${doc.image}`} alt="" className='w-[320px] object-cover self-start rounded-lg' />
                 ))}
             </div>
         </>

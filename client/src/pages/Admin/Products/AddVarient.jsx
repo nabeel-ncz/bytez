@@ -11,6 +11,7 @@ import axios from 'axios';
 import productVarientSchema from '../../../schema/admin/productVarientSchema';
 import { createNewAttribute, createProductVarient, getAllAttribute } from '../../../store/actions/admin/adminActions';
 import { useParams } from 'react-router-dom';
+import { getBrandsInAdminApi, getCategoryInAdminApi, getProductInAdminApi } from '../../../services/api';
 
 function AddVarient() {
     const [subImages, setSubImages] = useState({ 1: null, 2: null, 3: null, 4: null, 5: null, 6: null });
@@ -36,9 +37,9 @@ function AddVarient() {
     }, []);
 
     const handleCategoryAndBrand = (category, brand) => {
-        axios.get(`http://localhost:3000/admin/category/${category}`, { withCredentials: true }).then((response) => {
+        getCategoryInAdminApi(category).then((response) => {
             if (response.data?.status === "ok") {
-                axios.get(`http://localhost:3000/admin/brand/${brand}`, {withCredentials: true}).then((result) => {
+                getBrandsInAdminApi(brand).then((result) => {
                     if(result?.data?.status === "ok"){
                         setCategoryAndBrand({
                             category: response?.data?.data?.category,
@@ -53,7 +54,7 @@ function AddVarient() {
     }
 
     const handleFetch = () => {
-        axios.get(`http://localhost:3000/admin/product/${id}`, { withCredentials: true }).then((response) => {
+        getProductInAdminApi(id).then((response) => {
             if (response.data?.status === "ok") {
                 setProduct(response.data?.data);
                 handleCategoryAndBrand(response.data?.data?.category, response.data?.data?.brand)

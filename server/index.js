@@ -29,9 +29,9 @@ app.use('/products/resized', express.static(path.join(__dirname, "public", "prod
 app.use('/banners/resized', express.static(path.join(__dirname, "public", "banners", "resized")));
 app.use('/uploads', express.static(path.join(__dirname, "public", "uploads")));
 
-app.use('/user', userRouter);
-app.use('/admin', adminRouter);
-app.use('/products', productRouter);
+app.use('/api/user', userRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/products', productRouter);
 
 cron.schedule('0 0 * * *', () => {
     deleteUnverifiedUsers();

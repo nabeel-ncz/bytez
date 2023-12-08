@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { BASE_URL } from "../../../constants/urls";
 import axios from "axios";
-axios.defaults.baseURL = "http://localhost:3000";
+axios.defaults.baseURL = BASE_URL ? `${BASE_URL}/api` : "http://localhost:3000/api";
 
 
 export const getStoreProducts = createAsyncThunk("products/getStoreProducts", async (query) => {

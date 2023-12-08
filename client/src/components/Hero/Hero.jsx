@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import CustomCarousel from '../CustomCarousel/CustomCarousel'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAllCarouselImages, getAllPosterImages } from '../../store/actions/admin/adminActions';
+import { BASE_URL } from '../../constants/urls';
 
 function Hero() {
     const dispatch = useDispatch();
@@ -35,8 +36,8 @@ function Hero() {
         <>
             <div className='w-full flex flex-col lg:flex-row items-center justify-center gap-[25px] px-6 md:p-0'>
                 <div className='h-[548px] hidden lg:flex flex-col items-center justify-between'>
-                    <img src={posterOne !== -1 ? `http://localhost:3000/banners/resized/${posterImages[posterOne]?.image}` : "/images/bytez-banner-1.png"} alt="" className='w-[386px] h-[255px] self-start rounded-lg' />
-                    <img src={posterTwo !== -1 ? `http://localhost:3000/banners/resized/${posterImages[posterTwo]?.image}` : "/images/bytez-banner-2.png"} alt="" className='w-[386px] h-[255px] self-end rounded-lg' />
+                    <img src={posterOne !== -1 ? `${BASE_URL}/banners/resized/${posterImages[posterOne]?.image}` : "/images/bytez-banner-1.png"} alt="" className='w-[386px] h-[255px] self-start rounded-lg' />
+                    <img src={posterTwo !== -1 ? `${BASE_URL}/banners/resized/${posterImages[posterTwo]?.image}` : "/images/bytez-banner-2.png"} alt="" className='w-[386px] h-[255px] self-end rounded-lg' />
                 </div>
                 <CustomCarousel images={carouselImages} />
                 <div className='md:hidden w-full flex items-center justify-between'>

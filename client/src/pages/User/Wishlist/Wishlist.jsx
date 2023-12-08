@@ -4,6 +4,7 @@ import { getWishlistItemsDetails, removeItemFromWishlist } from '../../../store/
 import axios from 'axios';
 import Pagination from '../../../components/Pagination/Pagination';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../../constants/urls';
 
 function Wishlist() {
   const dispatch = useDispatch();
@@ -49,7 +50,7 @@ function Wishlist() {
             <div className='flex items-end justify-between bg-white shadow-md w-full h-full py-6 px-12 rounded-md'>
               <div className='w-full flex flex-col sm:flex-row items-center justify-start gap-12'>
                 <div className='w-full sm:w-4/12 lg:w-2/12 flex flex-col items-center justify-center p-1 lg:p-6 gap-2'>
-                  <img src={`http://localhost:3000/products/resized/${doc.varients[0].images.mainImage}`} alt="" className='w-fit' />
+                  <img src={`${BASE_URL}/products/resized/${doc.varients[0].images.mainImage}`} alt="" className='w-fit' />
                   <span className='text-xs'>+{doc.varients?.length} More variants</span>
                 </div>
                 <div className='w-full sm:w-8/12 lg:w-10/12 flex flex-col items-start justify-between'>

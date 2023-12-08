@@ -13,7 +13,6 @@ function ChangePassword() {
     const navigate = useNavigate();
 
     const handleFormSubmit = (values) => {
-        console.log('working--------------------------------')
         dispatch(updateUserPassword({
             userId: user?._id,
             current_password: values.current_password,

@@ -3,7 +3,6 @@ import OrderStepper from '../../../components/Stepper/OrderStepper'
 import OrderRejected from '../../../components/Stepper/OrderRejected';
 import OrderCancelled from '../../../components/Stepper/OrderCancelled';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 import { Button } from '@material-tailwind/react';
 import toast from 'react-hot-toast';
 import CancelOrder from '../../../components/CustomDialog/CancelOrder';
@@ -15,6 +14,8 @@ import ReturnRequestCancelled from '../../../components/Stepper/ReturnRequestCan
 import CancelSingleProduct from '../../../components/CustomDialog/CancelSingleProduct';
 import ReturnSingleProduct from '../../../components/CustomDialog/ReturnSingleProduct';
 import DownloadInvoice from '../../../components/ExportFile/DownloadInvoice';
+import { getAllUserOrdersApi } from '../../../services/api';
+import { BASE_URL } from '../../../constants/urls';
 
 function OrderDetails() {
     const { id } = useParams();
@@ -32,7 +33,7 @@ function OrderDetails() {
     }, []);
 
     const handleFetchOrderDetails = () => {
-        axios.get(`http://localhost:3000/user/order/find/${id}`, { withCredentials: true }).then((response) => {
+        getAllUserOrdersApi(id).then((response) => {
             if (response.data?.status === "ok") {
                 setOrder(response?.data?.data);
                 handleStep(response?.data?.data?.status);
@@ -162,7 +163,7 @@ function OrderDetails() {
                                         <td className="text-sm flex items-center gap-2 text-start border-r">
                                             <div className="w-14 overflow-clip flex justify-center items-center">
                                                 <img
-                                                    src={`http://localhost:3000/products/resized/${doc?.image}`}
+                                                    src={`${BASE_URL}/products/resized/${doc?.image}`}
                                                     alt="img"
                                                     className="object-contain w-full h-full"
                                                 />

@@ -6,6 +6,8 @@ import { Button, Chip, Select, Option } from '@material-tailwind/react';
 import { useDispatch } from 'react-redux';
 import { updateOrderStatus } from '../../../store/actions/admin/adminActions';
 import AdminOrderStatusConfirmation from '../../../components/CustomDialog/AdminOrderStatusConfirmation';
+import { getUserOrderInAdminApi } from '../../../services/api';
+import { BASE_URL } from '../../../constants/urls';
 
 function AdminOrderDetails() {
     const navigate = useNavigate();
@@ -22,7 +24,7 @@ function AdminOrderDetails() {
     }, []);
 
     const handleFetch = () => {
-        axios.get(`http://localhost:3000/user/order/find/${id}`, { withCredentials: true }).then((response) => {
+        getUserOrderInAdminApi(id).then((response) => {
             if (response.data?.status === "ok") {
                 setOrder(response?.data?.data);
                 setOrderStatus(response?.data?.data?.status);
@@ -159,7 +161,7 @@ function AdminOrderDetails() {
                                         <td className="text-sm flex items-center gap-2 text-start border-r">
                                             <div className="w-14 overflow-clip flex justify-center items-center">
                                                 <img
-                                                    src={`http://localhost:3000/products/resized/${doc?.image}`}
+                                                    src={`${BASE_URL}/products/resized/${doc?.image}`}
                                                     alt="img"
                                                     className="object-contain w-full h-full"
                                                 />

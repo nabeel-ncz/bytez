@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { BASE_URL } from "../../constants/urls";
 
 const BannerFileInput = ({ onChange, onDelete, exist, file, id }) => {
     const [existingImage, setExistingImage] = useState('');
@@ -8,7 +9,7 @@ const BannerFileInput = ({ onChange, onDelete, exist, file, id }) => {
 
     useEffect(() => {
         if (exist) {
-            setExistingImage(`http://localhost:3000/banners/resized/${file}`);
+            setExistingImage(`${BASE_URL}/banners/resized/${file}`);
         }
     }, [exist]);
 

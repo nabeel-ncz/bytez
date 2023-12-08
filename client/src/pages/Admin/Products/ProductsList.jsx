@@ -5,6 +5,7 @@ import CustomTabs from '../../../components/Tabs/CustomTabs';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllProducts } from '../../../store/actions/admin/adminActions';
 import Pagination from "../../../components/Pagination/Pagination";
+import { BASE_URL } from '../../../constants/urls';
 
 function ViewProducts() {
   const navigate = useNavigate();
@@ -100,7 +101,7 @@ function ViewProducts() {
                     <div className="w-10 h-10 overflow-clip flex justify-center items-center">
                       {doc.varients[0]?.images?.mainImage ? (
                         <img
-                          src={`http://localhost:3000/products/resized/${doc.varients[0]?.images?.mainImage}`}
+                          src={`${BASE_URL}/products/resized/${doc.varients[0]?.images?.mainImage}`}
                           alt="img"
                           className="object-contain w-full h-full"
                         />

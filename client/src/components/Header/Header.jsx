@@ -41,8 +41,8 @@ function Header() {
                                     <div className="ml-10 flex items-baseline gap-2 space-x-4">
                                         <Link className='text-gray-900 hover:text-black py-2 rounded-md text-sm font-medium' to={"/"}>HOME</Link>
                                         <Link className='text-gray-900 hover:text-black py-2 rounded-md text-sm font-medium' to={"store"}>STORE</Link>
-                                        <Link className='text-gray-900 hover:text-black py-2 rounded-md text-sm font-medium' to={"blog"}>BLOG</Link>
-                                        <Link className='text-gray-900 hover:text-black py-2 rounded-md text-sm font-medium' to={"contact"}>CONTACT</Link>
+                                        <h1 className='text-gray-900 hover:text-black py-2 rounded-md text-sm font-medium cursor-pointer' >BLOG</h1>
+                                        <h1 className='text-gray-900 hover:text-black py-2 rounded-md text-sm font-medium cursor-pointer' >CONTACT</h1>
                                     </div>
                                 </div>
                             </div>

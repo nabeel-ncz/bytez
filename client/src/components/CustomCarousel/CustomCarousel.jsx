@@ -1,5 +1,6 @@
 import React from 'react';
 import { Carousel } from "@material-tailwind/react";
+import { BASE_URL } from '../../constants/urls';
 
 function CustomCarousel({ images }) {
 
@@ -22,7 +23,7 @@ function CustomCarousel({ images }) {
             >
                 {images?.map((item) => (
                     <img
-                        src={`http://localhost:3000/banners/resized/${item.image}`}
+                        src={`${BASE_URL}/banners/resized/${item.image}`}
                         alt="image 1"
                         className="absolute object-cover"
                     />

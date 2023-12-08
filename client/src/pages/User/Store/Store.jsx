@@ -13,6 +13,7 @@ import {
 import ProductCardSm from '../../../components/ProductCard/ProductCardSm';
 import { IoFilterSharp } from "react-icons/io5";
 import { getAllWishlistItems } from '../../../store/actions/user/userActions';
+import { getActiveBrandsApi, getActiveCategoriesApi } from '../../../services/api';
 
 function Store() {
     const products = useSelector(state => state.products?.data);
@@ -47,12 +48,12 @@ function Store() {
     }, [query, page]);
 
     useEffect(() => {
-        axios.get('http://localhost:3000/user/categories/all/active', { withCredentials: true }).then((response) => {
+        getActiveCategoriesApi().then((response) => {
             if (response.data?.status === "ok") {
                 setCategories(response?.data?.data);
             }
         });
-        axios.get('http://localhost:3000/user/brands/all/active', { withCredentials: true }).then((response) => {
+        getActiveBrandsApi().then((response) => {
             if (response.data?.status === "ok") {
                 setBrands(response?.data?.data);
             }

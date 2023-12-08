@@ -12,6 +12,8 @@ import productVarientSchema from '../../../schema/admin/productVarientSchema';
 import { updateProductVarient, createNewAttribute, getAllAttribute } from '../../../store/actions/admin/adminActions';
 import { useParams } from 'react-router-dom';
 import ExistingFileInput from '../../../components/CustomFileInput/existingFileInput';
+import { getBrandsInAdminApi, getCategoryInAdminApi, getProductVarientInAdminApi } from '../../../services/api';
+import { BASE_URL } from '../../../constants/urls';
 
 function EditVarient() {
     const [subImages, setSubImages] = useState({ 1: null, 2: null, 3: null, 4: null, 5: null, 6: null });
@@ -41,10 +43,10 @@ function EditVarient() {
     }, []);
 
     const handleCategoryAndBrand = (category, brand) => {
-        axios.get(`http://localhost:3000/admin/category/${category}`, { withCredentials: true }).then((response) => {
+        getCategoryInAdminApi(category).then((response) => {
             if (response.data?.status === "ok") {
-                axios.get(`http://localhost:3000/admin/brand/${brand}`, {withCredentials: true}).then((result) => {
-                    if(result?.data?.status === "ok"){
+                getBrandsInAdminApi(brand).then((result) => {
+                    if (result?.data?.status === "ok") {
                         setCategoryAndBrand({
                             category: response?.data?.data?.category,
                             brand: result?.data?.data?.brand
@@ -58,7 +60,7 @@ function EditVarient() {
     }
 
     const handleFetch = () => {
-        axios.get(`http://localhost:3000/admin/product/varient?pId=${pId}&vId=${vId}`, { withCredentials: true }).then((response) => {
+        getProductVarientInAdminApi(pId, vId).then((response) => {
             if (response.data?.status === "ok") {
                 setProduct(response.data?.data);
                 handleCategoryAndBrand(response.data?.data?.category, response.data?.data?.brand)
@@ -219,7 +221,7 @@ function EditVarient() {
                                             (<div className="mt-4 flex flex-col items-center">
                                                 <div className="bg-white p-2 h-52 rounded shadow-sm mb-2 ">
                                                     <img
-                                                        src={`http://localhost:3000/products/resized/${product?.images?.mainImage}`}
+                                                        src={`${BASE_URL}/products/resized/${product?.images?.mainImage}`}
                                                         alt={"loading..."}
                                                         className="object-contain w-full h-full rounded"
                                                     />

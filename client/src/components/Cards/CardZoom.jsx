@@ -6,6 +6,7 @@ import {
     IconButton,
     Card,
 } from "@material-tailwind/react";
+import { BASE_URL } from "../../constants/urls";
 
 function CardZoom({image}) {
     const [open, setOpen] = React.useState(false);
@@ -20,7 +21,7 @@ function CardZoom({image}) {
                 <img
                     alt="nature"
                     className="h-full w-full object-cover object-center"
-                    src={`http://localhost:3000/products/resized/${image}`}
+                    src={`${BASE_URL}/products/resized/${image}`}
                 />
             </div>
             <Dialog size="md" open={open} handler={handleOpen}>
@@ -28,7 +29,7 @@ function CardZoom({image}) {
                     <img
                         alt="nature"
                         className="h-[32rem]"
-                        src={`http://localhost:3000/products/resized/${image}`}
+                        src={`${BASE_URL}/products/resized/${image}`}
                     />
                 </div>
             </Dialog>

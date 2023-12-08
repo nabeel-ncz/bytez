@@ -8,6 +8,7 @@ import {
 } from "@material-tailwind/react";
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { BASE_URL } from '../../constants/urls';
 
 function ReturnSingleProduct({ open, handleOpen, data, clearData, handleFetchOrderDetails }) {
     const [returnReason, setReturnReason] = useState("Product did not meet expectations.");
@@ -20,7 +21,7 @@ function ReturnSingleProduct({ open, handleOpen, data, clearData, handleFetchOrd
     }, []);
 
     const returnOrder = (returnReason) => {
-        axios.put(`http://localhost:3000/user/order/return_single`, { returnReason, ...data }, { withCredentials: true }).then((response) => {
+        axios.put(`${BASE_URL}/api/user/order/return_single`, { returnReason, ...data }, { withCredentials: true }).then((response) => {
             if (response.data?.status === "ok") {
                 handleFetchOrderDetails();
                 toast.success("Return request is successfully sended!");

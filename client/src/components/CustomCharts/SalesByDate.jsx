@@ -3,6 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS } from 'chart.js/auto';
 import axios from 'axios';
 import { Tab, Tabs, TabsHeader } from '@material-tailwind/react';
+import { getSalesReportInAdminApi } from '../../services/api';
 
 function SalesByDate() {
     const [labels, setLabels] = useState([]);
@@ -10,14 +11,14 @@ function SalesByDate() {
     const [period, setPeriod] = useState("daily")
 
     useEffect(() => {
-        axios.get(`http://localhost:3000/admin/dashboard/sales/${period}`, { withCredentials: true }).then((response) => {
+        getSalesReportInAdminApi(period).then((response) => {
             if (response.data?.status === "ok") {
                 const labelsTemp = response.data?.data?.map((doc) => doc.date);
                 const dataTemp = response.data?.data?.map((doc) => doc.totalSales);
                 setLabels(labelsTemp);
                 setGraphData(dataTemp);
             }
-        })
+        });
     }, [period])
 
     const data = {
@@ -42,8 +43,8 @@ function SalesByDate() {
                     <TabsHeader
                         className="rounded-none border-b border-blue-gray-50 bg-transparent p-0"
                         indicatorProps={{
-                          className:
-                            "bg-gray-200 border-b-2 border-gray-900 shadow-none rounded-none",
+                            className:
+                                "bg-gray-200 border-b-2 border-gray-900 shadow-none rounded-none",
                         }}
                     >
                         <Tab onClick={() => { setPeriod("daily") }} className='px-6'>Daily</Tab>

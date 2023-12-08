@@ -4,6 +4,7 @@ import { fetchUser, getAllOrders } from '../../../store/actions/user/userActions
 import { Chip } from '@material-tailwind/react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../../components/Pagination/Pagination';
+import { BASE_URL } from '../../../constants/urls';
 
 function OrdersList() {
     const navigate = useNavigate();
@@ -36,7 +37,7 @@ function OrdersList() {
     return (
         <>
             <div className='w-full min-h-screen px-24 py-6'>
-                {(orders?.length <= 0 || !orders)? (
+                {(orders?.length <= 0 || !orders) ? (
                     <h2>There is no orders!</h2>
                 ) : (
                     <>
@@ -59,7 +60,7 @@ function OrdersList() {
                                             <td className="text-sm p-4 flex items-center gap-2 text-start border-r">
                                                 <div className="w-14 overflow-clip flex justify-center items-center">
                                                     <img
-                                                        src={`http://localhost:3000/products/resized/${doc?.items[0]?.image}`}
+                                                        src={`${BASE_URL}/products/resized/${doc?.items[0]?.image}`}
                                                         alt="img"
                                                         className="object-contain w-full h-full"
                                                     />

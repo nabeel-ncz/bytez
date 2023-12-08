@@ -8,11 +8,12 @@ import {
 } from "@material-tailwind/react";
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { BASE_URL } from '../../constants/urls';
 
 function CancelReturn({ open, handleOpen, orderId, handleFetchOrderDetails }) {
 
     const handleSubmit = () => {
-        axios.patch(`http://localhost:3000/user/order/return/cancel`, { orderId }, { withCredentials: true }).then((response) => {
+        axios.patch(`${BASE_URL}/api/user/order/return/cancel`, { orderId }, { withCredentials: true }).then((response) => {
             if (response.data?.status === "ok") {
                 handleFetchOrderDetails();
                 toast.success("Return request is successfully cancelled!");

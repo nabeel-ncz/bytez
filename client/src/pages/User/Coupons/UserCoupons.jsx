@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { getAvailableUserCouponsApi } from '../../../services/api';
 
 function UserCoupons() {
 
@@ -12,8 +12,7 @@ function UserCoupons() {
     }, [user]);
 
     const handleFetch = async () => {
-        console.log(user)
-        axios.get(`http://localhost:3000/user/coupons/available/${user?._id}`, { withCredentials: true })
+        getAvailableUserCouponsApi()
             .then((response) => {
                 if (response?.data?.status === "ok") {
                     setCoupons(response?.data?.data);

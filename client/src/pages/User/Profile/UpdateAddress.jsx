@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateAddress } from '../../../store/actions/user/userActions';
 import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { getUserAddressApi } from '../../../services/api';
 
 function UpdateAddress() {
     const navigate = useNavigate();
@@ -30,7 +31,7 @@ function UpdateAddress() {
         if (!userId || !addressId) {
             navigate('/profile/address');
         } else {
-            axios.get(`http://localhost:3000/user/profile/address/find?uId=${userId}&aId=${addressId}`, { withCredentials: true }).then((response) => {
+            getUserAddressApi(userId, addressId).then((response) => {
                 if (response?.data?.status === "ok") {
                     setAddress(response.data?.data);
                 }

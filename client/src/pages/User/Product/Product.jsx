@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { addProductToCart, checkUserCanAddReview, deleteProductReview, fetchUser, getAllProductReviews } from '../../../store/actions/user/userActions';
 import ReviewDigalog from '../../../components/CustomDialog/ReviewDialog';
+import { productAvailableAttributesApi, productAvailableColorsApi, productColorAndAttributeChangeApi, productColorChangeApi, productViewApi } from '../../../services/api';
 
 function Product() {
     const [product, setProduct] = useState(null);
@@ -44,28 +45,25 @@ function Product() {
 
 
     const handleColorChange = (color) => {
-        axios.get(`http://localhost:3000/products/varient/available/color?pId=${id}&color=${encodeURIComponent(color)}`,
-            { withCredentials: true }).then((response) => {
-                if (response.data?.status === "ok") {
-                    setSelectedVarient(response?.data?.data?.varient);
-                    setProductVarientImages(response?.data?.data?.varient)
-                    getAvailableVarientColors(color)
-                }
-            })
+        productColorChangeApi(id, color).then((response) => {
+            if (response.data?.status === "ok") {
+                setSelectedVarient(response?.data?.data?.varient);
+                setProductVarientImages(response?.data?.data?.varient)
+                getAvailableVarientColors(color)
+            }
+        })
     }
     const handleAttributeChange = (attribute, color) => {
-        axios.get(`http://localhost:3000/products/varient/available/attribute?pId=${id}&rr=${encodeURIComponent(attribute)}&color=${encodeURIComponent(color)}`,
-            { withCredentials: true }).then((response) => {
-                if (response.data?.status === "ok") {
-                    setSelectedVarient(response?.data?.data?.varient);
-                    setProductVarientImages(response?.data?.data?.varient)
-                }
-            })
+        productColorAndAttributeChangeApi(id, attribute, color).then((response) => {
+            if (response.data?.status === "ok") {
+                setSelectedVarient(response?.data?.data?.varient);
+                setProductVarientImages(response?.data?.data?.varient)
+            }
+        })
     }
 
     const getAvailableVarientColors = (color) => {
-        axios.get(`http://localhost:3000/products/varient/attribute/available?pId=${id}&color=${encodeURIComponent(color)}`,
-            { withCredentials: true }).then((response) => {
+        productAvailableColorsApi(id, color).then((response) => {
                 if (response.data?.status === "ok") {
                     setAvailableAttributes(response.data?.data);
                     getAvailableColorsOnTheAttribute(response.data?.data[0]);
@@ -73,8 +71,7 @@ function Product() {
             })
     }
     const getAvailableColorsOnTheAttribute = (attribute) => {
-        axios.get(`http://localhost:3000/products/varient/color/available?pId=${id}&rr=${encodeURIComponent(attribute)}`,
-            { withCredentials: true }).then((response) => {
+        productAvailableAttributesApi(id, attribute).then((response) => {
                 if (response.data?.status === "ok") {
                     setAvailableColors(response.data?.data);
                 }
@@ -82,7 +79,7 @@ function Product() {
     }
 
     const handleFetch = () => {
-        axios.get(`http://localhost:3000/products/view/${id}`, { withCredentials: true }).then((response) => {
+        productViewApi(id).then((response) => {
             if (response.data?.status === "ok") {
                 console.log(response.data?.data)
                 setProduct(response.data?.data);

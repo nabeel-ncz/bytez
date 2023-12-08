@@ -7,7 +7,7 @@ import { useSearchParams } from 'react-router-dom';
 import { fetchUser } from '../../../store/actions/user/userActions';
 import toast from 'react-hot-toast';
 import RowBanner from '../../../components/RowPost/RowBanner';
-import axios from 'axios';
+import { getActiveBrandsApi } from '../../../services/api';
 
 function Home() {
   const dispatch = useDispatch();
@@ -19,8 +19,7 @@ function Home() {
   const [brands, setBrands] = useState({ first: null, second: null, third: null });
 
   useEffect(() => {
-    axios.get('http://localhost:3000/user/brands/all/active', { withCredentials: true }).then((response) => {
-    console.log(response.data?.data)  
+    getActiveBrandsApi().then((response) => { 
     if (response.data?.status === "ok") {
         const temp = response.data?.data?.map((item) => item.brand);
         const random = getRandomElements(temp, 3);

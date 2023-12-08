@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser, login } from '../../../store/actions/user/userActions';
 import { resetError } from '../../../store/reducers/user/userSlice';
 import { useLocation } from 'react-router-dom';
+import { BASE_URL } from '../../../constants/urls';
 
 function Login() {
   const [authError, setAuthError] = useState("");
@@ -38,7 +39,7 @@ function Login() {
   }
 
   const handleGoogleAuth = () => {
-    window.open("http://localhost:3000/user/oauth2/google", "_self");
+    window.open(`${BASE_URL}/user/oauth2/google`, "_self");
   }
 
   return (

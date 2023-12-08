@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Breadcrumbs, Chip } from "@material-tailwind/react";
 import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { getCustomerDetailsApi, updateCustomerStatusApi } from '../../../services/api';
 
 function CustomerView() {
     const [user, setUser] = useState(null);
@@ -13,7 +14,7 @@ function CustomerView() {
     }, []);
 
     const handleFetch = () => {
-        axios.get(`http://localhost:3000/admin/customer/${id}`, { withCredentials: true }).then((response) => {
+        getCustomerDetailsApi(id).then((response) => {
             if (response.data?.status === "ok") {
                 setUser(response.data?.data);
                 setDate(new Date(response.data?.data?.createdAt).toLocaleString());
@@ -23,7 +24,7 @@ function CustomerView() {
         })
     }
     const handleUserStatus = () => {
-        axios.patch(`http://localhost:3000/admin/customer/update/status?id=${user._id}&status=${!user.isBlocked}`, {}, { withCredentials: true }).then((response) => {
+        updateCustomerStatusApi(user?._id, user?.isBlocked).then((response) => {
             if (response.data?.status === "ok") {
                 handleFetch();
             }

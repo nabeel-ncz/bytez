@@ -3,6 +3,7 @@ import { Button } from "@material-tailwind/react"
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { IoDownloadOutline } from "react-icons/io5";
+import { BASE_URL } from '../../constants/urls';
 
 
 function DownloadInvoice({ orderId }) {
@@ -11,7 +12,7 @@ function DownloadInvoice({ orderId }) {
     const handleDownload = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:3000/user/order/invoice_data?oId=${orderId}`,
+            const response = await axios.get(`${BASE_URL}/api/user/order/invoice_data?oId=${orderId}`,
                 { responseType: "blob", withCredentials: true });
             const blob = new Blob([response.data], { type: "application/pdf" });
             const link = document.createElement("a");

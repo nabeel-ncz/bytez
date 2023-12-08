@@ -8,6 +8,7 @@ import DeleteCartProduct from '../../../components/CustomDialog/deleteCartProduc
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../../components/Pagination/Pagination';
 import RemoveCouponFromCart from '../../../components/CustomDialog/RemoveCouponFromCart';
+import { BASE_URL } from '../../../constants/urls';
 
 function Cart() {
   const navigate = useNavigate();
@@ -116,7 +117,7 @@ function Cart() {
                 <div className='flex items-end justify-between bg-white shadow-md w-full h-full py-6 px-12 rounded-md'>
                   <div className='flex items-center justify-start gap-12'>
                     <div>
-                      <img src={`http://localhost:3000/products/resized/${doc.image}`} alt="" className='w-24' />
+                      <img src={`${BASE_URL}/products/resized/${doc.image}`} alt="" className='w-24' />
                     </div>
                     <div className='flex flex-col items-start justify-between'>
                       <h2 className='font-semibold text-xl'>{doc.name}</h2>

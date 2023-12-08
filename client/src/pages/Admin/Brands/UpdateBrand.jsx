@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { Breadcrumbs, Button } from '@material-tailwind/react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { addNewCategory } from '../../../store/actions/admin/adminActions';
 import toast from 'react-hot-toast';
 import CustomFileInput from '../../../components/CustomFileInput/CustomFileInput';
 import axios from 'axios';
+import { getBrandsInAdminApi, updateBrandInAdminApi } from '../../../services/api';
+import { BASE_URL } from '../../../constants/urls';
 
 function UpdateBrand() {
     const navigate = useNavigate();
@@ -23,8 +24,7 @@ function UpdateBrand() {
     }, []);
 
     const handleFetch = () => {
-        axios.get(`http://localhost:3000/admin/brand/${id}`, { withCredentials: true }).then((response) => {
-            console.log(response)
+        getBrandsInAdminApi(id).then((response) => {
             if (response.data?.status === "ok") {
                 setData(response?.data?.data);
             }
@@ -41,7 +41,7 @@ function UpdateBrand() {
     const handleThumbnail = (file) => {
         setThumbnail(file);
     }
-    
+
     const handleCheckbox = (event) => {
         setData((data) => ({
             ...data,
@@ -59,26 +59,23 @@ function UpdateBrand() {
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
-        if(data?.offerApplied && new Date(data?.offerExpireAt) - new Date() < 0){
+        if (data?.offerApplied && new Date(data?.offerExpireAt) - new Date() < 0) {
             toast.error("Choose a valid date")
             return;
         }
         if (isThumbnailChanged && !thumbnail) {
             toast.error("Thumbnail is required");
             return;
-        } else if(data.brand?.length < 4){
+        } else if (data.brand?.length < 4) {
             toast.error("Category Name contain atleat 4 characters")
         } else {
-            axios.put(`http://localhost:3000/admin/brand/update`, {
+            updateBrandInAdminApi({
                 id: id,
                 fileChanged: isThumbnailChanged,
                 file: thumbnail,
                 ...data
-            }, {
-                headers: { 'Content-Type': 'multipart/form-data' },
-                withCredentials: true,
             }).then((response) => {
-                if(response.data.status === "ok"){
+                if (response.data.status === "ok") {
                     navigate('/admin/brands');
                 } else {
                     toast.error(response?.data?.message || "There is something went wrong!")
@@ -118,7 +115,7 @@ function UpdateBrand() {
                         {data?.thumbnail ? (
                             <>
                                 <div className='p-8 border border-gray-600 rounded border-dotted'>
-                                    <img src={`http://localhost:3000/uploads/${data.thumbnail}`} alt="" className='w-48' />
+                                    <img src={`${BASE_URL}/uploads/${data.thumbnail}`} alt="" className='w-48' />
                                 </div>
                                 <Button onClick={clearExistingThumbnail} size='sm'>Clear</Button>
                             </>

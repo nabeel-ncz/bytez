@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { BASE_URL } from "../../../constants/urls";
 import axios from "axios";
-axios.defaults.baseURL = "http://localhost:3000";
+axios.defaults.baseURL = BASE_URL ? `${BASE_URL}/api` : "http://localhost:3000/api";
 
 export const register = createAsyncThunk("user/register", async ({ userCredentials }, { dispatch }) => {
     try {
@@ -93,7 +94,7 @@ export const logout = createAsyncThunk("user/logout", async () => {
 
 export const addProductToCart = createAsyncThunk("user/addProductToCart", async (data) => {
     try {
-        const response = await axios.post(`http://localhost:3000/user/cart/product/add`, {
+        const response = await axios.post(`user/cart/product/add`, {
             userId: data.userId,
             productId: data.productId,
             varientId: data.varientId,
@@ -400,7 +401,7 @@ export const generateReferralCode = createAsyncThunk("user/generateReferralCode"
 
 export const addProductReview = createAsyncThunk("user/addProductReview", async (data) => {
     try {
-        const response = await axios.post(`user/product/add_review`,data, { withCredentials: true });
+        const response = await axios.post(`user/product/add_review`, data, { withCredentials: true });
         if (response.data?.status === "ok") {
             return response?.data;
         } else {
@@ -413,7 +414,7 @@ export const addProductReview = createAsyncThunk("user/addProductReview", async 
 
 export const updateProductReview = createAsyncThunk("user/updateProductReview", async (data) => {
     try {
-        const response = await axios.put(`user/product/update_review`,data, { withCredentials: true });
+        const response = await axios.put(`user/product/update_review`, data, { withCredentials: true });
         if (response.data?.status === "ok") {
             return response?.data;
         } else {
@@ -463,7 +464,7 @@ export const getReview = createAsyncThunk("user/getReview", async (id) => {
     }
 })
 
-export const checkUserCanAddReview = createAsyncThunk("user/checkUserCanAddReview", async ({userId, productId}) => {
+export const checkUserCanAddReview = createAsyncThunk("user/checkUserCanAddReview", async ({ userId, productId }) => {
     try {
         const response = await axios.get(`user/product/review/check?pId=${productId}&uId=${userId}`, { withCredentials: true });
         if (response.data?.status === "ok") {

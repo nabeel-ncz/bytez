@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { BASE_URL } from '../../constants/urls';
 
 function ProductImageSlider({ images, handleHeroImage }) {
     const itemsPerRow = 3;
@@ -32,7 +33,7 @@ function ProductImageSlider({ images, handleHeroImage }) {
                 {images.slice(startIndex, startIndex + itemsPerRow).map((image, index) => (
                     <img
                         key={index}
-                        src={`http://localhost:3000/products/resized/${image}`}
+                        src={`${BASE_URL}/products/resized/${image}`}
                         alt={`Image ${index}`}
                         className="w-24 h-auto border border-gray-400 rounded lg:p-2"
                         onClick={() => handleHeroImage(image)}

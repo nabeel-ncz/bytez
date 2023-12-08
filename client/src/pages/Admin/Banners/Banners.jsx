@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Breadcrumbs, Button } from '@material-tailwind/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { getAllCarouselImages, getAllPosterImages, getAllNewsImages } from '../../../store/actions/admin/adminActions';
+import { BASE_URL } from '../../../constants/urls';
 
 function Banners() {
   const dispatch = useDispatch();
@@ -49,7 +50,7 @@ function Banners() {
               <td className="text-sm p-4 text-start border-r">{carouselImages?.length || 0}</td>
               <td className="text-sm p-4 text-start border-r flex items-center justify-start gap-2">
                 {carouselImages?.map((item) => (
-                  <img src={`http://localhost:3000/banners/resized/${item.image}`} alt="" className='h-14' />
+                  <img src={`${BASE_URL}/banners/resized/${item.image}`} alt="" className='h-14' />
                 ))}
               </td>
             </tr>
@@ -58,7 +59,7 @@ function Banners() {
               <td className="text-sm p-4 text-start border-r">{posterImages?.length || 0}</td>
               <td className="text-sm p-4 text-start border-r flex items-center justify-start gap-2">
                 {posterImages?.map((item) => (
-                  <img src={`http://localhost:3000/banners/resized/${item.image}`} alt="" className='h-14' />
+                  <img src={`${BASE_URL}/banners/resized/${item.image}`} alt="" className='h-14' />
                 ))}
               </td>
             </tr>
@@ -67,7 +68,7 @@ function Banners() {
               <td className="text-sm p-4 text-start border-r">{newsImages?.length || 0}</td>
               <td className="text-sm p-4 text-start border-r flex items-center justify-start gap-2">
                 {newsImages?.map((item) => (
-                  <img src={`http://localhost:3000/banners/resized/${item.image}`} alt="" className='h-14' />
+                  <img src={`${BASE_URL}/banners/resized/${item.image}`} alt="" className='h-14' />
                 ))}
               </td>
             </tr>

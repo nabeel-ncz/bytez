@@ -8,6 +8,7 @@ import {
 } from "@material-tailwind/react";
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { BASE_URL } from '../../constants/urls';
 
 function ReturnOrder({ open, handleOpen, orderId, handleFetchOrderDetails }) {
     const [returnReason, setReturnReason] = useState("Product did not meet expectations.");
@@ -17,15 +18,15 @@ function ReturnOrder({ open, handleOpen, orderId, handleFetchOrderDetails }) {
     useEffect(() => {
         setReturnReason("Product did not meet expectations.");
         setError(null);
-    },[]);
+    }, []);
 
     const returnOrder = (reason) => {
-        axios.patch(`http://localhost:3000/user/order/return`, {reason, orderId}, { withCredentials: true }).then((response) => {
+        axios.patch(`${BASE_URL}/api/user/order/return`, { reason, orderId }, { withCredentials: true }).then((response) => {
             if (response.data?.status === "ok") {
                 handleFetchOrderDetails();
                 toast.success("Return request is successfully sended!");
                 handleOpen();
-            } else if(response.data?.status === 'error') {
+            } else if (response.data?.status === 'error') {
                 handleFetchOrderDetails();
                 toast.error(response.data?.message);
                 handleOpen();
@@ -37,7 +38,7 @@ function ReturnOrder({ open, handleOpen, orderId, handleFetchOrderDetails }) {
         })
     }
 
-    const handleReturnSubmit  = () => {
+    const handleReturnSubmit = () => {
         if (returnReason === "Other") {
             if (reasonInput.split(" ").length < 3) {
                 setError("Please write the reason, Reason should contian atleast 3 words!")

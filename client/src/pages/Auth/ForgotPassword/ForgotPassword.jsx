@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { Spinner } from '@material-tailwind/react';
+import { forgorPasswordMailSendApi } from '../../../services/api';
 
 function ForgotPassword() {
     const navigate = useNavigate();
@@ -11,7 +12,7 @@ function ForgotPassword() {
 
     const handleFormSubmit = () => {
         setLoading(true);
-        axios.get(`http://localhost:3000/user/auth/send_mail?email=${email}`).then((response) => {
+        forgorPasswordMailSendApi(email).then((response) => {
             if (response.data?.status === "ok") {
                 navigate('/?email_send=true');
             } else if (response.data?.status === "error") {

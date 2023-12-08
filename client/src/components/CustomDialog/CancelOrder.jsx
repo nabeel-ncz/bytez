@@ -9,6 +9,7 @@ import {
 import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { BASE_URL } from '../../constants/urls';
 
 function CancelOrder({ open, handleOpen, orderId, handleFetchOrderDetails }) {
     const dispatch = useDispatch();
@@ -22,7 +23,7 @@ function CancelOrder({ open, handleOpen, orderId, handleFetchOrderDetails }) {
     }, []);
 
     const cancelOrder = (reason) => {
-        axios.patch(`http://localhost:3000/user/order/cancel`, { orderId, reason }, { withCredentials: true }).then((response) => {
+        axios.patch(`${BASE_URL}/api/user/order/cancel`, { orderId, reason }, { withCredentials: true }).then((response) => {
             if (response.data?.status === "ok") {
                 handleFetchOrderDetails();
                 toast.success("Order is successfully cancelled!");

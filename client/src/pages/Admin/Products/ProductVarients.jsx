@@ -7,6 +7,8 @@ import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateProduct, getAllBrands, getAllCategories } from '../../../store/actions/admin/adminActions';
 import formValidateSchema from '../../../schema/admin/productMainField';
+import { getProductInAdminApi } from '../../../services/api';
+import { BASE_URL } from '../../../constants/urls';
 
 function ProductVarients() {
     const navigate = useNavigate();
@@ -36,7 +38,7 @@ function ProductVarients() {
     }, [])
 
     const handleFetch = () => {
-        axios.get(`http://localhost:3000/admin/product/${id}`, { withCredentials: true }).then((response) => {
+        getProductInAdminApi(id).then((response) => {
             if (response.data?.status === "ok") {
                 setProduct(response.data?.data);
                 setTags(response.data?.data?.tags);
@@ -185,7 +187,7 @@ function ProductVarients() {
                                         <div className="w-10 h-10 overflow-clip flex justify-center items-center">
                                             {doc.images?.mainImage ? (
                                                 <img
-                                                    src={`http://localhost:3000/products/resized/${doc?.images?.mainImage}`}
+                                                    src={`${BASE_URL}/products/resized/${doc?.images?.mainImage}`}
                                                     alt="img"
                                                     className="object-contain w-full h-full"
                                                 />

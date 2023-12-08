@@ -1,4 +1,5 @@
 import React from 'react'
+import { BASE_URL } from '../../constants/urls'
 
 function ExistingFileInput({ clearExistingFile, imageUrl }) {
     return (
@@ -6,7 +7,7 @@ function ExistingFileInput({ clearExistingFile, imageUrl }) {
             <div>
                 <div className="rounded flex flex-col items-center justify-center">
                     <img
-                        src={`http://localhost:3000/products/resized/${imageUrl}`}
+                        src={`${BASE_URL}/products/resized/${imageUrl}`}
                         alt={"Loading..."}
                         className="rounded h-20"
                     />

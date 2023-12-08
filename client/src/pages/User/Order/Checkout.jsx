@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import OrderSuccessfull from '../../../components/CustomDialog/OrderSuccessfull';
-import axios from 'axios';
+import { createOrderApi, getRazorpayKeyApi, verifyPaymentApi } from '../../../services/api';
+import { BASE_URL } from '../../../constants/urls';
 
 function Checkout() {
     const dispatch = useDispatch();
@@ -51,7 +52,7 @@ function Checkout() {
             description: "Test Transaction",
             order_id: data?.id,
             handler: function (response) {
-                axios.post(`http://localhost:3000/user/order/payment/verify`, response, { withCredentials: true }).then((result) => {
+                verifyPaymentApi(response).then((result) => {
                     if (result.data?.status === "ok") {
                         dispatch(createOrder({
                             userId: user?._id,
@@ -110,10 +111,10 @@ function Checkout() {
                     toast.error("Please add an address first!");
                 } else {
                     if (paymentMode === "RazorPay") {
-                        axios.post('http://localhost:3000/user/razorpay/create_order', { totalAmount: cart?.totalPrice, cartId: cart?._id }, { withCredentials: true }).then((result) => {
+                        createOrderApi({ totalAmount: cart?.totalPrice, cartId: cart?._id }).then((result) => {
                             if (result?.data?.status === "ok") {
                                 const data = result?.data?.data;
-                                axios.get('http://localhost:3000/user/razorpay/key', { withCredentials: true }).then((response) => {
+                                getRazorpayKeyApi().then((response) => {
                                     if (response.data?.status === "ok") {
                                         const key = response?.data?.data?.razorpay_key;
                                         initOnlinePayment(key, data);
@@ -259,7 +260,7 @@ function Checkout() {
                             <>
                                 <div className='w-full flex items-center justify-start gap-6 my-2 px-4 py-2 border rounded border-gray-200'>
                                     <div>
-                                        <img src={`http://localhost:3000/products/resized/${doc.image}`} alt="" className='w-8' />
+                                        <img src={`${BASE_URL}/products/resized/${doc.image}`} alt="" className='w-8' />
                                     </div>
                                     <div className='flex flex-col items-start justify-center'>
                                         <h2 className='font-medium text-xs'>{doc.name} {doc.attributes.ramAndRom}</h2>
