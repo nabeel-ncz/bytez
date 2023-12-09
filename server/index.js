@@ -30,10 +30,10 @@ app.use('/products/resized', express.static(path.join(__dirname, "public", "prod
 app.use('/banners/resized', express.static(path.join(__dirname, "public", "banners", "resized")));
 app.use('/uploads', express.static(path.join(__dirname, "public", "uploads")));
 // Middleware to set Content-Type for JavaScript files
-app.use('/assets/*.js', (req, res, next) => {
-    res.type('application/javascript');
-    next();
-});
+// app.use('/assets/*.js', (req, res, next) => {
+//     res.type('application/javascript');
+//     next();
+// });
 
 app.use('/api/user', userRouter);
 app.use('/api/admin', adminRouter);
