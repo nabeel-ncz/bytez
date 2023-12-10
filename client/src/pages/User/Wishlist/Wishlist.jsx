@@ -47,10 +47,10 @@ function Wishlist() {
       <div className='w-full min-h-[60vh] flex items-start justify-center gap-2 py-2 lg:py-6 px-4 lg:px-24'>
         <div className='w-full flex flex-col items-start justify-center gap-4'>
           {data?.map((doc) => (
-            <div className='flex items-end justify-between bg-white shadow-md w-full h-full py-6 px-12 rounded-md'>
+            <div className='flex flex-col md:flex-row items-end justify-between bg-white shadow-md w-full h-full py-6 px-12 rounded-md'>
               <div className='w-full flex flex-col sm:flex-row items-center justify-start gap-12'>
-                <div className='w-full sm:w-4/12 lg:w-2/12 flex flex-col items-center justify-center p-1 lg:p-6 gap-2'>
-                  <img src={`${BASE_URL}/products/resized/${doc.varients[0].images.mainImage}`} alt="" className='w-fit' />
+                <div className='w-full sm:w-4/12 lg:w-2/12 flex flex-col items-center justify-center p-12 sm:p-2 md:p-0 gap-2'>
+                  <img src={`${BASE_URL}/products/resized/${doc.varients[0].images.mainImage}`} alt="" className='object-cover' />
                   <span className='text-xs'>+{doc.varients?.length} More variants</span>
                 </div>
                 <div className='w-full sm:w-8/12 lg:w-10/12 flex flex-col items-start justify-between'>
@@ -76,8 +76,8 @@ function Wishlist() {
                   </div>
                 </div>
               </div>
-              <div className='flex flex-col items-end justify-center h-full'>
-                <div className='flex items-center justify-center gap-2 h-12'>
+              <div className='w-full h-full mt-2 sm:mt-0'>
+                <div className='w-full flex items-center justify-start sm:justify-center gap-2 h-12'>
                   <div onClick={() => {
                     navigate(`/product/${doc?._id}?sv=true`);
                   }} className='w-36 flex items-center justify-center border border-gray-300 hover:border-gray-900 cursor-pointer rounded px-4 h-full'>

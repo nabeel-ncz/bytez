@@ -6,7 +6,7 @@ function ProfileSidebar() {
     const navigate = useNavigate();
     return (
         <>
-        <div className='bg-white w-3/12 shadow-sm'>
+        <div className='bg-white w-3/12 shadow-sm hidden lg:block'>
             <List>
                 <ListItem onClick={() => navigate('')}>Dashboard</ListItem>
                 <ListItem onClick={() => navigate('account')}>Account Details</ListItem>

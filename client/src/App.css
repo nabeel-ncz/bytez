@@ -42,3 +42,6 @@ body::-webkit-scrollbar-thumb {
   background-color: rgb(112, 124, 144);
   border: 2px solid rgb(144, 153, 167);
 }
+.scroll-container-invisible::-webkit-scrollbar-thumb {
+  background-color: transparent; /* Set the color of the thumb (the moving part of the scrollbar) */
+}

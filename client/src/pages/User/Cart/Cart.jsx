@@ -109,20 +109,51 @@ function Cart() {
   return (
     <>
 
-      <div className='w-screen min-h-screen px-24 py-6'>
+      <div className='w-screen min-h-screen px-4 md:px-24 py-6'>
         {(!cart || cart.items.length === 0) ? <h2>Cart is empty!</h2> : (
-          <div className='w-full flex items-start justify-center gap-2'>
-            <div className='w-8/12 flex flex-col items-start justify-center gap-4'>
+          <div className='w-full flex flex-col lg:flex-row items-start justify-center gap-2'>
+            <div className='w-full lg:w-8/12 flex flex-col items-start justify-center gap-4'>
               {records?.map((doc) => (
-                <div className='flex items-end justify-between bg-white shadow-md w-full h-full py-6 px-12 rounded-md'>
-                  <div className='flex items-center justify-start gap-12'>
-                    <div>
+                <div className='flex flex-col md:flex-row item-center lg:items-end justify-between bg-white shadow-md w-full h-full py-6 px-4 md:px-12 rounded-md'>
+                  <div className='flex flex-col md:flex-row items-center justify-start md:gap-12 gap-6'>
+                    <div className='md:flex hidden'>
                       <img src={`${BASE_URL}/products/resized/${doc.image}`} alt="" className='w-24' />
                     </div>
-                    <div className='flex flex-col items-start justify-between'>
-                      <h2 className='font-semibold text-xl'>{doc.name}</h2>
-                      <h2 className='font-semibold text-xl'>₹.{doc.discountPrice} <span className='font-normal line-through opacity-40'>₹.{doc.price}</span></h2>
-                      <div className='flex flex-col items-start gap-2 text-blue-gray-700 text-sm'>
+                    <div className='md:hidden w-full flex items-end justify-between'>
+                      <img src={`${BASE_URL}/products/resized/${doc.image}`} alt="" className='w-24' />
+                      <div className='flex md:hidden flex-col items-end justify-center h-full mt-4 md:mt-0'>
+                        <div className='flex items-center justify-center'>
+                          <h2 className='text-xl'><span className='text-sm'>Sub Total : </span>₹ {doc.discountPrice * doc.quantity}</h2>
+                        </div>
+                        <div className='flex items-center justify-center gap-2 h-10 md:h-12'>
+                          <div className='flex items-center justify-center gap-4 border border-blue-gray-700 rounded h-full'>
+                            <button disabled={doc.quantity === 1} className={`${doc.quantity === 1 && "opacity-30"} h-full w-10 flex items-center justify-center cursor-pointer bg-blue-50`} onClick={() => {
+                              handleQuantity(doc.productId, doc.varientId, -1);
+                            }}>
+                              <span className='text-lg md:text-xl font-semibold'>-</span>
+                            </button>
+                            <span>{doc.quantity}</span>
+                            <button className=' h-full w-10 flex items-center justify-center cursor-pointer bg-blue-50' onClick={() => {
+                              handleQuantity(doc.productId, doc.varientId, +1);
+                            }}>
+                              <span className='text-lg md:text-xl font-semibold'>+</span>
+                            </button>
+                          </div>
+                          <div onClick={() => {
+                            setDeleteId(doc.varientId)
+                            handleDialogOpen();
+                          }} className='flex items-center justify-center border border-blue-gray-700 rounded px-4 h-full'>
+                            <img src="/icons/bin.png" alt="" className='w-6 md:h-6' />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className='flex flex-col items-start justify-between w-full'>
+                      <div className='flex flex-col items-start'>
+                        <h2 className='font-semibold text-lg md:text-xl'>{doc.name}</h2>
+                        <h2 className='font-semibold text-lg md:text-xl'>₹.{doc.discountPrice} <span className='font-normal line-through opacity-40'>₹.{doc.price}</span></h2>
+                      </div>
+                      <div className='flex flex-row md:flex-col items-start gap-2 text-blue-gray-700 text-sm'>
                         {/* <h2>{doc.quantity < doc}</h2> */}
                         <div className='flex items-center justify-start gap-4'>
                           <div className={`flex items-center justify-center gap-4 bg-white px-2 py-1 border border-blue-gray-500 cursor-pointer`}>
@@ -137,7 +168,7 @@ function Cart() {
                       </div>
                     </div>
                   </div>
-                  <div className='flex flex-col items-end justify-center h-full'>
+                  <div className='hidden md:flex flex-col items-end justify-center h-full mt-4 md:mt-0'>
                     <div className='flex items-center justify-center'>
                       <h2 className='text-xl'><span className='text-sm'>Sub Total : </span>₹ {doc.discountPrice * doc.quantity}</h2>
                     </div>
@@ -146,20 +177,20 @@ function Cart() {
                         <button disabled={doc.quantity === 1} className={`${doc.quantity === 1 && "opacity-30"} h-full w-12 flex items-center justify-center cursor-pointer bg-blue-50`} onClick={() => {
                           handleQuantity(doc.productId, doc.varientId, -1);
                         }}>
-                          <span className='text-xl font-semibold'>-</span>
+                          <span className='text-lg md:text-xl font-semibold'>-</span>
                         </button>
                         <span>{doc.quantity}</span>
                         <button className=' h-full w-12 flex items-center justify-center cursor-pointer bg-blue-50' onClick={() => {
                           handleQuantity(doc.productId, doc.varientId, +1);
                         }}>
-                          <span className='text-xl font-semibold'>+</span>
+                          <span className='text-lg md:text-xl font-semibold'>+</span>
                         </button>
                       </div>
                       <div onClick={() => {
                         setDeleteId(doc.varientId)
                         handleDialogOpen();
                       }} className='flex items-center justify-center border border-blue-gray-700 rounded px-4 h-full'>
-                        <img src="/icons/bin.png" alt="" className='w-6 h-6' />
+                        <img src="/icons/bin.png" alt="" className='w-6 md:h-6' />
                       </div>
                     </div>
                   </div>
@@ -169,7 +200,7 @@ function Cart() {
                 <Pagination next={next} prev={prev} total={totalCartPage} active={activePage} />
               </div>
             </div>
-            <div className='w-4/12 min-h-[20rem] py-6 px-10 shadow-md rounded-md bg-white'>
+            <div className='w-full lg:w-4/12 min-h-[20rem] py-6 px-10 shadow-md rounded-md bg-white'>
               <div className='flex flex-col items-start justify-center w-full gap-2'>
                 <h2 className='text-xl font-semibold'>Order Summary</h2>
                 <div className='w-full flex items-center justify-between'>

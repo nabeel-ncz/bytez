@@ -15,9 +15,9 @@ function RowBanner({ title }) {
 
     return (
         <>
-            <div className='w-full pb-12 px-6 lg:px-32 flex flex-row items-center justify-between gap-2'>
+            <div className='w-full pb-12 px-6 lg:px-32 flex flex-row items-center justify-between gap-2 overflow-x-auto lg:overflow-x-hidden'>
                 {posters?.map((doc) => (
-                    <img src={`${BASE_URL}/banners/resized/${doc.image}`} alt="" className='w-[320px] object-cover self-start rounded-lg' />
+                    <img src={`${BASE_URL}/banners/resized/${doc.image}`} alt="" className='w-[240px] lg:w-[320px] object-cover self-start rounded-lg' />
                 ))}
             </div>
         </>
