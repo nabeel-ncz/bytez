@@ -27,7 +27,7 @@ function RowPost({ title }) {
               <img src="/icons/arrow-icon.png" alt="" className='w-6 h-6 -rotate-90' />
             </div> */}
           </div>
-          <div className='w-full pb-12 px-6 lg:px-32 flex flex-row items-center justify-between'>
+          <div className='w-full pb-12 px-6 lg:px-32 gap-2 lg:gap-0 flex flex-row items-center justify-between overflow-x-auto lg:overflow-x-hidden'>
             {products?.splice(0, 5)?.map((doc) => (
               <ProductCard id={doc._id} image={doc?.varients[0]?.images?.mainImage} title={doc?.title}
                 description={doc?.varients[0]?.description} price={doc.varients[0]?.discountPrice} varients={doc?.varients} />

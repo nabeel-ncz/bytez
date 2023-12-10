@@ -36,7 +36,7 @@ function Wallet() {
 
 
   return (
-    <div className='w-9/12 shadow-sm'>
+    <div className='w-full lg:w-9/12 shadow-sm'>
       <div className='w-full bg-white rounded shadow-sm flex items-center justify-between px-8 py-4'>
         <div className='flex items-center justify-start gap-4'>
           <img src="/icons/wallet_black.png" alt="" className='w-14 opacity-60' />
@@ -54,7 +54,7 @@ function Wallet() {
           </h6>
         )}
       </div>
-      <div className='w-full bg-white rounded shadow-sm flex items-center justify-center px-8 py-4'>
+      <div className='w-full bg-white rounded shadow-sm px-8 py-4 overflow-x-scroll'>
         <table className="w-full min-w-max table-auto">
           <thead className="font-normal">
             <tr className="border-b border-gray-200">

@@ -468,6 +468,26 @@ module.exports = {
             res.json({ status: 'error', message: error?.message });
         }
     },
+    getSalesReportByBrand: async (req, res) => {
+        const brand = req.params?.brand;
+        try {
+            const orders = await Order.find({
+                status: 'delivered',
+            });
+            let totalSalesByBrand = 0;
+            for (const order of orders) {
+                for (const item of order.items) {
+                    const product = await Product.findById(item.productId);
+                    if (product && product.brand.toString() === brand) {
+                        totalSalesByBrand += parseFloat(item.price);
+                    }
+                }
+            };
+            res.json({ status: 'ok', data: totalSalesByBrand });
+        } catch (error) {
+            res.json({ status: 'error', message: error?.message });
+        }
+    },
     cancelSingleProduct: async (req, res) => {
         try {
             const { productId, varientId, orderId, cancelReason } = req.body;

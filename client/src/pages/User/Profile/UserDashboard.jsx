@@ -41,8 +41,7 @@ function UserDashboard() {
 
     return (
         <>
-            {console.log(defaultAddress)}
-            <div className='w-9/12 shadow-sm'>
+            <div className='w-full lg:w-9/12 shadow-sm'>
                 {/* <div className='flex items-center justify-between gap-4'>
                     <div className="text-start w-full px-5 flex items-center justify-start gap-4 bg-blue-100 py-4">
                         <div className='w-fit bg-white p-2'>
@@ -76,23 +75,23 @@ function UserDashboard() {
                     <h2 className='text-lg font-medium'>Hello, {user?.name}</h2>
                     <p className='text-start font-light text-xs'>From your account dashboard. you can easily check & view your Recent Orders, manage your Shipping and Billing Addresses and edit your Password and Account Details.</p>
                 </div>
-                <div className='w-full flex items-start justify-between gap-12 mt-6'>
-                    <div className='w-1/2 bg-white py-4 rounded shadow-sm'>
+                <div className='w-full flex md:flex-row flex-col items-start justify-between gap-12 mt-6'>
+                    <div className='w-full md:w-1/2 bg-white py-4 rounded shadow-sm'>
                         <div className='w-full border-b border-gray-600 ps-4 pb-2'>
                             <h2 className='text-start font-medium text-sm'>Account Info</h2>
                         </div>
-                        <div className='flex flex-col items-start justify-center ps-4 py-6 gap-2'>
+                        <div className='flex flex-col items-start justify-center ps-4 py-6 gap-2 text-start'>
                             <h2 className='font-medium text-sm'>Name : {user?.name}</h2>
                             <h2 className='font-medium text-sm'>Email : {user?.email}</h2>
                             <h2 className='font-medium text-sm'>Phone : {user?.phone ? user.phone : defaultAddress?.phone}</h2>
                         </div>
                     </div>
-                    <div className='w-1/2 bg-white py-4 rounded shadow-sm'>
+                    <div className='w-full md:w-1/2 bg-white py-4 rounded shadow-sm'>
                         <div className='w-full border-b border-gray-600 ps-4 pb-2'>
                             <h2 className='text-start font-medium text-sm'>Default Address</h2>
                         </div>
                         {defaultAddress ? (
-                            <div className='flex flex-col items-start justify-center ps-4 py-6 gap-2'>
+                            <div className='flex flex-col items-start justify-center ps-4 py-6 gap-2 text-start'>
                                 <h2 className='font-medium text-sm'>{defaultAddress?.firstName} {defaultAddress?.lastName}</h2>
                                 <p className='font-medium text-sm opacity-80'>{defaultAddress?.houseAddress}, {defaultAddress?.city}, {defaultAddress?.state} Pin: {defaultAddress?.zipcode}</p>
                                 <h2 className='font-medium text-sm opacity-80'>Phone: {defaultAddress?.phone}</h2>

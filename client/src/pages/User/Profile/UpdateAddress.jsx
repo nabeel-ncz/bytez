@@ -40,7 +40,7 @@ function UpdateAddress() {
     }, []);
     return (
         <>
-            <div className='w-9/12 shadow-sm bg-white'>
+            <div className='w-full lg:w-9/12 shadow-sm bg-white'>
                 <Formik
                     initialValues={{
                         firstName: address?.firstName,

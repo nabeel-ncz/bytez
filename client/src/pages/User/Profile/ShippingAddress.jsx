@@ -46,7 +46,7 @@ function ShippingAddress() {
 
     return (
         <>
-            <div className='w-9/12 shadow-sm'>
+            <div className='w-full lg:w-9/12 shadow-sm'>
                 <div className='w-full flex items-center justify-end mb-4'>
                     <Button onClick={() => { navigate('create') }}>Add Address</Button>
                 </div>
@@ -66,9 +66,9 @@ function ShippingAddress() {
                                     <img src="/icons/edit-icon.png" alt="" className='w-9 border border-gray-400 p-2' onClick={() => { navigate(`update?uId=${user?._id}&aId=${doc._id}`)}} />
                                 </div>
                             </div>
-                            <div className='w-full flex flex-col items-start px-6 py-3 font-medium text-sm'>
+                            <div className='w-full flex flex-col items-start px-6 py-3 font-medium text-sm text-start'>
                                 <h2>{doc.firstName} {doc.lastName}</h2>
-                                <p className='opacity-70'>{doc.houseAddress}, {doc.city}, {doc.state}, {doc.zipcode}, {doc.country}</p>
+                                <p className='opacity-70 text-start'>{doc.houseAddress}, {doc.city}, {doc.state}, {doc.zipcode}, {doc.country}</p>
                                 <h2 className='opacity-70'>Phone : {doc.phone}</h2>
                             </div>
                         </div>

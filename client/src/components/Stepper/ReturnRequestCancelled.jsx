@@ -4,7 +4,7 @@ import { Stepper, Step, Button, Typography } from "@material-tailwind/react";
 function ReturnRequestCancelled({ activeStep }) {
 
     return (
-        <div className="w-full px-36 py-4">
+        <div className="w-full px-16 lg:px-36 py-4">
             <Stepper activeStep={activeStep} lineClassName="bg-orange-100" activeLineClassName="bg-red-400">
                 <Step className="!bg-white">
                     <img src="/icons/delivered.png" alt="" className="w-20" />

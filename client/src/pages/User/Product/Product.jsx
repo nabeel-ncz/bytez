@@ -231,7 +231,7 @@ function Product() {
                             </div>
                         </div>
                     </div>
-                    <div className='w-full flex flex-col items-start justify-center px-20 pt-20'>
+                    <div className='w-full flex flex-col items-start justify-center px-4 lg:px-20 pt-20'>
                         <div className='w-full flex items-center justify-between'>
                             {productReviews?.length >= 1 && (
                                 <h2 className='font-bold text-xl underline py-4'>Reviews</h2>

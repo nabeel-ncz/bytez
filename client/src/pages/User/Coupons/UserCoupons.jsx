@@ -21,6 +21,11 @@ function UserCoupons() {
     };
     return (
         <div className='w-full flex items-start justify-start flex-wrap gap-10 px-24'>
+            {(!coupons || coupons?.length === 0) &&
+                (<div className='min-h-[50vh] w-full'>
+                    <h2 className='text-center'>There is no coupons!</h2>
+                </div>)
+            }
             {coupons?.map((item) => (
                 <div class="container text-black w-fit">
                     <div class="coupon-card bg-gradient-to-r from-yellow-50 to-orange-100 text-center py-10 px-20 rounded-lg shadow-md relative">

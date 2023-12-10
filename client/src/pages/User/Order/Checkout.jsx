@@ -197,8 +197,8 @@ function Checkout() {
 
     return (
         <>
-            <div className='w-full flex items-start justify-center px-24 py-6 gap-10'>
-                <div className='w-8/12 flex flex-col items-start gap-4'>
+            <div className='w-full flex xl:flex-row flex-col items-start justify-center px-4 lg:px-12 xl:px-24 py-6 gap-10'>
+                <div className='xl:w-8/12 w-full flex flex-col items-start gap-4'>
                     <div className='w-full bg-white rounded shadow-sm'>
                         <div className='w-full flex items-center justify-end border-b border-gray-200 px-6 py-1'>
                             <div className='flex items-center gap-2'>
@@ -213,7 +213,7 @@ function Checkout() {
                             {defaultAddress && (
                                 <>
                                     <h2 className='font-medium text-sm'>{defaultAddress?.firstName} {defaultAddress?.lastName}</h2>
-                                    <p className='font-medium text-sm opacity-80'>{defaultAddress?.houseAddress}, {defaultAddress?.city}, {defaultAddress?.state} Pin: {defaultAddress?.zipcode}</p>
+                                    <p className='font-medium text-sm opacity-80 text-start'>{defaultAddress?.houseAddress}, {defaultAddress?.city}, {defaultAddress?.state} Pin: {defaultAddress?.zipcode}</p>
                                     <h2 className='font-medium text-sm opacity-80'>Phone: {defaultAddress?.phone}</h2>
                                     <h2 className='font-medium text-sm opacity-80'>Email: {defaultAddress?.email}</h2>
                                 </>
@@ -226,15 +226,15 @@ function Checkout() {
                                 <h2 className='text-xl font-semibold'>Payment Option</h2>
                             </div>
                             <div className='w-full flex items-center justify-around relative px-6 h-28'>
-                                <div onClick={() => setPaymentMode("COD")} className={`absolute ${paymentMode === "COD" && "border"} border-gray-600 left-20 transition-all duration-50 cursor-pointer w-48 h-32 shadow-md hover:shadow-lg rounded-md hover:w-[12.5rem] hover:h-[8.5rem] h flex flex-col items-center justify-center gap-2`}>
+                                <div onClick={() => setPaymentMode("COD")} className={`absolute ${paymentMode === "COD" && "border"} border-gray-600 left-5 lg:left-20 transition-all duration-50 cursor-pointer w-28 lg:w-48 h-24 lg:h-32 shadow-md hover:shadow-lg rounded-md hover:w-[7.5rem] hover:h-[6.5rem] lg:hover:w-[12.5rem] lg:hover:h-[8.5rem] h flex flex-col items-center justify-center gap-2`}>
                                     <img src="/icons/cash-on-delivery.png" alt="" className='w-8' />
                                     <h2>Cash on delivery</h2>
                                 </div>
-                                <div onClick={() => setPaymentMode("RazorPay")} className={`absolute ${paymentMode === "RazorPay" && "border"} border-gray-600 transition-all duration-50 cursor-pointer w-48 h-32 shadow-md hover:shadow-lg rounded-md hover:w-[12.5rem] hover:h-[8.5rem] h flex flex-col items-center justify-center gap-2`}>
+                                <div onClick={() => setPaymentMode("RazorPay")} className={`absolute ${paymentMode === "RazorPay" && "border"} border-gray-600 transition-all duration-50 cursor-pointer w-28 lg:w-48 h-24 lg:h-32 shadow-md hover:shadow-lg rounded-md hover:w-[7.5rem] hover:h-[6.5rem] lg:hover:w-[12.5rem] lg:hover:h-[8.5rem] h flex flex-col items-center justify-center gap-2`}>
                                     <img src="/icons/credit-card.png" alt="" className='w-8' />
                                     <h2>Online payment</h2>
                                 </div>
-                                <div onClick={() => setPaymentMode("Wallet")} className={`absolute ${paymentMode === "Wallet" && "border"} border-gray-600 transition-all duration-50 cursor-pointer right-20 w-48 h-32 shadow-md hover:shadow-lg rounded-md hover:w-[12.5rem] hover:h-[8.5rem] h flex flex-col items-center justify-center gap-2`}>
+                                <div onClick={() => setPaymentMode("Wallet")} className={`absolute ${paymentMode === "Wallet" && "border"} border-gray-600 transition-all duration-50 cursor-pointer right-5 lg:right-20 w-28 lg:w-48 h-24 lg:h-32 shadow-md hover:shadow-lg hover:w-[7.5rem] hover:h-[6.5rem] rounded-md lg:hover:w-[12.5rem] lg:hover:h-[8.5rem] h flex flex-col items-center justify-center gap-2`}>
                                     <img src="/icons/wallet.png" alt="" className='w-8' />
                                     <h2>Wallet</h2>
                                 </div>
@@ -248,12 +248,12 @@ function Checkout() {
                             </div>
                             <div className='w-full flex flex-col items-start justify-center px-6'>
                                 <h2>Order Notes (optional)</h2>
-                                <input type="text" onChange={handleOrderNoteChange} value={orderNote} className='bg-gray-200 w-3/4 h-10 rounded outline-none border border-gray-200' />
+                                <input type="text" onChange={handleOrderNoteChange} value={orderNote} className='bg-gray-200 w-full lg:w-3/4 h-10 rounded outline-none border border-gray-200' />
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className='w-4/12 min-h-screen flex items-start'>
+                <div className='xl:w-4/12 w-full min-h-screen flex items-start'>
                     <div className='flex flex-col items-start justify-center w-full gap-2 bg-white px-12 py-8'>
                         <h2 className='text-xl font-semibold'>Order Summary</h2>
                         {cart?.items?.map((doc) => (

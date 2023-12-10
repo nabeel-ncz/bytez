@@ -36,12 +36,12 @@ function OrdersList() {
 
     return (
         <>
-            <div className='w-full min-h-screen px-24 py-6'>
+            <div className='w-full min-h-screen lg:px-24 px-4 py-6'>
                 {(orders?.length <= 0 || !orders) ? (
                     <h2>There is no orders!</h2>
                 ) : (
                     <>
-                        <div className='bg-white rounded p-8'>
+                        <div className='bg-white rounded md:p-8 p-2 w-full overflow-x-auto'>
                             <table className="w-full min-w-max table-auto">
                                 <thead className="font-normal">
                                     <tr className="border-b border-gray-200">

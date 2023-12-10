@@ -112,13 +112,13 @@ function OrderDetails() {
     return (
         <>
 
-            <div className='w-full min-h-screen px-24 py-4'>
+            <div className='w-full min-h-screen lg:px-24 px-4 py-4'>
                 <div className='flex flex-col items-center bg-white rounded shadow-sm'>
                     <div className='w-full p-6'>
-                        <div className='w-full flex items-center justify-between bg-gray-100 p-4 rounded border'>
+                        <div className='w-full flex flex-col md:flex-row gap-2 md:gap-0 items-start md:items-center justify-between bg-gray-100 p-4 rounded border'>
                             <div className='flex flex-col items-start'>
-                                <h2 className='font-medium text-xl'>ODR{order?._id}</h2>
-                                <h2 className='text-xs font-normal'>{order?.itemsQuantity} Products, Order Placed at {new Date(order?.createdAt).toLocaleString()}</h2>
+                                <h2 className='font-medium text-base md:text-xl'>ODR{order?._id}</h2>
+                                <h2 className='text-xs font-normal text-start'>{order?.itemsQuantity} Products, Order Placed at {new Date(order?.createdAt).toLocaleString()}</h2>
                             </div>
                             <h2 className='font-medium text-xl'>₹ {order?.totalPrice}</h2>
                         </div>
@@ -147,7 +147,7 @@ function OrderDetails() {
                     ) : (
                         <OrderStepper activeStep={activeStep ? activeStep : 0} />
                     )}
-                    <div className='w-full p-6 mt-12'>
+                    <div className='w-full p-6 mt-12 overflow-x-auto'>
                         <table className="w-full min-w-max table-auto">
                             <thead className="font-normal">
                                 <tr className="border-b border-gray-200">
@@ -195,9 +195,9 @@ function OrderDetails() {
                             </tbody>
                         </table>
                     </div>
-                    <div className='w-full p-6 flex items-end justify-between'>
-                        <div className='w-1/2 flex items-center justify-start p-4 rounded border'>
-                            <div className='flex flex-col items-start'>
+                    <div className='w-full p-6 flex flex-col md:flex-row items-end justify-between'>
+                        <div className='w-full md:w-1/2 flex items-center justify-start p-4 rounded border'>
+                            <div className='flex flex-col items-start text-start'>
                                 <h2 className='font-medium text-lg'>{order?.address?.fullName}</h2>
                                 <h2 className='text-sm font-medium opacity-70'>{order?.address?.address}</h2>
                                 <h2 className='text-sm font-medium opacity-70'>Phone : {order?.address?.phone}</h2>
@@ -205,7 +205,7 @@ function OrderDetails() {
                                 <h2 className='text-sm font-medium opacity-70'>Order Notes : {order?.orderNote}</h2>
                             </div>
                         </div>
-                        <div className='w-1/2 flex items-center justify-start p-4 rounded border'>
+                        <div className='w-full md:w-1/2 flex items-center justify-start p-4 rounded border'>
                             {(order?.status === "pending" || order?.status === "processing") && (
                                 <div className='w-full flex flex-col items-end justify-end'>
                                     <Button variant='outlined' color='red' onClick={handleCancelOrder}>Cancel Order</Button>
