@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ProfileSidebar from '../../../components/ProfileSidebar/ProfileSidebar'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchUser, getAllAddresses } from '../../../store/actions/user/userActions';
+import { fetchUser, getAllAddresses, logout } from '../../../store/actions/user/userActions';
 import { Button, Drawer, List, ListItem, IconButton } from '@material-tailwind/react';
 
 function Profile() {
@@ -12,6 +12,9 @@ function Profile() {
 
     const openDrawer = () => setOpen(true);
     const closeDrawer = () => setOpen(false);
+    const handleLogout = () => {
+        dispatch(logout());
+    }
     return (
         <>
             <div className='w-full flex lg:hidden items-center justify-end py-1 px-6 md:px-24'>
@@ -45,7 +48,7 @@ function Profile() {
                     <ListItem onClick={() => { navigate('account'); closeDrawer(); }}>Account Details</ListItem>
                     <ListItem onClick={() => { navigate('address'); closeDrawer(); }}>Shipping Address</ListItem>
                     <ListItem onClick={() => { navigate('wallet'); closeDrawer(); }}>Wallet</ListItem>
-                    <ListItem>Logout</ListItem>
+                    <ListItem onClick={() => { handleLogout(); }}>Logout</ListItem>
                 </List>
             </Drawer>
         </>

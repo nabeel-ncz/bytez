@@ -63,12 +63,12 @@ function AdminOrderDetails() {
 
     return (
         <>
-            <div className='w-full min-h-screen px-24 py-4'>
+            <div className='w-full min-h-screen px-4 md:px-12 lg:px-24 py-4'>
                 <div className='flex flex-col items-center bg-white rounded shadow-sm'>
                     <div className='w-full p-6'>
-                        <div className='w-full flex items-center justify-between bg-gray-100 p-4 rounded border'>
+                        <div className='w-full flex flex-col gap-2 md:gap-0 md:flex-row items-start md:items-center justify-between bg-gray-100 p-4 rounded border'>
                             <div className='flex flex-col items-start'>
-                                <h2 className='font-medium text-xl'>{order?._id}</h2>
+                                <h2 className='font-medium text-base md:text-xl'>ODR{order?._id}</h2>
                                 <h2 className='text-xs font-normal'>{order?.itemsQuantity} Products, Order Placed at {new Date(order?.createdAt).toLocaleString()}</h2>
                                 <h2 className='text-xs font-normal'>Expected Order Delivery {new Date(order?.deliveryDate).toLocaleString()}</h2>
                             </div>
@@ -180,7 +180,7 @@ function AdminOrderDetails() {
                         <div className='w-full flex items-center justify-start p-4 rounded border'>
                             <div className='flex flex-col items-start'>
                                 <h2 className='font-medium text-lg'>{order?.address?.fullName}</h2>
-                                <h2 className='text-sm font-medium opacity-70'>{order?.address?.address}</h2>
+                                <h2 className='text-sm font-medium opacity-70 text-start'>{order?.address?.address}</h2>
                                 <h2 className='text-sm font-medium opacity-70'>Phone : {order?.address?.phone}</h2>
                                 <h2 className='text-sm font-medium opacity-70'>Email : {order?.address?.email}</h2>
                                 <h2 className='text-sm font-medium opacity-70'>Order Notes : {order?.orderNote}</h2>

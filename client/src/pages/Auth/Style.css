@@ -2,7 +2,7 @@
     @apply fixed top-0 w-screen h-screen overflow-hidden flex items-center justify-center;
 }
 .outer-container .container{
-    @apply absolute w-5/12 h-auto flex items-start justify-center px-28 py-20
+    @apply absolute w-11/12 lg:w-8/12 2xl:w-5/12 h-auto flex items-start justify-center px-10 lg:px-28 py-20
     bg-[#00000038] rounded-[20px] shadow-[0px_13px_44px_#0000001f] backdrop-blur-[19.6px] backdrop-brightness-[100%] [-webkit-backdrop-filter:blur(19.6px)_brightness(100%)];
 }
 .outer-container .container .content{

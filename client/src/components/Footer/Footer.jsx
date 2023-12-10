@@ -19,7 +19,7 @@ const currentYear = new Date().getFullYear();
 
 function Footer() {
   return (
-    <footer className="static bottom-0 w-full bg-white pt-4 mt-24">
+    <footer className="static bottom-0 w-full bg-white pt-4 mt-24 z-0">
       <div className="mx-auto w-full max-w-7xl px-8">
         <div className="grid grid-cols-1 justify-between gap-4 md:grid-cols-2">
           <Typography variant="h5" className="mb-6">
@@ -59,7 +59,7 @@ function Footer() {
             &copy; {currentYear} <a href="https://material-tailwind.com/">Bytez</a>. All
             Rights Reserved.
           </Typography>
-          <div className="flex gap-4 text-blue-gray-900 sm:justify-center">
+          <div className="flex gap-4 text-blue-gray-900 sm:justify-center z-0">
             <Typography as="a" href="#" className="opacity-80 transition-opacity hover:opacity-100">
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path

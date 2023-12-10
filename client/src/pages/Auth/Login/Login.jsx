@@ -45,7 +45,7 @@ function Login() {
   return (
     <>
       <div className='outer-container'>
-        <img src="/images/auth-bg.png" alt="" className='w-full h-auto' />
+        <img src="/images/auth-bg.png" alt="" className='2xl:w-full 2xl:h-auto h-full object-cover' />
         <div className="container" >
           <div className='content'>
             <div className='text-white text-2xl text-start mb-2'>
@@ -90,8 +90,8 @@ function Login() {
                 </div>
               </div>
               <button onClick={handleGoogleAuth} className='w-full h-12 px-10 mt-6 rounded-3xl bg-transparent border-white border-2 flex items-center justify-center gap-3'>
-                <img src="/icons/google-trsp-icon.png" alt="" className='h-8'/>
-                <span className='font-medium text-base text-white'>Continue With Google</span>
+                <img src="/icons/google-trsp-icon.png" alt="" className='h-6 lg:h-8'/>
+                <span className='font-medium text-sm lg:text-base text-white'>Continue With Google</span>
               </button>
               <h2 className='mt-8 text-white text-start text-sm font-extralight'>Don’t have account?
                 <Link to={"/signup"}><span className='font-medium'>Register Now</span></Link>

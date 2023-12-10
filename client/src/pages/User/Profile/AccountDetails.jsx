@@ -109,19 +109,19 @@ function AccountDetails() {
                                 </div>
                             )}
                             {!user.oauth && (
-                                <div className='w-full flex gap-6 px-12'>
-                                    <div className='w-1/2'>
+                                <div className='w-full flex flex-col lg:flex-row gap-6 px-12'>
+                                    <div className='w-full lg:w-1/2'>
 
                                     </div>
-                                    <div className='w-1/2 flex items-center justify-between gap-2'>
+                                    <div className='w-full lg:w-1/2 flex items-center justify-between gap-2'>
                                         {!user?.verified && (
-                                            <div onClick={() => { navigate(`/verify/email?request=true&email=${user?.email}`) }} className='w-full flex items-center justify-between px-4 py-2 bg-white border-2 border-green-200 cursor-pointer'>
-                                                <h2>Verify Account</h2>
+                                            <div onClick={() => { navigate(`/verify/email?request=true&email=${user?.email}`) }} className='w-full h-full flex items-center justify-between px-4 py-2 bg-white border-2 border-green-200 cursor-pointer'>
+                                                <h2 className='text-xs xl:text-base'>Verify Account</h2>
                                                 <img src="/icons/edit-icon.png" alt="" className='w-6 opacity-0' />
                                             </div>
                                         )}
                                         <div onClick={() => { navigate('change_password') }} className='w-full flex items-center justify-between px-4 py-2 bg-white border-2 border-gray-400'>
-                                            <h2>Change Password</h2>
+                                            <h2 className='text-xs xl:text-base'>Change Password</h2>
                                             <img src="/icons/edit-icon.png" alt="" className='w-6' />
                                         </div>
                                     </div>

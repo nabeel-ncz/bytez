@@ -38,6 +38,7 @@ const {
     getAllOrders,
     updateOrderStatus,
     getSalesReport,
+    getSalesReportByBrand
 } = require('../controllers/orderController');
 const {
     getAllCoupons,
@@ -60,11 +61,10 @@ const {
 const { uploadFiles, uploadSingleFile } = require('../helper/fileUploadHelper');
 const { verifyAdmin } = require('../middleware/validate');
 
-router.get('/banner/:type', getAllBanners);
-
 router.use(verifyAdmin);
 
 router.get('/dashboard/sales/:period', getSalesReport);
+router.get('/dashboard/sales_by_brand/:brand', getSalesReportByBrand);
 router.get('/customer/all', getAllUsers);
 router.patch('/customer/update/status', changeUserStatus);
 router.get('/customer/:id', getUser);
@@ -105,5 +105,6 @@ router.get('/coupons/details/:id', getCouponDetails)
 router.post('/banner/create', uploadSingleFile, createBanner);
 router.patch('/banner/update', updateBanner);
 router.delete('/banner/delete/:id', deleteBanner);
+router.get('/banner/:type', getAllBanners);
 
 module.exports = router;

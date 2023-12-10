@@ -55,8 +55,8 @@ function OtpValidation() {
 
     return (
         <>
-            <div className='outer-container'>
-                <img src="/images/auth-bg.png" alt="" className='w-full h-auto' />
+            <div className='outer-container z-10'>
+                <img src="/images/auth-bg.png" alt="" className='2xl:w-full 2xl:h-auto h-full object-cover' />
                 <div className="container" >
                     <div className='content'>
                         <div className='text-white text-2xl text-start mb-2'>

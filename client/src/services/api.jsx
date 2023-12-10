@@ -107,3 +107,7 @@ export const getProductVarientInAdminApi = (productId, varientId) => {
 export const getSalesReportInAdminApi = (period) => {
     return axios.get(`/admin/dashboard/sales/${period}`, { withCredentials: true })
 }
+
+export const getSalesReportByBrandInAdminApi = (id) => {
+    return axios.get(`/admin/dashboard/sales_by_brand/${id}`, { withCredentials: true })
+}
