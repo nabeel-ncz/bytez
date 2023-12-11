@@ -12,7 +12,7 @@ function UserCoupons() {
     }, [user]);
 
     const handleFetch = async () => {
-        getAvailableUserCouponsApi()
+        getAvailableUserCouponsApi(user?._id)
             .then((response) => {
                 if (response?.data?.status === "ok") {
                     setCoupons(response?.data?.data);
