@@ -21,7 +21,7 @@ function CardZoom({image, offer}) {
                 <img
                     alt="nature"
                     className="h-full w-full object-cover object-center"
-                    src={`/images/dummy-product-1.webp`}
+                    src={`${BASE_URL}/products/resized/${image}`}
                 />
                 <div className="absolute top-1 left-1 font-bold text-sm bg-yellow-400 text-black px-3 py-1 rounded">
                     <h2>{offer}% off</h2>
