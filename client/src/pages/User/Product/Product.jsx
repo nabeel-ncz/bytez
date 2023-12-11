@@ -171,7 +171,7 @@ function Product() {
                         <>
                             <div className='w-full flex flex-col lg:flex-row items-center justify-center lg:items-start lg:justify-between py-2 lg:pt-6 px-6 lg:px-20'>
                                 <div className='w-full lg:w-1/2 mt-2 flex flex-col items-center justify-center gap-14 py-4 lg:py-12 bg-transparent mx-12 rounded-md shadow-sm'>
-                                    <CardZoom image={heroImage} />
+                                    <CardZoom image={heroImage} offer={100-Math.floor(((product?.varients[selectedVarient]?.discountPrice / product?.varients[selectedVarient]?.price) * 100))}/>
                                     <ProductImageSlider handleHeroImage={handleHeroImage} images={product ? [...productImages] : []} />
                                 </div>
                                 <div className="w-full lg:w-1/2 pt-12">
