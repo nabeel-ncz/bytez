@@ -111,7 +111,7 @@ function Cart() {
 
   return (
     <>
-      {(userLoading || cartLoading) ? <PageLoading /> : (
+      {(userLoading) ? <PageLoading /> : (
         <div className='w-screen min-h-screen px-4 md:px-24 py-6'>
           {(!cart || cart.items.length === 0) ? <h2>Cart is empty!</h2> : (
             <div className='w-full flex flex-col lg:flex-row items-start justify-center gap-2'>
