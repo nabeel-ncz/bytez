@@ -10,13 +10,13 @@ import Pagination from '../../../components/Pagination/Pagination';
 import RemoveCouponFromCart from '../../../components/CustomDialog/RemoveCouponFromCart';
 import { BASE_URL } from '../../../constants/urls';
 import PageLoading from '../../../components/Loading/PageLoading';
+import LoadingSpinnerSm from "../../../components/Loading/LoadingSpinnerSm"
 
 function Cart() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector(state => state.user?.user?.data);
   const cart = useSelector(state => state.user?.cart?.data);
-  const cartLoading = useSelector(state => state.user?.cart?.loading);
   const userLoading = useSelector(state => state.user?.user?.loading);
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -32,12 +32,18 @@ function Cart() {
   const [couponStatus, setCouponStatus] = useState("not_applied");
   const [couponError, setCouponError] = useState("");
 
+  const [cartLoading, setCartLoading] = useState(false);
+  const [quantityChangeLoading, setQuantityChangeLoading] = useState(false);
+
   useEffect(() => {
+    setCartLoading(true);
     dispatch(getAllCartProducts(user._id)).then((response) => {
       if (response?.payload?.couponApplied > 0) {
         setCouponStatus('applied');
       }
       setActivePage(1);
+    }).finally(() => {
+      setCartLoading(false);
     })
   }, []);
 
@@ -54,6 +60,7 @@ function Cart() {
   }, [activePage, cart]);
 
   const handleQuantity = (productId, varientId, quantity) => {
+    setQuantityChangeLoading(true);
     dispatch(changeCartProductQuantity({
       quantityToAdd: quantity,
       productId: productId,
@@ -64,7 +71,9 @@ function Cart() {
       if (result?.error) {
         toast.error(result.error?.message);
       } else if (result?.payload?.status === "ok") {
-        dispatch(getAllCartProducts(user._id));
+        dispatch(getAllCartProducts(user._id)).finally(() => {
+          setQuantityChangeLoading(false);
+        })
       }
     })
   }
@@ -111,7 +120,7 @@ function Cart() {
 
   return (
     <>
-      {(userLoading) ? <PageLoading /> : (
+      {(userLoading || cartLoading) ? <PageLoading /> : (
         <div className='w-screen min-h-screen px-4 md:px-24 py-6'>
           {(!cart || cart.items.length === 0) ? <h2>Cart is empty!</h2> : (
             <div className='w-full flex flex-col lg:flex-row items-start justify-center gap-2'>
@@ -129,19 +138,21 @@ function Cart() {
                             <h2 className='text-xl'><span className='text-sm'>Sub Total : </span>₹ {doc.discountPrice * doc.quantity}</h2>
                           </div>
                           <div className='flex items-center justify-center gap-2 h-10 md:h-12'>
-                            <div className='flex items-center justify-center gap-4 border border-blue-gray-700 rounded h-full'>
-                              <button disabled={doc.quantity === 1} className={`${doc.quantity === 1 && "opacity-30"} h-full w-10 flex items-center justify-center cursor-pointer bg-blue-50`} onClick={() => {
-                                handleQuantity(doc.productId, doc.varientId, -1);
-                              }}>
-                                <span className='text-lg md:text-xl font-semibold'>-</span>
-                              </button>
-                              <span>{doc.quantity}</span>
-                              <button className=' h-full w-10 flex items-center justify-center cursor-pointer bg-blue-50' onClick={() => {
-                                handleQuantity(doc.productId, doc.varientId, +1);
-                              }}>
-                                <span className='text-lg md:text-xl font-semibold'>+</span>
-                              </button>
-                            </div>
+                            {quantityChangeLoading ? <LoadingSpinnerSm /> : (
+                              <div className='flex items-center justify-center gap-4 border border-blue-gray-700 rounded h-full'>
+                                <button disabled={doc.quantity === 1} className={`${doc.quantity === 1 && "opacity-30"} h-full w-10 flex items-center justify-center cursor-pointer bg-blue-50`} onClick={() => {
+                                  handleQuantity(doc.productId, doc.varientId, -1);
+                                }}>
+                                  <span className='text-lg md:text-xl font-semibold'>-</span>
+                                </button>
+                                <span>{doc.quantity}</span>
+                                <button className=' h-full w-10 flex items-center justify-center cursor-pointer bg-blue-50' onClick={() => {
+                                  handleQuantity(doc.productId, doc.varientId, +1);
+                                }}>
+                                  <span className='text-lg md:text-xl font-semibold'>+</span>
+                                </button>
+                              </div>
+                            )}
                             <div onClick={() => {
                               setDeleteId(doc.varientId)
                               handleDialogOpen();
