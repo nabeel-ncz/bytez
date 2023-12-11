@@ -39,7 +39,7 @@ function Login() {
   }
 
   const handleGoogleAuth = () => {
-    window.open(`${BASE_URL}/user/oauth2/google`, "_self");
+    window.open(`${BASE_URL}/api/user/oauth2/google`, "_self");
   }
 
   return (

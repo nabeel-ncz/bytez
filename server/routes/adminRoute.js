@@ -61,6 +61,8 @@ const {
 const { uploadFiles, uploadSingleFile } = require('../helper/fileUploadHelper');
 const { verifyAdmin } = require('../middleware/validate');
 
+router.get('/banner/:type', getAllBanners);
+
 router.use(verifyAdmin);
 
 router.get('/dashboard/sales/:period', getSalesReport);
@@ -105,6 +107,6 @@ router.get('/coupons/details/:id', getCouponDetails)
 router.post('/banner/create', uploadSingleFile, createBanner);
 router.patch('/banner/update', updateBanner);
 router.delete('/banner/delete/:id', deleteBanner);
-router.get('/banner/:type', getAllBanners);
+
 
 module.exports = router;
