@@ -16,7 +16,7 @@ module.exports = {
 
     },
     createCoupon: async (req, res) => {
-        const { code, discountPercentage, validFrom, validTo, maxUsesPerUser, couponType, minimumApplicableAmount, maximumApplicableAmount, minimumPurchaseAmount } = req.body;
+        const { code, discountPercentage, maximumDiscountAmount, validFrom, validTo, maxUsesPerUser, couponType, minimumApplicableAmount, maximumApplicableAmount, minimumPurchaseAmount } = req.body;
         try {
             await Coupon.create({
                 code,
@@ -27,7 +27,8 @@ module.exports = {
                 couponType,
                 minimumApplicableAmount,
                 maximumApplicableAmount,
-                minimumPurchaseAmount
+                minimumPurchaseAmount,
+                maximumDiscountAmount
             });
             res.json({ status: 'ok' });
         } catch (error) {
@@ -35,7 +36,7 @@ module.exports = {
         }
     },
     updateCoupon: async (req, res) => {
-        const { id, code, discountPercentage, validFrom, validTo, minimumApplicableAmount, maximumApplicableAmount, maxUsesPerUser, couponType, minimumPurchaseAmount } = req.body;
+        const { id, code, discountPercentage, maximumDiscountAmount, validFrom, validTo, minimumApplicableAmount, maximumApplicableAmount, maxUsesPerUser, couponType, minimumPurchaseAmount } = req.body;
         try {
             await Coupon.findByIdAndUpdate(id, {
                 code,
@@ -46,7 +47,8 @@ module.exports = {
                 couponType,
                 minimumPurchaseAmount,
                 maximumApplicableAmount,
-                minimumApplicableAmount
+                minimumApplicableAmount,
+                maximumDiscountAmount
             });
             res.json({ status: 'ok' });
         } catch (error) {
@@ -92,11 +94,14 @@ module.exports = {
         const totalPrice = req.query?.price;
         const couponDetails = await Coupon.findById(couponId).lean();
         const isValidDate = validateCouponDate(couponDetails);
-        const isApplicable = validateCouponApplied(totalPrice, couponDetails);
+        let isApplicable = true;
+        if (totalPrice < couponDetails.minimumApplicableAmount) {
+            isApplicable = false;
+        };
         if (!isValidDate) {
             return res.json({ status: 'error', message: "Coupon is valid, Please remove coupon from your cart and continue" });
         } else if (!isApplicable) {
-            return res.json({ status: 'error', message: `Coupon can only apply the price range between ${couponDetails?.minimumApplicableAmount} - ${couponDetails?.maximumApplicableAmount}` });
+            return res.json({ status: 'error', message: `Coupon can only apply above ₹.${couponDetails?.minimumApplicableAmount} purchase` });
         } else {
             return res.json({ status: "ok" });
         }

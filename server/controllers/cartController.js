@@ -54,8 +54,29 @@ module.exports = {
                     await cart.updateOne({ couponApplied: discountAmount, $inc: { totalPrice: -discountAmount }, coupon: match._id });
                     await cart.save();
                     res.json({ status: 'ok', data: {} });
+                } else if (cart?.totalPrice >= match?.minimumApplicableAmount && cart?.totalPrice > match?.maximumApplicableAmount) {
+                    const couponUsage = await CouponUsage.findOne({ couponId: match._id, userId: id });
+                    if (couponUsage) {
+                        if (couponUsage.usedCount < match.maxUsesPerUser) {
+                            couponUsage.usedCount++;
+                            await couponUsage.save();
+                        } else {
+                            return res.json({ status: 'error', message: "Coupon is already used!" });
+                        }
+                    } else {
+                        const newCouponUsage = new CouponUsage({
+                            couponId: match._id,
+                            userId: id,
+                            usedCount: 1,
+                        });
+                        await newCouponUsage.save();
+                    }
+                    const discountAmount = match.maximumDiscountAmount;
+                    await cart.updateOne({ couponApplied: discountAmount, $inc: { totalPrice: -discountAmount }, coupon: match._id });
+                    await cart.save();
+                    res.json({ status: 'ok', data: {} });
                 } else {
-                    res.json({ status: 'error', message: `Coupon can only apply the price range between ${match?.minimumApplicableAmount} - ${match?.maximumApplicableAmount}` });
+                    res.json({ status: 'error', message: `Coupon can only apply above ₹.${match.minimumApplicableAmount} purchase` });
                 }
             } else {
                 res.json({ status: 'error', message: "Coupon is not availble" });

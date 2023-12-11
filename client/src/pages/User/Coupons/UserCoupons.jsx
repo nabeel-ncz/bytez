@@ -37,6 +37,7 @@ function UserCoupons() {
                         <div class="container text-black w-fit">
                             <div class="coupon-card bg-gradient-to-r from-yellow-50 to-orange-100 text-center py-10 px-20 rounded-lg shadow-md relative">
                                 <h3 class="text-sm font-normal">{item.discountPercentage}% flat off on the purchase range <br />between ₹{item.minimumApplicableAmount} - ₹{item.maximumApplicableAmount}</h3>
+                                <h3 class="text-sm font-normal">Upto ₹.{item.maximumApplicableAmount} purchase - ₹.{item.maximumDiscountAmount} discount</h3>
                                 <div class="coupon-row items-center mx-auto my-6">
                                     <span id="cpnCode" class="border-dashed border-black border px-4 py-2 mr-2">{item.code}</span>
                                 </div>

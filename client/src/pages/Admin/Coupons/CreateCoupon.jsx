@@ -14,6 +14,7 @@ function CreateCoupon() {
         discountPercentage: "",
         minimumApplicableAmount: 0,
         maximumApplicableAmount: 0,
+        maximumDiscountAmount: 0,
         couponType: "public_coupon",
         maxUsesPerUser: 1,
         minimumPurchaseAmount: ""
@@ -27,6 +28,16 @@ function CreateCoupon() {
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
+        let dateTo = new Date(data?.validTo)
+        let dateFrom = new Date(data?.validFrom)
+        if (dateTo - dateFrom < 0) {
+            toast.error("Invalid date, please choose correct date!");
+            return;
+        } 
+        if(data?.maximumDiscountAmount <= 0 || data?.minimumApplicableAmount <= 0 || data?.maximumApplicableAmount <= 0){
+            toast.error("Invalid data, please enter correct data in the amount field!");
+            return;
+        }
         dispatch(createCoupon(data)).then(() => {
             navigate(-1);
         })
@@ -67,8 +78,10 @@ function CreateCoupon() {
                         <input type='number' min={1} name='maxUsesPerUser' onChange={handleChange} value={data?.maxUsesPerUser} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
                         <label >Minimum Applicable Amount : </label>
                         <input type='number' name='minimumApplicableAmount' onChange={handleChange} value={data?.minimumApplicableAmount} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
-                        <label >Maximum Applicable Amount : </label>
+                        <label >Maximum Applicable Amount (Percentage) : </label>
                         <input type='number' name='maximumApplicableAmount' onChange={handleChange} value={data?.maximumApplicableAmount} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
+                        <label >Maximum Discount Amount : </label>
+                        <input type='number' name='maximumDiscountAmount' onChange={handleChange} value={data?.maximumDiscountAmount} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
                         <label >Coupon Type : </label>
                         <label htmlFor="" >
                             <input type="radio" name='couponType' value={"public_coupon"} checked={data?.couponType === "public_coupon"} onChange={handleChange} required />

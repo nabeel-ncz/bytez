@@ -15,6 +15,7 @@ function UpdateCoupon() {
         discountPercentage: "",
         minimumApplicableAmount: 0,
         maximumApplicableAmount: 0,
+        maximumDiscountAmount: 0,
         couponType: "public_coupon",
         maxUsesPerUser: 1,
         minimumPurchaseAmount: ""
@@ -53,6 +54,10 @@ function UpdateCoupon() {
 
     const handleFormSubmit = (event) => {
         event.preventDefault();
+        if(data?.maximumDiscountAmount <= 0){
+            toast.error('Invalid Maximum discount amount!');
+            return;
+        }
         if (data?.minimumApplicableAmount <= data?.maximumApplicableAmount) {
             let dateTo = new Date(data?.validTo)
             let dateFrom = new Date(data?.validFrom)
@@ -105,6 +110,8 @@ function UpdateCoupon() {
                         <input type='number' name='minimumApplicableAmount' onChange={handleChange} value={data?.minimumApplicableAmount} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
                         <label >Maximum Applicable Amount : </label>
                         <input type='number' name='maximumApplicableAmount' onChange={handleChange} value={data?.maximumApplicableAmount} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
+                        <label >Maximum Discount Amount : </label>
+                        <input type='number' name='maximumDiscountAmount' onChange={handleChange} value={data?.maximumDiscountAmount} required className='w-full h-12 bg-white rounded border border-gray-700 outline-none' />
                         <label >Coupon Type : </label>
                         <label htmlFor="" >
                             <input type="radio" name='couponType' value={"public_coupon"} checked={data?.couponType === "public_coupon"} onChange={handleChange} required />
