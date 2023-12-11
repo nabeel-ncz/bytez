@@ -2,8 +2,8 @@ import { BASE_URL } from "../constants/urls";
 import axios from "axios";
 axios.defaults.baseURL = BASE_URL ? `${BASE_URL}/api` : "http://localhost:3000/api";
 
-export const getAvailableUserCouponsApi = () => {
-    return axios.get(`/user/coupons/available/${user?._id}`, { withCredentials: true });
+export const getAvailableUserCouponsApi = (id) => {
+    return axios.get(`/user/coupons/available/${id}`, { withCredentials: true });
 };
 
 export const getActiveBrandsApi = () => {
