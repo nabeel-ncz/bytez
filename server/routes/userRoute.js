@@ -99,7 +99,7 @@ router.get('/auth/isExist', checkUserExist);
 router.get('/auth/logout', logout);
 
 router.get('/oauth2/google',passport.authenticate('google', { scope: ['profile', 'email'] }))
-router.get('/oauth2/google/redirect', passport.authenticate('google',{ successRedirect:"/user/oauth2/google/success", failureRedirect:"/user/oauth2/google/failed" }));
+router.get('/oauth2/google/redirect', passport.authenticate('google',{ successRedirect:"/api/user/oauth2/google/success", failureRedirect:"/api/user/oauth2/google/failed" }));
 router.get('/oauth2/google/success',googleAuthSuccess);
 router.get('/oauth2/google/failed',googleAuthFailed);
 
