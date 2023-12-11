@@ -17,11 +17,15 @@ const couponSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
-    minimumApplicableAmount:{
+    minimumApplicableAmount: {
         type: Number,
         required: true,
     },
-    maximumApplicableAmount:{
+    maximumApplicableAmount: {
+        type: Number,
+        required: true,
+    },
+    maximumDiscountAmount: {
         type: Number,
         required: true,
     },
@@ -38,8 +42,8 @@ const couponSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
-    minimumPurchaseAmount:{
-        type:Number,
+    minimumPurchaseAmount: {
+        type: Number,
     }
 }, {
     timestamps: true,
