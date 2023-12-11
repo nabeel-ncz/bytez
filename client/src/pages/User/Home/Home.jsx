@@ -8,23 +8,29 @@ import { fetchUser } from '../../../store/actions/user/userActions';
 import toast from 'react-hot-toast';
 import RowBanner from '../../../components/RowPost/RowBanner';
 import { getActiveBrandsApi } from '../../../services/api';
+import PageLoading from '../../../components/Loading/PageLoading';
 
 function Home() {
   const dispatch = useDispatch();
   const verified = useSelector(state => state?.user?.user?.data?.verified);
   const user = useSelector(state => state?.user?.user?.data);
+  const userLoading = useSelector(state => state?.user?.user?.loading);
 
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useSearchParams();
   const [brands, setBrands] = useState({ first: null, second: null, third: null });
+  const [brandsLoading, setBrandsLoading] = useState(false);
 
   useEffect(() => {
-    getActiveBrandsApi().then((response) => { 
-    if (response.data?.status === "ok") {
+    setBrandsLoading(true);
+    getActiveBrandsApi().then((response) => {
+      if (response.data?.status === "ok") {
         const temp = response.data?.data?.map((item) => item.brand);
         const random = getRandomElements(temp, 3);
-        setBrands(state => ({ ...state, first: random[0], second: random[1], third: random[2]}));
+        setBrands(state => ({ ...state, first: random[0], second: random[1], third: random[2] }));
       }
+    }).finally(() => {
+      setBrandsLoading(false);
     })
   }, []);
 
@@ -56,14 +62,18 @@ function Home() {
   const handleOpen = () => setOpen(state => !state);
 
   return (
-    <div>
-      {(user && !verified) && <VerifyMessage open={open} handleOpen={handleOpen} email={user?.email} />}
-      <Hero />
-      <RowPost title={brands?.first} />
-      <RowBanner />
-      <RowPost title={brands?.second} />
-      <RowPost title={brands?.third} />
-    </div>
+    <>
+      {(userLoading || brandsLoading) ? <PageLoading /> : (
+        <div>
+          {(user && !verified) && <VerifyMessage open={open} handleOpen={handleOpen} email={user?.email} />}
+          <Hero />
+          <RowPost title={brands?.first} />
+          <RowBanner />
+          <RowPost title={brands?.second} />
+          <RowPost title={brands?.third} />
+        </div>
+      )}
+    </>
   )
 }
 

@@ -172,11 +172,15 @@ const userSlice = createSlice({
         })
         //
         .addCase(getAllOrders.pending, (state) => {
-
+            state.orders.loading = true;
         })
         .addCase(getAllOrders.fulfilled, (state, action) => {
             state.orders.data = action?.payload?.data?.orders;
             state.orders.totalCount = action?.payload?.data?.totalCount;
+            state.orders.loading = false;
+        })
+        .addCase(getAllOrders.rejected, (state, action) => {
+            state.orders.loading = false;
         })
 
         //
@@ -187,10 +191,15 @@ const userSlice = createSlice({
             state.transactions.data = action?.payload?.data?.transactions;
         })
         //
+        .addCase(getAllWishlistItems.pending, (state) => {
+            state.wishlist.loading = true;
+        })
         .addCase(getAllWishlistItems.fulfilled, (state, action) => {
-            console.log(action)
             state.wishlist.loading = false;
             state.wishlist.data = action?.payload?.data?.items;
+        })
+        .addCase(getAllWishlistItems.rejected, (state, action) => {
+            state.wishlist.loading = false;
         })
     }    
 });
