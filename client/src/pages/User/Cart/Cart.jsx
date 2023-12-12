@@ -187,19 +187,21 @@ function Cart() {
                         <h2 className='text-xl'><span className='text-sm'>Sub Total : </span>₹ {doc.discountPrice * doc.quantity}</h2>
                       </div>
                       <div className='flex items-center justify-center gap-2 h-12'>
-                        <div className='flex items-center justify-center gap-4 border border-blue-gray-700 rounded h-full'>
-                          <button disabled={doc.quantity === 1} className={`${doc.quantity === 1 && "opacity-30"} h-full w-12 flex items-center justify-center cursor-pointer bg-blue-50`} onClick={() => {
-                            handleQuantity(doc.productId, doc.varientId, -1);
-                          }}>
-                            <span className='text-lg md:text-xl font-semibold'>-</span>
-                          </button>
-                          <span>{doc.quantity}</span>
-                          <button className=' h-full w-12 flex items-center justify-center cursor-pointer bg-blue-50' onClick={() => {
-                            handleQuantity(doc.productId, doc.varientId, +1);
-                          }}>
-                            <span className='text-lg md:text-xl font-semibold'>+</span>
-                          </button>
-                        </div>
+                        {quantityChangeLoading ? <LoadingSpinnerSm /> : (
+                          <div className='flex items-center justify-center gap-4 border border-blue-gray-700 rounded h-full'>
+                            <button disabled={doc.quantity === 1} className={`${doc.quantity === 1 && "opacity-30"} h-full w-12 flex items-center justify-center cursor-pointer bg-blue-50`} onClick={() => {
+                              handleQuantity(doc.productId, doc.varientId, -1);
+                            }}>
+                              <span className='text-lg md:text-xl font-semibold'>-</span>
+                            </button>
+                            <span>{doc.quantity}</span>
+                            <button className=' h-full w-12 flex items-center justify-center cursor-pointer bg-blue-50' onClick={() => {
+                              handleQuantity(doc.productId, doc.varientId, +1);
+                            }}>
+                              <span className='text-lg md:text-xl font-semibold'>+</span>
+                            </button>
+                          </div>
+                        )}
                         <div onClick={() => {
                           setDeleteId(doc.varientId)
                           handleDialogOpen();
