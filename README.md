@@ -1,6 +1,8 @@
 ## BYTEZ
 ### E-Commerce Platform - MERN Stack
 
+**Live link : https://bytez.nabeel.cloud**
+
 #### Overview
 
 Welcome to my E-Commerce Platform, a feature-rich web application built using the MERN stack (MongoDB, Express, React, Node.js). This platform is designed to provide users with a seamless and enjoyable online shopping experience.
@@ -44,7 +46,7 @@ git clone https://github.com/nabeel-ncz/bytez.git
 ```
 2. **Install Dependencies:**
 ```bash
-cd e-commerce-platform
+cd bytez
 npm install
 ```
 3. **Run the Application:**
