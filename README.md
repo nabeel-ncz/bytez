@@ -3,52 +3,44 @@
 
 #### Overview
 
-Welcome to our E-Commerce Platform, a feature-rich web application built using the MERN stack (MongoDB, Express, React, Node.js). This platform is designed to provide users with a seamless and enjoyable online shopping experience.
+Welcome to my E-Commerce Platform, a feature-rich web application built using the MERN stack (MongoDB, Express, React, Node.js). This platform is designed to provide users with a seamless and enjoyable online shopping experience.
 
 #### Features
 
-- **User Authentication:** Secure signup, login, and password recovery.
-- **Responsive UI:** Simple and intuitive interface catering to diverse user preferences.
-- **Modern Features:** Integration of contemporary functionalities for a dynamic shopping experience.
-- **Monolithic MVC Architecture:** Streamlined architecture for efficient development and maintenance.
-- **AWS Hosting:** The platform is hosted on Amazon Web Services for robust performance.
-
-#### Functionalities List
-
-signup & login 
-otp verification
-forgot password
-signin with google
-user profile managment
-multiple addresses
-wallet
-payments list
-referral offer
-cart & wish list
-product variants
-product offer
-multiple product images
-product image zoom
-product rating & reviews
-stock management
-coupon offer
-category/ brand offer
-checkout with cash on delivery / online / wallet
-online payment using razorpay
-different types of banners
-search and filter options
-order tracking
-order invoice
-order cancellation (single/multiple)
-order return
-order amount refund 
-pagination
+- **Signup & Login** 
+- **Otp Verification**
+- **Forgot Password**
+- **Signin with google**
+- **User profile managment**
+- **Multiple addresses**
+- **Wallet**
+- **Payments list**
+- **Referral offer**
+- **Cart & Wish list**
+- **Product variants**
+- **Product offer**
+- **Multiple product images**
+- **Product image zoom**
+- **Product rating & reviews**
+- **Stock management**
+- **Coupon offer**
+- **Category / Brand offer**
+- **Checkout with cash on delivery / online / wallet**
+- **online payment using razorpay**
+- **Different types of banners**
+- **Search and filter options**
+- **Order tracking**
+- **Order invoice**
+- **Order cancellation (single/multiple)**
+- **Order return**
+- **Order amount refund** 
+- **Pagination**
 
 #### Getting Started
 
 1. **Clone the Repository:**
 ```bash
-git clone [https://github.com/nabeel-ncz/bytez.git]   
+git clone https://github.com/nabeel-ncz/bytez.git   
 ```
 2. **Install Dependencies:**
 ```bash
