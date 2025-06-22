@@ -11,7 +11,7 @@ import axios from 'axios';
 import productVarientSchema from '../../../schema/admin/productVarientSchema';
 import { updateProductVarient, createNewAttribute, getAllAttribute } from '../../../store/actions/admin/adminActions';
 import { useParams } from 'react-router-dom';
-import ExistingFileInput from '../../../components/CustomFileInput/existingFileInput';
+import ExistingFileInput from '../../../components/CustomFileInput/ExistingFileInput';
 import { getBrandsInAdminApi, getCategoryInAdminApi, getProductVarientInAdminApi } from '../../../services/api';
 import { BASE_URL } from '../../../constants/urls';
 

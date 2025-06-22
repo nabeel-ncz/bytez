@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { applyCouponInCart, changeCartProductQuantity, deleteProductFromCart, getAllCartProducts } from '../../../store/actions/user/userActions';
 import toast from 'react-hot-toast';
 import { Button } from '@material-tailwind/react';
-import DeleteCartProduct from '../../../components/CustomDialog/deleteCartProduct'
+import DeleteCartProduct from '../../../components/CustomDialog/DeleteCartProduct'
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../../components/Pagination/Pagination';
 import RemoveCouponFromCart from '../../../components/CustomDialog/RemoveCouponFromCart';
